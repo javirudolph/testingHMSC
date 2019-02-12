@@ -1,0 +1,145 @@
+---
+title: "Update Jan18"
+author: "Javiera Rudolph"
+date: "February 1, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+## Update
+We changed the parameters from the original scripts. In the case of figure 2, we focused on niche breadth and species interactions. For this reason, figures a) and b) correspond to communities without competition, and the comparison is between narrow and wide niche breadth. For the case of figures c) and d), species interactions are included with an effect on both the colonization and extinction probabilities. 
+
+```{r parametersFig2, echo=FALSE}
+source("simParamsTable.R")
+knitr::kable(fig2Params)
+```
+
+To load these figures, make sure that the script 'Draw_for_md.R' has run and produced the png files. The following chunk of code lets you can check if the figures are in the directory.
+
+```{r figuresTRUE, echo=TRUE}
+figpng <- list.files(pattern = ".png")
+figpng
+```
+
+
+The following figures were generated using the original code from the 'Draw figures.R' script, and they use the variation partition as shown in Figure A1, from the appendix of the original manuscript. 
+
+
+
+```{r figure2, echo = FALSE}
+library(png)
+library(grid)
+library(gridExtra)
+a <-  rasterGrob(as.raster(readPNG("fig2a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("fig2b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("fig2c.png")), interpolate = FALSE)
+d <-  rasterGrob(as.raster(readPNG("fig2d.png")), interpolate = FALSE)
+grid.arrange(a,b,c,d, ncol = 2, nrow = 2)
+```
+
+
+An additional approach considered only the variation partition components, [a] environment, [b] spatial autocorrelation, and [c] co-distribution. The code used to generate these figures can be found in the 'Draw_for_md.R' script. Essentially, only overlap1 was considered, which included the pure, or individual, fractions only. 
+
+```{r pureFracsFig2, echo = FALSE}
+a <-  rasterGrob(as.raster(readPNG("purefig2a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("purefig2b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("purefig2c.png")), interpolate = FALSE)
+d <-  rasterGrob(as.raster(readPNG("purefig2d.png")), interpolate = FALSE)
+grid.arrange(a,b,c,d, ncol = 2, nrow = 2)
+```
+
+
+### Figure 3
+
+The parameters used for these communities are shown in the table. We changed these from the original code provided so that figure 3c would consider one third of the species to have low, medium and high dispersal, all of them with species interactions. 
+
+
+```{r parametersFig3, echo=FALSE}
+knitr::kable(fig3Params)
+```
+
+
+```{r figure3orig, echo = FALSE}
+a <-  rasterGrob(as.raster(readPNG("fig3a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("fig3b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("fig3c.png")), interpolate = FALSE)
+
+grid.arrange(a,b,c, ncol = 2)
+```
+
+Individual fractions only:
+
+```{r pureFracsFig3, echo = FALSE}
+a <-  rasterGrob(as.raster(readPNG("purefig3a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("purefig3b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("purefig3c.png")), interpolate = FALSE)
+
+grid.arrange(a,b,c, ncol = 2)
+```
+
+
+
+### Patch contribution variation partitioning analysis
+variPart function, the indSite argument was set to TRUE
+
+Example output:
+
+```{r VPsite example output}
+
+vp <- readRDS("VPsiteFig2a.RDS")
+str(vp[[1]])
+
+
+```
+
+* Each "overlap"" has the data for 1000 patches and 15 species
+* Overlap 1 includes the random, spatial and environment fractions only
+* Overlap 2 has the pair interactions: spatial-random, env-random, env-spatial
+* Overlap 3 has the interaction between the three of them: spatial-random-environment
+* Since we are interested in this at the patch level, we could either add or take the mean across all the species in a given patch?
+
+Not sure what the color scheme was supposed to be for these. I just set one color for each of the iterations.
+
+#### Figure 2 - for the sites  
+
+```{r sitesFig2, echo = FALSE}
+a <-  rasterGrob(as.raster(readPNG("sitesfig2a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("sitesfig2b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("sitesfig2c.png")), interpolate = FALSE)
+d <-  rasterGrob(as.raster(readPNG("sitesfig2d.png")), interpolate = FALSE)
+grid.arrange(a,b,c,d, ncol = 2, nrow = 2)
+```
+
+#### Figure 3 - for the sites
+
+```{r sitesFig3, echo = FALSE}
+a <-  rasterGrob(as.raster(readPNG("sitesfig3a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("sitesfig3b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("sitesfig3c.png")), interpolate = FALSE)
+
+grid.arrange(a,b,c, ncol = 2)
+```
+
+### Take the mean across species instead of the sum
+#### Figure 2 - for the sites  
+
+```{r sitesMeansFig2, echo = FALSE}
+a <-  rasterGrob(as.raster(readPNG("sitesMeansfig2a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("sitesMeansfig2b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("sitesMeansfig2c.png")), interpolate = FALSE)
+d <-  rasterGrob(as.raster(readPNG("sitesMeansfig2d.png")), interpolate = FALSE)
+grid.arrange(a,b,c,d, ncol = 2, nrow = 2)
+```
+
+#### Figure 3 - for the sites
+
+```{r sitesMeansFig3, echo = FALSE}
+a <-  rasterGrob(as.raster(readPNG("sitesMeansfig3a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("sitesMeansfig3b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("sitesMeansfig3c.png")), interpolate = FALSE)
+
+grid.arrange(a,b,c, ncol = 2)
+```
