@@ -2,9 +2,7 @@
 title: "DGravel 2016 code"
 author: "Javiera Rudolph"
 date: "February 1, 2019"
-output:
-  html_document:
-    keep_md: true
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
