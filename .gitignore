@@ -34,3 +34,11 @@ vignettes/*.pdf
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+.Rproj.user
+
+# Don't track heavy output files, figures, etc.
+*.RDS
+*.pdf
+*.png
+*.html
+/output/
