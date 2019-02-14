@@ -15,9 +15,9 @@ source("functions/main_sim_fx.R")
 
 # Landscape ---------------------------------------------------------------
 
-N <- 100
+N <- 300
 D <- 1
-R <- 4
+R <- 7
 # Get an environment
 set.seed(27)
 XY <- get_xy(N)
@@ -68,9 +68,10 @@ if(FALSE){
   stopCluster(clusters)
 }
 
-pvals <- lapply(testMEM, function(x) x$pvalue)
+# pvals <- lapply(testMEM, function(x) x$pvalue)
+# min(which(pvals>0.05))
 
-MEMsel <- MEM[,1:19]
+MEMsel <- MEM[,1:74]
 
 
 
@@ -108,8 +109,8 @@ run[[i]]
 
 # VP ----------------------------------------------------------------------
 
-model <- model
-nmodel <- length(nmodel)
+
+nmodel <- length(model)
 
 clusters <- makeCluster(ncluster)
 registerDoParallel(clusters)
@@ -117,7 +118,7 @@ registerDoParallel(clusters)
 ### Estimate models
 vpRes <- foreach(j = 1:nmodel) %dopar% {
   library(HMSC)
-  variPart(model[[j]], groupX = c(rep("env",3),rep("spa",19)), 
+  variPart(model[[j]], groupX = c(rep("env",3),rep("spa",length(MEMsel))), 
            type = "III", R2adjust = TRUE)
 }
 
