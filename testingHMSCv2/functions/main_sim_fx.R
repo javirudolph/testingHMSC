@@ -36,7 +36,7 @@ mainfx <- function(XY, E, pars, Y0, nsteps){
       
       ### Extinction ###
       # Compute the extinction probability
-      Ex <- E_f(v, d_e, e_0, e_min, N, R)
+      Ex <- E_f(v, d_e, e_0, e_min)
       M <- M_f(E, u_e, s_e)
       P_ext <- M * (1 - Ex) + Ex
       
