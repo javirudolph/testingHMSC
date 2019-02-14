@@ -3,6 +3,7 @@
 library(HMSC)
 library(doParallel)
 library(adespatial)
+library(ggtern)
 
 source("functions/landscape_fx.R")
 source("functions/metacom_sim_fx.R")
@@ -95,13 +96,37 @@ model <- foreach(j = 1:nrun) %dopar% {
 ### Stop clusters
 stopCluster(clusters)
 
+# Just curious about the X argument: 
+cbind(scale(E),scale(E)^2, MEMsel)
+# Y argument
+run[[i]]
+
 
 # The result: model, is what we use for the VP
 
 
 # VP ----------------------------------------------------------------------
 
+model <- model
+nmodel <- length(nmodel)
 
+clusters <- makeCluster(ncluster)
+registerDoParallel(clusters)
+
+### Estimate models
+vpRes <- foreach(j = 1:nmodel) %dopar% {
+  library(HMSC)
+  variPart(model[[j]], groupX = c(rep("env",3),rep("spa",19)), 
+           type = "III", R2adjust = TRUE)
+}
+
+### Stop clusters
+stopCluster(clusters)
+
+# Don't understand why for groupX, env is chosen 3 timees, and spatial the others... 
+
+
+# Plot the example --------------------------------------------------------
 
 
 
