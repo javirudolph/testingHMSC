@@ -134,6 +134,7 @@ stopCluster(clusters)
 # Spa = b + e + 1/2d + 1/2g
 # Random = c
 
+
 a <- vpRes[[1]]$overlap1[,3]
 b <- vpRes[[1]]$overlap1[,2]
 c <- vpRes[[1]]$overlap1[,1]
@@ -156,3 +157,5 @@ ternaryplot(plotVP,
             bg = "lightgray",
             grid_color = "white",
             cex = rowSums(plotVP))
+
+
