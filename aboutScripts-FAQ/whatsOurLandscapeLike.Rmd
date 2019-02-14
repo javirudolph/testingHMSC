@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 ```
 
-In all of the simulations done previously, two .txt files were associated to them. These corresponded to the environmental variable and the xy coordinate of pathces. 
+In all of the simulations done previously, two .txt files were associated to them. These corresponded to the environmental variable and the xy coordinate of patches. 
 
 I don't know how these were obtained or how they are arranged in space
 
