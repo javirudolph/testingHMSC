@@ -128,7 +128,7 @@ stopCluster(clusters)
 
 
 # Plot the example --------------------------------------------------------
-
+# should really create a function to plot these things
 # Env = a + f + 1/2d + 1/2g
 # Spa = b + e + 1/2d + 1/2g
 # Random = c
