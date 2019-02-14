@@ -3,7 +3,8 @@
 library(HMSC)
 library(doParallel)
 library(adespatial)
-library(ggtern)
+library(vcd)
+
 
 source("functions/landscape_fx.R")
 source("functions/metacom_sim_fx.R")
@@ -128,8 +129,29 @@ stopCluster(clusters)
 
 # Plot the example --------------------------------------------------------
 
+# Env = a + f + 1/2d + 1/2g
+# Spa = b + e + 1/2d + 1/2g
+# Random = c
 
+a <- vpRes[[1]]$overlap1[,3]
+b <- vpRes[[1]]$overlap1[,2]
+c <- vpRes[[1]]$overlap1[,1]
+d <- vpRes[[1]]$overlap2[,3]
+e <- vpRes[[1]]$overlap2[,1]
+f <- vpRes[[1]]$overlap2[,2]
+g <- vpRes[[1]]$overlap3[,1]
 
+env <- a + f + 1/2 * d + 1/2 * g
+spa <- b + e + 1/2 * d + 1/2 * g
+random <- c
 
+plotVP <- data.frame(env = ifelse(env < 0, 0, env),
+                     spa = ifelse(spa < 0, 0, spa),
+                     random = ifelse(random < 0, 0, random))
 
-
+ternaryplot(plotVP,
+            dimnames = c("Environment","Spatial\nAutocorrelation",
+                         "Co-Distribution"),
+            bg = "lightgray",
+            grid_color = "white",
+            cex = rowSums(plotVP))
