@@ -2,8 +2,8 @@
 title: "DGravel 2016 code"
 author: "Javiera Rudolph"
 date: "February 1, 2019"
-output:
-  html_output:
+output: 
+  html_document:
     keep_md: true
 ---
 
