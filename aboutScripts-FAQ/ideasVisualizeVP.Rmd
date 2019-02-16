@@ -29,5 +29,52 @@ VPdata[[1]] %>%
          r2 = env + spa + codist,
          iter = paste0("niter") )
 
+
+vptidy <- function(lista){
+  lista %>% 
+    map(as_tibble) %>% 
+    bind_cols() %>% 
+    set_names(c("c", "b", "a", "e", "f", "d", "g")) %>% 
+    transmute(env = a + f + 0.5 * d + 0.5 * g,
+         spa = b + e + 0.5 * d + 0.5 * g,
+         codist = g, 
+         r2 = env + spa + codist)
+}
+
+
+```
+
+
+
+
+```{r}
+
+data <- VPdata[[1]] %>% map(., as_tibble)
+
+VPdata %>% map_dfr("overlap1")
+
+
+VPdata[[1]] %>% 
+  set_names()
+  map(as_tibble) %>% 
+  bind_cols() %>% 
+  set_names(c("c", "b", "a", "e", "f", "d", "g")) %>% 
+  transmute(env = a + f + 0.5 * d + 0.5 * g,
+         spa = b + e + 0.5 * d + 0.5 * g,
+         codist = g, 
+         r2 = env + spa + codist)
+
+funcs <- function(lista) {
+  lista %>% 
+  map(as_tibble) %>% 
+    bind_cols() %>% 
+    set_names(c("c", "b", "a", "e", "f", "d", "g")) %>% 
+    transmute(env = a + f + 0.5 * d + 0.5 * g,
+           spa = b + e + 0.5 * d + 0.5 * g,
+           codist = g, 
+           r2 = env + spa + codist)
+}
+
+VPdata %>% set_names(paste("iter", 1:length(VPdata))) %>% map(funcs)
 ```
 
