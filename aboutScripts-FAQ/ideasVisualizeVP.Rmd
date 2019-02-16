@@ -19,23 +19,15 @@ Create a function that will calculate that dataframe needed for each item on the
 
 
 ```{r tidyVPdata}
-miniData1 <- as_tibble(VPdata[[1]]$overlap1) %>% 
-  gather(key = "source", value = "variation")
-
-miniData2 <- as_tibble(VPdata[[1]]$overlap2) %>% 
-  gather(key = "source", value = "variation")
-
-miniData3 <- as_tibble(VPdata[[1]]$overlap3) %>% 
-  gather(key = "source", value = "variation")
-
-flatData <- bind_rows(miniData1, miniData2, miniData3)
-
-minitibble <- VPdata[[1]] %>% 
-  map(., as_tibble)
-
-
-
-mutate(r2 = rowSums(.)) 
+VPdata[[1]] %>% 
+  map(as_tibble) %>% 
+  bind_cols() %>% 
+  set_names(c("c", "b", "a", "e", "f", "d", "g")) %>% 
+  transmute(env = a + f + 0.5 * d + 0.5 * g,
+         spa = b + e + 0.5 * d + 0.5 * g,
+         codist = g, 
+         r2 = env + spa + codist,
+         iter = paste0("niter") )
 
 ```
 
