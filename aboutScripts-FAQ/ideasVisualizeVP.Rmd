@@ -9,26 +9,46 @@ We will use thi document to explore alternatives to visualizing the data. As an 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(ggtern)
 ```
 
 ```{r loadVPdata}
 VPdata <- readRDS("VP Fig2a.RDS")
 ```
 
-Create a function that will calculate that dataframe needed for each item on the list, so then you can just use the funciton on each item of the list, you have the dataframes you want and bind them together. 
+## Understand the structure of the data
+```{r vpStructure, echo=FALSE, eval=FALSE}
+head(VPdata[[1]])
+names(VPdata[[1]])
+dimnames(VPdata[[1]]$overlap1)
 
+```
+Organize the list to calculate the actual variables needed and organize for plotting.
 
-```{r tidyVPdata}
+```{r tidyVPdata, echo=FALSE, include=FALSE}
+# Forgot to consider the negative values, should be fixed now
+VPdata %>% 
+  set_names(imap(., ~ paste0("iter_", .y))) -> VPdata
+
 VPdata[[1]] %>% 
-  map(as_tibble) %>% 
+  map(as_tibble) %>%
   bind_cols() %>% 
   set_names(c("c", "b", "a", "e", "f", "d", "g")) %>% 
   transmute(env = a + f + 0.5 * d + 0.5 * g,
-         spa = b + e + 0.5 * d + 0.5 * g,
-         codist = g, 
-         r2 = env + spa + codist,
-         iter = paste0("niter") )
+            env = ifelse(env < 0, 0, env),
+            spa = b + e + 0.5 * d + 0.5 * g,
+            spa = ifelse(spa < 0, 0, spa),
+            codist = c,
+            codist = ifelse(codist < 0, 0, codist),
+            r2 = env + spa + codist,
+            iteration = names(VPdata[1]))
 
+```
+
+
+
+
+```{r testFunction, echo=FALSE, eval=FALSE}
 
 vptidy <- function(lista){
   lista %>% 
@@ -36,45 +56,74 @@ vptidy <- function(lista){
     bind_cols() %>% 
     set_names(c("c", "b", "a", "e", "f", "d", "g")) %>% 
     transmute(env = a + f + 0.5 * d + 0.5 * g,
-         spa = b + e + 0.5 * d + 0.5 * g,
-         codist = g, 
-         r2 = env + spa + codist)
+            env = ifelse(env < 0, 0, env),
+            spa = b + e + 0.5 * d + 0.5 * g,
+            spa = ifelse(spa < 0, 0, spa),
+            codist = c,
+            codist = ifelse(codist < 0, 0, codist),
+            r2 = env + spa + codist)
 }
 
 
+vptidy(VPdata[[1]]) %>% mutate(iteration = "iter_1")
+  
+  
 ```
 
 
+```{r plotData}
+plotData <- list()
 
-
-```{r}
-
-data <- VPdata[[1]] %>% map(., as_tibble)
-
-VPdata %>% map_dfr("overlap1")
-
-
-VPdata[[1]] %>% 
-  set_names()
-  map(as_tibble) %>% 
-  bind_cols() %>% 
-  set_names(c("c", "b", "a", "e", "f", "d", "g")) %>% 
-  transmute(env = a + f + 0.5 * d + 0.5 * g,
-         spa = b + e + 0.5 * d + 0.5 * g,
-         codist = g, 
-         r2 = env + spa + codist)
-
-funcs <- function(lista) {
-  lista %>% 
-  map(as_tibble) %>% 
+for(i in 1:5){
+  
+  plotData[[i]] <- VPdata[[i]] %>% 
+    map(as_tibble) %>%
     bind_cols() %>% 
     set_names(c("c", "b", "a", "e", "f", "d", "g")) %>% 
     transmute(env = a + f + 0.5 * d + 0.5 * g,
-           spa = b + e + 0.5 * d + 0.5 * g,
-           codist = g, 
-           r2 = env + spa + codist)
+            env = ifelse(env < 0, 0, env),
+            spa = b + e + 0.5 * d + 0.5 * g,
+            spa = ifelse(spa < 0, 0, spa),
+            codist = c,
+            codist = ifelse(codist < 0, 0, codist),
+            r2 = env + spa + codist,
+            iteration = names(VPdata[i]))
 }
 
-VPdata %>% set_names(paste("iter", 1:length(VPdata))) %>% map(funcs)
+plotData %>% bind_rows() -> plotData
+str(plotData)
+
+```
+
+```{r fig1}
+plotData %>%
+  arrange(., desc(r2)) %>% 
+  ggtern(aes(x = env, z = spa, y = codist)) +
+  geom_point(aes(size = r2, color = iteration), alpha = 0.4) +
+  scale_color_viridis_d() +
+  theme_minimal()
+  
+
+```
+
+```{r alternPlot}
+plotData %>% 
+  arrange(desc(r2)) %>% 
+  ggplot(aes(env, spa)) +
+  geom_point(aes(colour = codist, size = r2, shape = iteration), alpha = 0.4) + 
+  scale_color_gradient(low = "#440154FF", high = "#FDE725FF", limits=c(0, 1), 
+                      na.value = "black") +
+  lims(x = c(0,1),
+       y = c(0,1)) +
+  theme_minimal()
+
+```
+
+why am I getting all these NAs?
+
+```{r checkNas}
+plotData %>% 
+  select(codist)
+
 ```
 
