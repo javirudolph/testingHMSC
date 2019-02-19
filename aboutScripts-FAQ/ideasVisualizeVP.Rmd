@@ -7,7 +7,7 @@ output: github_document
 We will use thi document to explore alternatives to visualizing the data. As an example I will use the data for scenario 1 Figure2a. The RDS file needed to run this markdown document needs to be in the same directory for this to work. 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(ggtern)
 ```
@@ -16,17 +16,21 @@ library(ggtern)
 VPdata <- readRDS("VP Fig2a.RDS")
 ```
 
-## Understand the structure of the data
-```{r vpStructure, echo=FALSE, eval=FALSE}
+## Plot data for Figure 2a
+Using the VP data for Figure 2a as an example, I am organizing the data and creating a function to automate plotting later on. 
+```{r vpStructure, eval=FALSE}
 head(VPdata[[1]])
 names(VPdata[[1]])
 dimnames(VPdata[[1]]$overlap1)
 
 ```
-Organize the list to calculate the actual variables needed and organize for plotting.
+Organize the list to calculate the actual variables needed and organize for plotting. The VP output has each of the variables in the variation partitioning analysis, and I've labeled them according to FigureA1. Setting the names to match figure A1 in the appendix makes it easier to calculate the partition for environment, space and co-distribution. 
 
-```{r tidyVPdata, echo=FALSE, include=FALSE}
-# Forgot to consider the negative values, should be fixed now
+![Figure 1A, variation partition](figA1.png)  
+
+
+
+```{r tidyVPdata, echo = TRUE}
 VPdata %>% 
   set_names(imap(., ~ paste0("iter_", .y))) -> VPdata
 
@@ -48,7 +52,7 @@ VPdata[[1]] %>%
 
 
 
-```{r testFunction, echo=FALSE, eval=FALSE}
+```{r testFunction, eval=FALSE}
 
 vptidy <- function(lista){
   lista %>% 
@@ -71,7 +75,7 @@ vptidy(VPdata[[1]]) %>% mutate(iteration = "iter_1")
 ```
 
 
-```{r plotData}
+```{r plotData, include=FALSE}
 plotData <- list()
 
 for(i in 1:5){
@@ -94,17 +98,31 @@ plotData %>% bind_rows() -> plotData
 str(plotData)
 
 ```
+Ternary plot for Figure 2a. I have included transparency to visualize greater density of points. Unlike the previous figures, the axes go from 0-100 instead of 0-1, so I still need to figure out how to change that.
 
-```{r fig1}
+```{r Figure2aTernary}
 plotData %>%
   arrange(., desc(r2)) %>% 
   ggtern(aes(x = env, z = spa, y = codist)) +
   geom_point(aes(size = r2, color = iteration), alpha = 0.4) +
   scale_color_viridis_d() +
   theme_minimal()
+# Add contour lines for density of points
   
 
 ```
+
+Curious about the range of r2
+
+```{r r2hist}
+plotData %>% 
+  ggplot(aes(x = r2)) +
+  geom_histogram(bins = 15) +
+  theme_minimal()
+
+```
+
+Trying to find an alternative way to visualize our variation data.
 
 ```{r alternPlot}
 plotData %>% 
@@ -119,11 +137,69 @@ plotData %>%
 
 ```
 
-why am I getting all these NAs?
+```{r plotDataFxs}
 
-```{r checkNas}
-plotData %>% 
-  select(codist)
+dataForPlotting <- function(VPdata){
+  VPdata %>% 
+    set_names(imap(., ~ paste0("iter_", .y))) -> VPdata
+  
+  plotData <- list()
+  
+  for(i in 1:5){
+    plotData[[i]] <- VPdata[[i]] %>% 
+    map(as_tibble) %>%
+    bind_cols() %>% 
+    set_names(c("c", "b", "a", "e", "f", "d", "g")) %>% 
+    transmute(env = a + f + 0.5 * d + 0.5 * g,
+            env = ifelse(env < 0, 0, env),
+            spa = b + e + 0.5 * d + 0.5 * g,
+            spa = ifelse(spa < 0, 0, spa),
+            codist = c,
+            codist = ifelse(codist < 0, 0, codist),
+            r2 = env + spa + codist,
+            iteration = names(VPdata[i]))
+  }
+  
+  plotData %>% bind_rows() -> plotData
+}
 
+ternPlot <- function(plotData){
+  plotData %>%
+    arrange(., desc(r2)) %>% 
+    ggtern(aes(x = env, z = spa, y = codist)) +
+    geom_point(aes(size = r2, color = iteration), alpha = 0.4) +
+    scale_color_viridis_d() +
+    theme_minimal()
+}
+
+
+altPlot <- function(plotData){
+  plotData %>% 
+    arrange(desc(r2)) %>% 
+    ggplot(aes(env, spa)) +
+    geom_point(aes(colour = codist, size = r2, shape = iteration), alpha = 0.4) + 
+    scale_color_gradient(low = "#440154FF", high = "#FDE725FF", limits=c(0, 1), 
+                      na.value = "black") +
+    lims(x = c(0,1),
+        y = c(0,1)) +
+    theme_minimal()
+}
+
+
+```
+
+Test with another RDS file, scenario for Figure2d
+
+```{r Fig2dTest}
+
+VPFig2d <- readRDS(file = "VP Fig2d.RDS")
+
+plotData_2d <- dataForPlotting(VPFig2d)
+ternPlot(plotData_2d)
+
+```
+
+```{r}
+altPlot(plotData_2d)
 ```
 
