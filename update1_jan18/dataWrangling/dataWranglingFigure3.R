@@ -79,6 +79,57 @@ prms2_Fig3a <- compileFig3Params(plusSpp = 7)
 
 prmsFig3a <- bind_rows(prms1_Fig3a, prms2_Fig3a)
 
+fullFig3a <- variPartTidy(datFig3a, prmsFig3a) %>% 
+  mutate(scenario = "Fig3a")
+
+
+# Figure3b ----------------------------------------------------------------
+
+datFig3b <- dataLoader("Fig3b")
+filename <- "update1_jan18/scenario2Fig3b.R"
+
+sourcePartial(filename)
+prms1_Fig3b <- compileFig3Params()
+
+sourcePartial(filename, startTag = "#secondStart", endTag = "secondEnd")
+prms2_Fig3b <- compileFig3Params(plusSpp = 5)
+
+sourcePartial(filename, startTag = "#thirdStart", endTag = "thirdEnd")
+prms3_Fig3b <- compileFig3Params(plusSpp = 10)
+
+prmsFig3b <- bind_rows(prms1_Fig3b, prms2_Fig3b, prms3_Fig3b)
+
+fullFig3b <- variPartTidy(datFig3b, prmsFig3b) %>% 
+  mutate(scenario = "Fig3b")
+
+
+
+# Figure3c ----------------------------------------------------------------
+
+
+datFig3c <- dataLoader("Fig3c")
+filename <- "update1_jan18/scenario3Fig3c.R"
+
+sourcePartial(filename)
+prms1_Fig3c <- compileFig3Params()
+
+sourcePartial(filename, startTag = "#secondStart", endTag = "secondEnd")
+prms2_Fig3c <- compileFig3Params(plusSpp = 5)
+
+sourcePartial(filename, startTag = "#thirdStart", endTag = "thirdEnd")
+prms3_Fig3c <- compileFig3Params(plusSpp = 10)
+
+prmsFig3c <- bind_rows(prms1_Fig3c, prms2_Fig3c, prms3_Fig3c)
+
+fullFig3c <- variPartTidy(datFig3c, prmsFig3c) %>% 
+  mutate(scenario = "Fig3c")
+
+# Compile all -------------------------------------------------------------
+
+Figure3Data <- bind_rows(fullFig3a, fullFig3b, fullFig3c)
+#write.csv(Figure3Data, file = "update1_jan18/dataWrangling/Fig3DataParams.csv")
+#saveRDS(Figure3Data, file = "update1_jan18/newFigures/Fig3DataParams.RDS")
+
 
 
 
