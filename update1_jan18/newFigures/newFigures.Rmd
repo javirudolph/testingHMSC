@@ -1,0 +1,54 @@
+---
+title: "Manuscript Figures"
+author: "Javiera Rudolph"
+date: "February 20, 2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(knitr)
+library(ggtern)
+```
+
+```{r readData}
+datFig2 <- readRDS("Fig2DataParams.RDS")
+datFig3 <- readRDS("Fig3DataParams.RDS")
+prmsTableFig2 <- readRDS("TableFig2Params.RDS")
+prmsTableFig3 <- readRDS("TableFig3Params.RDS")
+```
+
+```{r testTable}
+kable(prmsTableFig2, format = 'markdown')
+
+```
+
+```{r Fig2a}
+
+datFig2 %>% 
+  filter(., scenario == "Fig2a") %>% 
+  arrange(desc(r2)) %>% 
+  ggtern(aes(x = env, z = spa, y = codist)) +
+  labs(x = "Environment", 
+       y = "Codistribution", 
+       z = "Spatial",
+       title = "Figure 2a") +
+  geom_point(aes(size = r2, shape = iteration, color = nicheOpt), alpha = 0.5) +
+  scale_color_viridis_c() +
+  theme_minimal() +
+  guides(size = guide_legend(order = 1,
+                             title = expression(paste(R^{2}))),
+         shape = guide_legend(order = 2,
+                              title = NULL,
+                              override.aes = list(size = 4)),
+         col = guide_colourbar(title = "Niche",
+                               order = 3)) +
+  theme(legend.position = "bottom", legend.box = "vertical",
+        axis.title = element_text(size = 9),
+        axis.text = element_text(size = 5), 
+        panel.grid = element_line(colour = "darkgrey"),
+        plot.margin=unit(c(1,1,1.5,1.2),"cm"))
+
+```
+
