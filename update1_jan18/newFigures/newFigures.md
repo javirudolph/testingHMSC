@@ -14,4 +14,4 @@ February 20, 2019
 | Interactions c     | d\_c  | 0     | 0     | 1.5   | 1.5   |
 | Interactions e     | d\_e  | 0     | 0     | 1.5   | 1.5   |
 
-![](newFigures_files/figure-markdown_github/Fig2a-1.png)
+![](newFigures_files/figure-markdown_github/Fig2-1.png)
