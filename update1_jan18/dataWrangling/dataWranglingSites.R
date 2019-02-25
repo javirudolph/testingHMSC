@@ -45,11 +45,15 @@ tidyVPsites <- function(vp){
     g <- rowSums(workingVP3)/15
     
     env <- a + f + 1/2 * d + 1/2 * g
+    env <- ifelse(env < 0, 0, env)
     spa <- b + e + 1/2 * d + 1/2 * g
+    spa <- ifelse(spa < 0, 0, spa)
     random <- c
+    codist <- ifelse(random < 0, 0, random)
+    r2 <- env + spa + codist
     iteration <- factor(paste0("iter", i), levels = paste0("iter", 1:5))
     
-    cleanData <- cbind.data.frame(env, spa, random, iteration)
+    cleanData <- cbind.data.frame(env, spa, codist, r2, iteration)
     cleanData$site <- paste0(row.names(cleanData))
     
     vpALL[[i]] <- cleanData

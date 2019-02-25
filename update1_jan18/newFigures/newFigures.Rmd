@@ -100,6 +100,9 @@ grid.arrange(arrangeGrob(fig2a + theme(legend.position = "none")),
 ```
 
 ### Figure 3
+```{r testTable3}
+kable(prmsTableFig3, format = 'markdown')
+```
 
 ```{r, echo = FALSE, eval = FALSE}
 
