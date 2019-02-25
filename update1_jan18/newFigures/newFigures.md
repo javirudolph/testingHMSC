@@ -15,3 +15,7 @@ February 20, 2019
 | Interactions e     | d\_e  | 0     | 0     | 1.5   | 1.5   |
 
 ![](newFigures_files/figure-markdown_github/Fig2-1.png)
+
+### Figure 3
+
+![](newFigures_files/figure-markdown_github/unnamed-chunk-3-1.png)
