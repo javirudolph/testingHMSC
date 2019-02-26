@@ -11,16 +11,17 @@ This directory is organized in the following way:
 
 1. Simulate an environment and keep it constant for all simulations. You can do this by using the functions in the [landscape](https://github.com/javirudolph/testingHMSC/blob/master/testingHMSCv2/functions/landscape_fx.R) script. Make sure to use a seed and save the .RDS files for use in the following functions.
 
-2. We set the desired parameters as a list. We can do this with the [prep_pars function](https://github.com/javirudolph/testingHMSC/blob/master/testingHMSCv2/functions/prep_pars_fx.R)
+1. We set the desired parameters as a list. We can do this with the [prep_pars function](https://github.com/javirudolph/testingHMSC/blob/master/testingHMSCv2/functions/prep_pars_fx.R)
 
-3. Use that list of parameters to go into the [main_sim function](https://github.com/javirudolph/testingHMSC/blob/master/testingHMSCv2/functions/main_sim_fx.R) which will generate the simulated metacommunity. The output is a matrix of species occurrence in each site.
+1. Use that list of parameters to go into the [main_sim function](https://github.com/javirudolph/testingHMSC/blob/master/testingHMSCv2/functions/main_sim_fx.R) which will generate the simulated metacommunity. The output is a matrix of species occurrence in each site.
+    1. The process functions used in the main simulation can be found in the [metacom_sim_fx script](https://github.com/javirudolph/testingHMSC/blob/master/testingHMSCv2/functions/metacom_sim_fx.R) and a description of each of these functions can be found [here](https://github.com/javirudolph/testingHMSC/blob/master/aboutScripts-FAQ/metacom_sims_functions.md)
 
-4. Fit HMSC
+1. Fit HMSC
 
-5 Variation Partitioning
+1. Variation Partitioning
 
-6. Data wrangling
+1. Data wrangling
 
-7. Plotting
+1. Plotting
 
-8. Render reports with figures and associated table of parameters
+1. Render reports with figures and associated table of parameters
