@@ -30,8 +30,10 @@ source("functions/landscape_fx.R")
 # Or, if available locally, just load the RDS files saved from that script in the outputs folder
 # These RDS files should include the XY, E and MEMsel
 
-# This are the functions that run the whole process
+# These are the functions that run the whole process
 source("functions/full_process_fx.R")
+
+# These functions organize the VP data and get it ready for plotting or further analysis
 
 
 
@@ -80,7 +82,7 @@ testMEMsel <- testMEM[, 1:lastSignificant]
 testParams <- prep_pars(N = N, D = D, R = R, breadth = 0.2,
                         alpha = 0.05, interx_col = 0, interx_ext = 0,
                         makeRDS = TRUE,
-                        whereToSave = "outputs/testOutputs/", objName = "testPars")
+                        whereToSave = "outputs/testOutputs/", objName = "testParams")
 
 
 ###########################################################################
@@ -104,6 +106,12 @@ testVPresults <- get_VPresults(HMSCmodel = testHMSCmodel, MEMsel = testMEMsel,
                                makeRDS = TRUE,
                                whereToSave = "outputs/testOutputs/",
                                objName = "testVPresults")
+
+#########################################################################
+# 6. Organize the VP data object
+dataVP4plot <- organize_VPdata_species(VPdata = testVPresults, params = testParams)
+
+
 
 
 
