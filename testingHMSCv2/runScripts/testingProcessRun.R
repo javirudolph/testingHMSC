@@ -102,14 +102,14 @@ testHMSCmodel <- metacom_as_HMSCdata(metacomData = testMetacom, numClusters = 4,
 
 ##########################################################################
 # 5. Get variation partitioning components
-testVPresults <- get_VPresults(HMSCmodel = testHMSCmodel, MEMsel = testMEMsel,
+testVPresults <- get_VPresults(HMSCmodel = testHMSCmodel, MEMsel = testMEMsel, numClusters = 4,
                                makeRDS = TRUE,
                                whereToSave = "outputs/testOutputs/",
                                objName = "testVPresults")
 
 #########################################################################
 # 6. Organize the VP data object
-dataVP4plot <- organize_VPdata_species(VPdata = testVPresults, params = testParams)
+dataVP4plot <- organize_VPdata_species(VPdata = testVPresults)
 
 
 

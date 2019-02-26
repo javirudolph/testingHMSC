@@ -75,3 +75,12 @@ prep_pars <- function(N = NULL,
   
   return(pars)
 }
+
+
+
+
+
+
+
+
+
