@@ -82,7 +82,7 @@ metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
 
 # Variation Partitioning --------------------------------------------------
 
-get_VPresults <- function(HMSCmodel, MEMsel,
+get_VPresults <- function(HMSCmodel, MEMsel, numClusters,
                    makeRDS = FALSE,
                    whereToSave = NULL,
                    objName = NULL){
@@ -90,7 +90,7 @@ get_VPresults <- function(HMSCmodel, MEMsel,
   model <- HMSCmodel
   nmodel <- length(model)
   
-  clusters <- makeCluster(ncluster)
+  clusters <- makeCluster(numClusters)
   registerDoParallel(clusters)
   
   ### Estimate models
@@ -111,7 +111,7 @@ get_VPresults <- function(HMSCmodel, MEMsel,
   return(vpRes)
 }
 
-get_VPresults_SITE <- function(HMSCmodel, MEMsel,
+get_VPresults_SITE <- function(HMSCmodel, MEMsel, numClusters,
                                makeRDS = FALSE,
                                whereToSave = NULL,
                                objName = NULL){
@@ -119,7 +119,7 @@ get_VPresults_SITE <- function(HMSCmodel, MEMsel,
   model <- HMSCmodel
   nmodel <- length(model)
   
-  clusters <- makeCluster(ncluster)
+  clusters <- makeCluster(numClusters)
   registerDoParallel(clusters)
   
   ### Estimate models
