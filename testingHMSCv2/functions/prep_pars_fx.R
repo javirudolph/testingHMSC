@@ -18,7 +18,10 @@ prep_pars <- function(N = NULL,
                       breadth = NULL,
                       alpha = NULL,
                       interx_col = NULL,
-                      interx_ext = NULL){
+                      interx_ext = NULL,
+                      makeRDS = FALSE,
+                      whereToSave = NULL,
+                      objName = NULL){
   
   # Number of patches, environmental variables and species
   N <- N
@@ -64,5 +67,11 @@ prep_pars <- function(N = NULL,
   pars <- list(N = N, D = D, R = R,
                u_c = u_c, u_e = u_e, s_c = s_c, s_e = s_e, alpha = alpha, m = m,
                c_0 = c_0, e_0 = e_0, c_max = c_max, e_min = e_min, d_c = d_c, d_e = d_e, A = A)
-  pars
+  
+  if(makeRDS == TRUE){
+    nameFile <- paste0(whereToSave, objName, ".RDS")
+    saveRDS(pars, file = nameFile)
+  }
+  
+  return(pars)
 }
