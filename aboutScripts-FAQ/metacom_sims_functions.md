@@ -1,15 +1,3 @@
----
-title: "Metacommunity Simulation Functions"
-author: "Javiera Rudolph"
-date: "February 8, 2019"
-output: 
-  html_document:
-    keep_md: true
----
-
-
-
-
 
 
 *Text is edited from the appendix: **Rethinking Metacommunity Ecology**, by Mathew A. Leibold, Pedro Peres-Neto, Dominique Gravel, Luc De Meester, Lauren Shoemaker, Florian Hartig, F. Guillaume Blanchet, Jonathan M. Chase *
