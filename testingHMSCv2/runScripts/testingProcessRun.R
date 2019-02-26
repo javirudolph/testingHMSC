@@ -109,8 +109,15 @@ testVPresults <- get_VPresults(HMSCmodel = testHMSCmodel, MEMsel = testMEMsel, n
 
 #########################################################################
 # 6. Organize the VP data object
-dataVP4plot <- organize_VPdata_species(VPdata = testVPresults)
+testOrganizedVP <- organize_VPdata_species(VPdata = testVPresults)
 
+#########################################################################
+# 7. Join with parameters
+testPlotData <- testOrganizedVP %>% left_join(., organize_params_plot(testParams))
+
+#########################################################################
+# 8. Plot the data
+make_tern_plot(testPlotData, varShape = "iteration", varColor = "nicheOptima")
 
 
 
