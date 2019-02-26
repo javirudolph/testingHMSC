@@ -128,34 +128,4 @@ stopCluster(clusters)
 # Don't understand why for groupX, env is chosen 3 timees, and spatial the others... 
 
 
-# Plot the example --------------------------------------------------------
-# should really create a function to plot these things
-# Env = a + f + 1/2d + 1/2g
-# Spa = b + e + 1/2d + 1/2g
-# Random = c
-
-
-a <- vpRes[[1]]$overlap1[,3]
-b <- vpRes[[1]]$overlap1[,2]
-c <- vpRes[[1]]$overlap1[,1]
-d <- vpRes[[1]]$overlap2[,3]
-e <- vpRes[[1]]$overlap2[,1]
-f <- vpRes[[1]]$overlap2[,2]
-g <- vpRes[[1]]$overlap3[,1]
-
-env <- a + f + 1/2 * d + 1/2 * g
-spa <- b + e + 1/2 * d + 1/2 * g
-random <- c
-
-plotVP <- data.frame(env = ifelse(env < 0, 0, env),
-                     spa = ifelse(spa < 0, 0, spa),
-                     random = ifelse(random < 0, 0, random))
-
-ternaryplot(plotVP,
-            dimnames = c("Environment","Spatial\nAutocorrelation",
-                         "Co-Distribution"),
-            bg = "lightgray",
-            grid_color = "white",
-            cex = rowSums(plotVP))
-
 
