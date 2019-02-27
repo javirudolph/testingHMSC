@@ -127,8 +127,9 @@ fullFig2d <- variPartTidy(datFig2d, prmsFig2d) %>%
 # Compile all -------------------------------------------------------------
 
 Figure2Data <- bind_rows(fullFig2a, fullFig2b, fullFig2c, fullFig2d)
-write.csv(Figure2Data, file = "update1_jan18/dataWrangling/Fig2DataParams.csv")
-saveRDS(Figure2Data, file = "update1_jan18/newFigures/Fig2DataParams.RDS")
+
+#write.csv(Figure2Data, file = "update1_jan18/dataWrangling/Fig2DataParams.csv")
+#saveRDS(Figure2Data, file = "update1_jan18/newFigures/Fig2DataParams.RDS")
 
 
 

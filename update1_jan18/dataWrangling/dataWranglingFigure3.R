@@ -61,9 +61,24 @@ variPartTidy <- function(VPdata, params){
   }
   
   fullData %>% 
-    bind_rows() -> fullData
+    bind_rows() %>% 
+    mutate(identifier = paste0("spp", species, "_", iteration)) -> fullData
   return(fullData)
 }
+
+# Get the prevalence
+prevalenceForSpp <- function(filenameWithPath){
+  
+  readRDS(paste(filenameWithPath)) %>% 
+    set_names(imap(., ~ paste0("iter_", .y))) %>% 
+    map(., colSums) %>%
+    bind_cols() %>% 
+    rownames_to_column(var = "species") %>% 
+    gather(., key = "iteration", value = "prevalence", -species) %>% 
+    mutate(identifier = paste0("spp", species, "_", iteration)) %>% 
+    select(., -c(species, iteration))
+}
+
 
 
 # Figure3a ----------------------------------------------------------------
@@ -80,7 +95,8 @@ prms2_Fig3a <- compileFig3Params(plusSpp = 7)
 prmsFig3a <- bind_rows(prms1_Fig3a, prms2_Fig3a)
 
 fullFig3a <- variPartTidy(datFig3a, prmsFig3a) %>% 
-  mutate(scenario = "Fig3a")
+  mutate(scenario = "Fig3a") %>% 
+  left_join(., prevalenceForSpp("update1_jan18/Fig3a_run.RDS"), by = "identifier")
 
 
 # Figure3b ----------------------------------------------------------------
