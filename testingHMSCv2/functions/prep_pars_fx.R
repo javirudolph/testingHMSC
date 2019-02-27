@@ -28,7 +28,7 @@ prep_pars <- function(N = NULL,
   D <- D
   R <- R
   
-  # Effect on environment on colonization
+  # Effect of environment on colonization
   u_c <- matrix(nrow = D, ncol = R)
   u_c[1,] <- seq(0.1, 0.9, length = R)
   s_c <- matrix(breadth, nrow = D, ncol = R)
