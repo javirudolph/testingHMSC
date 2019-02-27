@@ -53,7 +53,7 @@ testE <- get_E(D, N)
 ncluster <- 4
 testMEM <- dbmem(testXY, MEM.autocor = "positive", thresh = 0.5)
 
-if(FALSE){
+if(TRUE){
   ### Set clusters
   clusters <- makeCluster(ncluster)
   registerDoParallel(clusters)
@@ -80,7 +80,7 @@ testMEMsel <- testMEM[, 1:lastSignificant]
 # 2. We create the parameters
 
 testParams <- prep_pars(N = N, D = D, R = R, breadth = 0.2,
-                        alpha = 0.05, interx_col = 0, interx_ext = 0,
+                        alpha = 0.005, interx_col = 0, interx_ext = 0,
                         makeRDS = TRUE,
                         whereToSave = "outputs/testOutputs/", objName = "testParams")
 
@@ -93,7 +93,7 @@ testMetacom <- metacom_sim4HMSC(XY = testXY, E = testE, pars = testParams,
 
 
 ##########################################################################
-# 4. Fit/Format HSMC to our simulated data. Remember you need the MEMsel for this
+# 4. Fit/Format HMSC to our simulated data. Remember you need the MEMsel for this
 
 testHMSCmodel <- metacom_as_HMSCdata(metacomData = testMetacom, numClusters = 4, E = testE,
                                      MEMsel = testMEMsel, makeRDS = TRUE,
@@ -106,6 +106,11 @@ testVPresults <- get_VPresults(HMSCmodel = testHMSCmodel, MEMsel = testMEMsel, n
                                makeRDS = TRUE,
                                whereToSave = "outputs/testOutputs/",
                                objName = "testVPresults")
+
+testVPresultsSITE <- get_VPresults_SITE(HMSCmodel = testHMSCmodel, MEMsel = testMEMsel, numClusters = 4,
+                                        makeRDS = TRUE,
+                                        whereToSave = "outputs/testOutputs/",
+                                        objName = "testVPresults_SITE")
 
 #########################################################################
 # 6. Organize the VP data object
