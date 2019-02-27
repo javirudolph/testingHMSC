@@ -47,20 +47,25 @@ ternPlot(figData = fig3Dataspp, selScenario = scenarioFig,
        caption = "Color corresponds to interactions \n Shape is the iteration")
 #ggsave(filename = paste0(savepath, scenarioFig, "Spp.png"), dpi = 600)
 
+scenarioFig <- "Fig3b"
 
-listScenarios <- c("Fig3b", "Fig3c")
-for(i in 1:2){
-  scenarioFig <- listScenarios[i]
-  
-  ternPlot(figData = fig3Dataspp, selScenario = scenarioFig,
-           varShape = "iteration", varColor = "dispersal") +
-    scale_color_viridis_c(begin = 0, end = 0.8) +
-    labs(title = scenarioFig,
-         caption = "Color corresponds to interactions \n Shape is the iteration")
-  
-  ggsave(filename = paste0(savepath, scenarioFig, "Spp.png"), dpi = 600)
-  
-}
+ternPlot(figData = fig3Dataspp, selScenario = scenarioFig,
+         varShape = "iteration", varColor = "dispersal") +
+  scale_color_viridis_c(begin = 0, end = 0.8) +
+  labs(title = scenarioFig,
+       caption = "Color corresponds to dispersal \n Shape is the iteration \n no interactions")
+
+#ggsave(filename = paste0(savepath, scenarioFig, "Spp.png"), dpi = 600)
+
+scenarioFig <- "Fig3c"
+
+ternPlot(figData = fig3Dataspp, selScenario = scenarioFig,
+         varShape = "iteration", varColor = "dispersal") +
+  scale_color_viridis_c(begin = 0, end = 0.8) +
+  labs(title = scenarioFig,
+       caption = "Color corresponds to dispersal \n Shape is the iteration \n with interactions")
+
+#ggsave(filename = paste0(savepath, scenarioFig, "Spp.png"), dpi = 600)
 
 
 
