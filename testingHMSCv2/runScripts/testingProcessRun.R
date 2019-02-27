@@ -53,7 +53,7 @@ testE <- get_E(D, N)
 ncluster <- 4
 testMEM <- dbmem(testXY, MEM.autocor = "positive", thresh = 0.5)
 
-if(TRUE){
+if(FALSE){
   ### Set clusters
   clusters <- makeCluster(ncluster)
   registerDoParallel(clusters)
