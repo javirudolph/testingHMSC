@@ -116,7 +116,8 @@ prms3_Fig3b <- compileFig3Params(plusSpp = 10)
 prmsFig3b <- bind_rows(prms1_Fig3b, prms2_Fig3b, prms3_Fig3b)
 
 fullFig3b <- variPartTidy(datFig3b, prmsFig3b) %>% 
-  mutate(scenario = "Fig3b")
+  mutate(scenario = "Fig3b") %>% 
+  left_join(., prevalenceForSpp("update1_jan18/Fig3a_run.RDS"), by = "identifier")
 
 
 
@@ -138,7 +139,8 @@ prms3_Fig3c <- compileFig3Params(plusSpp = 10)
 prmsFig3c <- bind_rows(prms1_Fig3c, prms2_Fig3c, prms3_Fig3c)
 
 fullFig3c <- variPartTidy(datFig3c, prmsFig3c) %>% 
-  mutate(scenario = "Fig3c")
+  mutate(scenario = "Fig3c") %>% 
+  left_join(., prevalenceForSpp("update1_jan18/Fig3c_run.RDS"), by = "identifier")
 
 # Compile all -------------------------------------------------------------
 

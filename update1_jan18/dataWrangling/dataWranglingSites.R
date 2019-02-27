@@ -59,8 +59,28 @@ tidyVPsites <- function(vp){
     vpALL[[i]] <- cleanData
   }
   
-  vpALL %>% bind_rows()
+  vpALL %>% bind_rows() %>% mutate(identifier = paste(site, iteration, sep = "_"))
 }
+
+# Site Species Richness
+
+spp_richness_site <- function(filenameWithPath){
+  
+  readRDS(paste(filenameWithPath)) %>% 
+    set_names(imap(., ~ paste0("iter", .y))) %>% 
+    map(., rowSums) %>%
+    bind_rows() %>% 
+    rownames_to_column(var = "sites") %>% 
+    gather(., key = "iteration", value = "richness", -sites) %>% 
+    mutate(identifier = paste0("site", sites, "_", iteration)) %>% 
+    select(., -c(sites, iteration))
+}
+
+
+
+
+
+
 
 # Site Variables ----------------------------------------------------------
 
@@ -78,7 +98,8 @@ siteInfor <- bind_cols(siteEnv, siteXY) %>% rowid_to_column(var = "siteNum") %>%
 datfig2a <- dataLoader("Fig2a") %>% 
   tidyVPsites() %>% 
   mutate(scenario = "Fig2a") %>% 
-  left_join(., siteInfor)
+  left_join(., siteInfor) %>% 
+  left_join(., spp_richness_site("update1_jan18/Fig2a_run.RDS"), by = "identifier")
 
 
 # fig2b -------------------------------------------------------------------
@@ -86,51 +107,61 @@ datfig2a <- dataLoader("Fig2a") %>%
 datfig2b <- dataLoader("Fig2b") %>% 
   tidyVPsites() %>% 
   mutate(scenario = "Fig2b") %>% 
-  left_join(., siteInfor)
+  left_join(., siteInfor) %>% 
+  left_join(., spp_richness_site("update1_jan18/Fig2b_run.RDS"), by = "identifier")
 
 # fig2c -------------------------------------------------------------------
 
 datfig2c <- dataLoader("Fig2c") %>% 
   tidyVPsites() %>% 
   mutate(scenario = "Fig2c") %>% 
-  left_join(., siteInfor)
+  left_join(., siteInfor) %>% 
+  left_join(., spp_richness_site("update1_jan18/Fig2c_run.RDS"), by = "identifier")
 
 # fig2d -------------------------------------------------------------------
 
 datfig2d <- dataLoader("Fig2d") %>% 
   tidyVPsites() %>% 
   mutate(scenario = "Fig2d") %>% 
-  left_join(., siteInfor)
+  left_join(., siteInfor) %>% 
+  left_join(., spp_richness_site("update1_jan18/Fig2d_run.RDS"), by = "identifier")
 
 # fig3a -------------------------------------------------------------------
 
 datfig3a <- dataLoader("Fig3a") %>% 
   tidyVPsites() %>% 
   mutate(scenario = "Fig3a") %>% 
-  left_join(., siteInfor)
+  left_join(., siteInfor) %>% 
+  left_join(., spp_richness_site("update1_jan18/Fig3a_run.RDS"), by = "identifier")
 
 # fig3b -------------------------------------------------------------------
 
 datfig3b <- dataLoader("Fig3b") %>% 
   tidyVPsites() %>% 
   mutate(scenario = "Fig3b") %>% 
-  left_join(., siteInfor)
+  left_join(., siteInfor) %>% 
+  left_join(., spp_richness_site("update1_jan18/Fig3b_run.RDS"), by = "identifier")
 
 # fig3c -------------------------------------------------------------------
 
 datfig3c <- dataLoader("Fig3c") %>% 
   tidyVPsites() %>% 
   mutate(scenario = "Fig3c") %>% 
-  left_join(., siteInfor)
+  left_join(., siteInfor) %>% 
+  left_join(., spp_richness_site("update1_jan18/Fig3c_run.RDS"), by = "identifier")
 
 
 
 
 # Compile all -------------------------------------------------------------
 
-FigDataSites <- bind_rows(datfig2a, datfig2b, datfig2c, datfig2d, datfig3a, datfig3b, datfig3c)
-#write.csv(FigDataSites, file = "update1_jan18/dataWrangling/FigDataSites.csv")
-#saveRDS(FigDataSites, file = "update1_jan18/newFigures/FigDataSites.RDS")
+Fig2DataSites <- bind_rows(datfig2a, datfig2b, datfig2c, datfig2d)
+#write.csv(Fig2DataSites, file = "update1_jan18/dataWrangling/Fig2DataSites.csv")
+#saveRDS(Fig2DataSites, file = "update1_jan18/newFigures/Fig2DataSites.RDS")
+
+Fig3DataSites <- bind_rows(datfig3a, datfig3b, datfig3c)
+#write.csv(Fig3DataSites, file = "update1_jan18/dataWrangling/Fig3DataSites.csv")
+#saveRDS(Fig3DataSites, file = "update1_jan18/newFigures/Fig3DataSites.RDS")
 
 
 
