@@ -12,14 +12,13 @@ source("functions/landscape_fx.R")
 
 # Create landscape --------------------------------------------------------
 
-set.seed(277)
+seednum <- 9876
+set.seed(seednum)
 
-XY <- get_xy(N = 1000)
-E <- get_E(D = 1, N = 1000)
+Nsites <- 1000
 
-#saveRDS(XY, file = "outputs/XY_fixed.RDS")
-#saveRDS(E, file = "outputs/E_fixed.RDS")
-
+XY <- get_xy(N = Nsites)
+E <- get_E(D = 1, N = Nsites)
 
 # Create MEMs -------------------------------------------------------------
 
@@ -48,6 +47,15 @@ lastSignificant <- min(which(pvals>0.05))
 # Select the MEMs based on their significance and then save that result
 MEMsel <- MEM[, 1:lastSignificant]
 
-#saveRDS(MEMsel, file = "outputs/MEMsel.RDS")
+filename <- paste0("MEMsel-", N)
+
+
+# SAVING ------------------------------------------------------------------
+date <- format(Sys.Date(), "%Y%m%d")
+descriptor <- paste0("-", Nsites, "sites-", seednum, "seed")
+
+saveRDS(XY, file = paste0("outputs/fixedLandscapes/", date, descriptor, "-XY.RDS"))
+saveRDS(E, file = paste0("outputs/fixedLandscapes/", date, "E", descriptor))
+saveRDS(MEMsel, file = paste0("outputs/fixedLandscapes/", date, "Memsel", descriptor))
 
 
