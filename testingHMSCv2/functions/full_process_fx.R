@@ -42,6 +42,59 @@ metacom_sim4HMSC <- function(XY, E, pars, nsteps,
 }
 
 
+# This function isn't fully tested, but it is for the case of having multiple parameters in one run
+# Example is in Figure 3b, where 1/3 of the species have different dispersal parameters.
+
+metacom_sim4HMSC_multParams <- function(XY, E, pars, nsteps,
+                                        occupancy, niter,
+                                        makeRDS = FALSE,
+                                        whereToSave = NULL,
+                                        objName = NULL){
+  
+  N <- pars$N
+  D <- pars$D
+  R <- pars$R
+  
+  Y0 <- ifelse(matrix(runif(N * D), nrow = N, ncol = R) < occupancy, 1, 0)
+  
+  res <- vector("list", length = niter)
+  for(i in 1:niter){
+    run <- mainfx(XY, E, pars, Y0, nsteps)
+    res[[i]] <- run[[nsteps]]
+  }
+  
+  
+  if(is.list(pars) == TRUE){
+    
+    res <- vector("list", length = niter)
+    
+    for(i in 1:niter){
+      parsRes <- NULL
+      for(pp in 1:length(pars)){
+        pars <- pars[[pp]]
+        
+        N <- pars$N
+        D <- pars$D
+        R <- pars$R
+        
+        Y0 <- ifelse(matrix(runif(N * D), nrow = N, ncol = R) < occupancy, 1, 0)
+        run <- mainfx(XY, E, pars, Y0, nsteps)
+        parsRes <- cbind(parsRes, run[[nsteps]])
+        
+      }
+      res[[i]] <- parsRes
+    }
+  }
+  
+  if(makeRDS == TRUE){
+    nameFile <- paste0(whereToSave, objName, ".RDS")
+    saveRDS(res, file = nameFile)
+  }
+  
+  return(res)
+  
+}
+
 
 # Fit HMSC ----------------------------------------------------------------
 
@@ -142,32 +195,66 @@ get_VPresults <- function(HMSCmodel, MEMsel, numClusters, indSite = FALSE,
 }
 
 # This function shouldn't be necessary anymore
-get_VPresults_SITE <- function(HMSCmodel, MEMsel, numClusters,
-                               makeRDS = FALSE,
-                               whereToSave = NULL,
-                               objName = NULL){
+# get_VPresults_SITE <- function(HMSCmodel, MEMsel, numClusters,
+#                                makeRDS = FALSE,
+#                                whereToSave = NULL,
+#                                objName = NULL){
+# 
+#   model <- HMSCmodel
+#   nmodel <- length(model)
+# 
+#   clusters <- makeCluster(numClusters)
+#   registerDoParallel(clusters)
+# 
+#   ### Estimate models
+#   vpRes <- foreach(j = 1:nmodel) %dopar% {
+#     library(HMSC)
+#     variPart(model[[j]], groupX = c(rep("env",3),rep("spa",length(MEMsel))),
+#              indSite = TRUE,
+#              type = "III", R2adjust = TRUE)
+#   }
+# 
+#   ### Stop clusters
+#   stopCluster(clusters)
+# 
+#   if(makeRDS == TRUE){
+#     nameFile <- paste0(whereToSave, objName, ".RDS")
+#     saveRDS(vpRes, file = nameFile)
+#   }
+# 
+#   return(vpRes)
+# }
 
-  model <- HMSCmodel
-  nmodel <- length(model)
 
-  clusters <- makeCluster(numClusters)
-  registerDoParallel(clusters)
+# Organize VP data --------------------------------------------------------
 
-  ### Estimate models
-  vpRes <- foreach(j = 1:nmodel) %dopar% {
-    library(HMSC)
-    variPart(model[[j]], groupX = c(rep("env",3),rep("spa",length(MEMsel))),
-             indSite = TRUE,
-             type = "III", R2adjust = TRUE)
-  }
+# Organize VP data into the right components
 
-  ### Stop clusters
-  stopCluster(clusters)
-
-  if(makeRDS == TRUE){
-    nameFile <- paste0(whereToSave, objName, ".RDS")
-    saveRDS(vpRes, file = nameFile)
-  }
-
-  return(vpRes)
+organize_VPdata <- function(VPdata, indSite = FALSE){
+  VPdata %>% 
+    set_names(imap(., ~ paste0("iter_", .y))) -> VPdata
+  
+  fullData <- list()
+  for(i in 1:length(VPdata)){
+    fullData[[i]] <- VPdata[[i]] %>% 
+      map(as_tibble) %>%
+      bind_cols() %>% 
+      rownames_to_column() %>% 
+      set_names(c("species", "c", "b", "a", "e", "f", "d", "g")) %>% 
+      transmute(species = species,
+                env = a + f + 0.5 * d + 0.5 * g,
+                env = ifelse(env < 0, 0, env),
+                spa = b + e + 0.5 * d + 0.5 * g,
+                spa = ifelse(spa < 0, 0, spa),
+                codist = c,
+                codist = ifelse(codist < 0, 0, codist),
+                r2 = env + spa + codist,
+                iteration = names(VPdata[i]))
+    }
+  
+  fullData %>% 
+    bind_rows() %>% 
+    mutate(identifier = paste0("spp", species, "_", iteration))-> fullData
+  return(fullData)
+  
 }
