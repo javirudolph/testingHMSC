@@ -15,6 +15,7 @@
 prep_pars <- function(N = NULL,
                       D = NULL,
                       R = NULL,
+                      nicheOpt = NULL,
                       breadth = NULL,
                       alpha = NULL,
                       interx_col = NULL,
@@ -29,8 +30,11 @@ prep_pars <- function(N = NULL,
   R <- R
   
   # Effect of environment on colonization
-  u_c <- matrix(nrow = D, ncol = R)
-  u_c[1,] <- seq(0.1, 0.9, length = R)
+  if(is.null(nicheOpt) == TRUE){
+    u_c <- matrix(nrow = D, ncol = R)
+    u_c[1,] <- seq(0.1, 0.9, length = R)
+  }
+  
   s_c <- matrix(breadth, nrow = D, ncol = R)
   
   # Effect of the environment on extinction
