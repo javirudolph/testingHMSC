@@ -56,7 +56,8 @@ doItAll_twosppNichecomp <- function(outPath, scenarioNum, indSites = FALSE){
     
     vpALL %>% 
       bind_rows() %>% 
-      mutate(identifier = paste(site, iteration, sep = "_")) %>% 
+      mutate(identifier = paste(site, iteration, sep = "_"),
+             scenario = scenarioNum) %>% 
       left_join(., richness) -> vpALL
     
     return(vpALL)
@@ -114,7 +115,7 @@ doItAll_twosppNichecomp <- function(outPath, scenarioNum, indSites = FALSE){
   fullData %>% 
     bind_rows() %>% 
     mutate(identifier = paste0("spp", species, "_", iteration), 
-           scenario = paste0("scenario", scenarioNum)) %>% 
+           scenario = scenarioNum) %>% 
     left_join(., prevalence) -> fullData
   return(fullData)
   

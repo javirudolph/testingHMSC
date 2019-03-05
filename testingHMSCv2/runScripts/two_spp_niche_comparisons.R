@@ -91,25 +91,57 @@ for(j in 1:length(spp1niche)){
 
 
 # Organize and Plot -------------------------------------------------------
+make_tern_plot <- function(figData, varShape = NULL, varColor = NULL){
+  figData %>% 
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+    scale_T_continuous(limits=c(0,1.0),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    scale_L_continuous(limits=c(0.0,1),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    scale_R_continuous(limits=c(0.0,1.0),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    labs(x = "Environment",
+         y = "Codistribution",
+         z = "Spatial") +
+    geom_point(aes_string(shape = varShape, color = varColor), alpha = 0.7) +
+    #scale_color_viridis_c() +
+    theme_minimal() +
+    guides(size = guide_legend(order = 1,
+                               title = expression(paste(R^{2}))),
+           shape = guide_legend("none"),
+           # shape = guide_legend(order = 2,
+           #                      title = varShape,
+           #                      override.aes = list(size = 3)),
+           col = guide_colourbar(title = varColor,
+                                 order = 3)) +
+    theme(#legend.position = "bottom", legend.box = "vertical",
+      panel.grid = element_line(color = "darkgrey"),
+      axis.title = element_text(size = 7))
+}
 
 save_csv_and_plots <- function(scenario){
   sppcsv <- doItAll_twosppNichecomp(outPath = folderpath, scenarioNum = scenario, indSites = FALSE)
-  write.csv(sppcsv, file = paste0(folderpath, "csvFiles/", scenario, "spp.csv"))
-  make_tern_plot(sppcsv, varShape = "species", varColor = "nicheOpt") +
+  #write.csv(sppcsv, file = paste0(folderpath, "csvFiles/", scenario, "spp.csv"))
+  sppcsv %>% 
+    make_tern_plot(., varShape = "iteration", varColor = "nicheOpt") +
     labs(title = scenario)
   ggsave(filename = paste0(folderpath, "figures/", scenario, "spp.png"), dpi = 300, width = 9, height = 4.5)
   
-  sitescsv <- doItAll_twosppNichecomp(outPath = folderpath, scenarioNum = scenario, indSites = TRUE)
-  write.csv(sitescsv, file = paste0(folderpath, "csvFiles/", scenario, "sites.csv"))
-  make_tern_plot(sitescsv, varShape = "iteration", varColor = "richness") +
-    labs(title=scenario)
-  ggsave(filename = paste0(folderpath, "figures/", scenario, "sites.png"), dpi = 300, width = 9, height = 4.5)
+  # sitescsv <- doItAll_twosppNichecomp(outPath = folderpath, scenarioNum = scenario, indSites = TRUE)
+  # write.csv(sitescsv, file = paste0(folderpath, "csvFiles/", scenario, "sites.csv"))
+  # make_tern_plot(sitescsv, varShape = "iteration", varColor = "richness") +
+  #   labs(title=scenario)
+  # ggsave(filename = paste0(folderpath, "figures/", scenario, "sites.png"), dpi = 300, width = 9, height = 4.5)
   
 }
 
 for(i in 1:9){
   loopscen <- paste0("scenario", i)
   save_csv_and_plots(loopscen)
+  print(i)
 }
 
 
@@ -127,7 +159,6 @@ for(i in 1:9){
 allData %>% 
   make_tern_plot(., varColor = "nicheOpt") +
   scale_color_viridis_c()
-
 
 
 
