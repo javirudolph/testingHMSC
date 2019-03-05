@@ -130,11 +130,11 @@ save_csv_and_plots <- function(scenario){
     labs(title = scenario)
   ggsave(filename = paste0(folderpath, "figures/", scenario, "spp.png"), dpi = 300, width = 9, height = 4.5)
   
-  # sitescsv <- doItAll_twosppNichecomp(outPath = folderpath, scenarioNum = scenario, indSites = TRUE)
-  # write.csv(sitescsv, file = paste0(folderpath, "csvFiles/", scenario, "sites.csv"))
-  # make_tern_plot(sitescsv, varShape = "iteration", varColor = "richness") +
-  #   labs(title=scenario)
-  # ggsave(filename = paste0(folderpath, "figures/", scenario, "sites.png"), dpi = 300, width = 9, height = 4.5)
+  sitescsv <- doItAll_twosppNichecomp(outPath = folderpath, scenarioNum = scenario, indSites = TRUE)
+  write.csv(sitescsv, file = paste0(folderpath, "csvFiles/", scenario, "sites.csv"))
+  make_tern_plot(sitescsv, varShape = "iteration", varColor = "richness") +
+    labs(title=scenario)
+  ggsave(filename = paste0(folderpath, "figures/", scenario, "sites.png"), dpi = 300, width = 9, height = 4.5)
   
 }
 
