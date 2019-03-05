@@ -35,6 +35,8 @@ prep_pars <- function(N = NULL,
     u_c[1,] <- seq(0.1, 0.9, length = R)
   }
   
+  u_c <- nicheOpt
+  
   s_c <- matrix(breadth, nrow = D, ncol = R)
   
   # Effect of the environment on extinction
@@ -73,7 +75,7 @@ prep_pars <- function(N = NULL,
                c_0 = c_0, e_0 = e_0, c_max = c_max, e_min = e_min, d_c = d_c, d_e = d_e, A = A)
   
   if(makeRDS == TRUE){
-    nameFile <- paste0(whereToSave, objName, ".RDS")
+    nameFile <- paste0(whereToSave, objName, "-params.RDS")
     saveRDS(pars, file = nameFile)
   }
   

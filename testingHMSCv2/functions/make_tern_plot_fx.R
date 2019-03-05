@@ -2,7 +2,7 @@
 #Functions to make the ternary plots...
 # first at the species level
 
-make_tern_plot <- function(figData, varShape, varColor){
+make_tern_plot <- function(figData, varShape = NULL, varColor = NULL){
   figData %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
     scale_T_continuous(limits=c(0,1.0),
@@ -21,10 +21,9 @@ make_tern_plot <- function(figData, varShape, varColor){
     theme_minimal() +
     guides(size = guide_legend(order = 1,
                                title = expression(paste(R^{2}))),
-           shape = "none",
-           # shape = guide_legend(order = 2,
-           #                      title = NULL,
-           #                      override.aes = list(size = 3)),
+           shape = guide_legend(order = 2,
+                                title = varShape,
+                                override.aes = list(size = 3)),
            col = guide_colourbar(title = varColor,
                                  order = 3)) +
     theme(#legend.position = "bottom", legend.box = "vertical",

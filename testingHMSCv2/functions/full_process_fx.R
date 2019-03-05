@@ -33,7 +33,7 @@ metacom_sim4HMSC <- function(XY, E, pars, nsteps,
   }
 
   if(makeRDS == TRUE){
-    nameFile <- paste0(whereToSave, objName, ".RDS")
+    nameFile <- paste0(whereToSave, objName, "-metacomSim.RDS")
     saveRDS(res, file = nameFile)
   }
 
@@ -87,7 +87,7 @@ metacom_sim4HMSC_multParams <- function(XY, E, pars, nsteps,
   }
   
   if(makeRDS == TRUE){
-    nameFile <- paste0(whereToSave, objName, ".RDS")
+    nameFile <- paste0(whereToSave, objName, "-metacomSim.RDS")
     saveRDS(res, file = nameFile)
   }
   
@@ -126,7 +126,7 @@ metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
   stopCluster(clusters)
 
   if(makeRDS == TRUE){
-    nameFile <- paste0(whereToSave, objName, ".RDS")
+    nameFile <- paste0(whereToSave, objName, "-model.RDS")
     saveRDS(model, file = nameFile)
   }
 
@@ -147,25 +147,32 @@ get_VPresults <- function(HMSCmodel, MEMsel, numClusters, indSite = FALSE,
 
   clusters <- makeCluster(numClusters)
   registerDoParallel(clusters)
-
+  
   ### Estimate models
   vpRes <- foreach(j = 1:nmodel) %dopar% {
     library(HMSC)
     variPart(model[[j]], groupX = c(rep("env",3),rep("spa",length(MEMsel))),
              type = "III", R2adjust = TRUE)
   }
-
+  
   ### Stop clusters
   stopCluster(clusters)
-
+  
   if(makeRDS == TRUE){
-    nameFile <- paste0(whereToSave, objName, ".RDS")
+    nameFile <- paste0(whereToSave, objName, "-vpspp.RDS")
     saveRDS(vpRes, file = nameFile)
   }
-
+  
   return(vpRes)
 
-  if(indSite == TRUE){
+}
+
+# This function shouldn't be necessary anymore
+get_VPresults_SITE <- function(HMSCmodel, MEMsel, numClusters,
+                               makeRDS = FALSE,
+                               whereToSave = NULL,
+                               objName = NULL){
+
   model <- HMSCmodel
   nmodel <- length(model)
 
@@ -184,77 +191,13 @@ get_VPresults <- function(HMSCmodel, MEMsel, numClusters, indSite = FALSE,
   stopCluster(clusters)
 
   if(makeRDS == TRUE){
-    nameFile <- paste0(whereToSave, objName, "site.RDS")
+    nameFile <- paste0(whereToSave, objName, "-vpsites.RDS")
     saveRDS(vpRes, file = nameFile)
   }
 
   return(vpRes)
-  }
-
-
 }
-
-# This function shouldn't be necessary anymore
-# get_VPresults_SITE <- function(HMSCmodel, MEMsel, numClusters,
-#                                makeRDS = FALSE,
-#                                whereToSave = NULL,
-#                                objName = NULL){
-# 
-#   model <- HMSCmodel
-#   nmodel <- length(model)
-# 
-#   clusters <- makeCluster(numClusters)
-#   registerDoParallel(clusters)
-# 
-#   ### Estimate models
-#   vpRes <- foreach(j = 1:nmodel) %dopar% {
-#     library(HMSC)
-#     variPart(model[[j]], groupX = c(rep("env",3),rep("spa",length(MEMsel))),
-#              indSite = TRUE,
-#              type = "III", R2adjust = TRUE)
-#   }
-# 
-#   ### Stop clusters
-#   stopCluster(clusters)
-# 
-#   if(makeRDS == TRUE){
-#     nameFile <- paste0(whereToSave, objName, ".RDS")
-#     saveRDS(vpRes, file = nameFile)
-#   }
-# 
-#   return(vpRes)
-# }
 
 
 # Organize VP data --------------------------------------------------------
 
-# Organize VP data into the right components
-
-organize_VPdata <- function(VPdata, indSite = FALSE){
-  VPdata %>% 
-    set_names(imap(., ~ paste0("iter_", .y))) -> VPdata
-  
-  fullData <- list()
-  for(i in 1:length(VPdata)){
-    fullData[[i]] <- VPdata[[i]] %>% 
-      map(as_tibble) %>%
-      bind_cols() %>% 
-      rownames_to_column() %>% 
-      set_names(c("species", "c", "b", "a", "e", "f", "d", "g")) %>% 
-      transmute(species = species,
-                env = a + f + 0.5 * d + 0.5 * g,
-                env = ifelse(env < 0, 0, env),
-                spa = b + e + 0.5 * d + 0.5 * g,
-                spa = ifelse(spa < 0, 0, spa),
-                codist = c,
-                codist = ifelse(codist < 0, 0, codist),
-                r2 = env + spa + codist,
-                iteration = names(VPdata[i]))
-    }
-  
-  fullData %>% 
-    bind_rows() %>% 
-    mutate(identifier = paste0("spp", species, "_", iteration))-> fullData
-  return(fullData)
-  
-}
