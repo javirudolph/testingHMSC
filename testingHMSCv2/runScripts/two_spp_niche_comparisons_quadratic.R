@@ -65,7 +65,7 @@ MEMsel <- readRDS("outputs/fixedLandscapes/orig-no-seed-MEMsel.RDS")
 
 
 savedate <- format(Sys.Date(), "%Y%m%d")
-folderpath <- paste0("outputs/", savedate, "-two_spp_niche_comparisons/")
+folderpath <- paste0("outputs/", savedate, "-two_spp_niche_comparisons_quadratic/")
 
 if(dir.exists(folderpath) == FALSE){
   dir.create(folderpath)
@@ -141,7 +141,7 @@ make_tern_plot <- function(figData, varShape = NULL, varColor = NULL){
 
 save_csv_and_plots <- function(scenario){
   sppcsv <- doItAll_twosppNichecomp(outPath = folderpath, scenarioNum = scenario, indSites = FALSE)
-  #write.csv(sppcsv, file = paste0(folderpath, "csvFiles/", scenario, "spp.csv"))
+  write.csv(sppcsv, file = paste0(folderpath, "csvFiles/", scenario, "spp.csv"))
   sppcsv %>% 
     make_tern_plot(., varShape = "iteration", varColor = "nicheOpt") +
     labs(title = scenario)
