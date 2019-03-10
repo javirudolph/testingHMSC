@@ -101,15 +101,25 @@ for(j in 1:4){
   sims <- metacom_sim4HMSC(XY = XY, E = E, pars = pars[[j]],
                            nsteps = 200, occupancy = 0.8, niter = 5,
                            makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
+  print(paste("sims", j, "created"))
+  
+  
   
   model <- metacom_as_HMSCdata(sims, numClusters = 4, E = E, MEMsel = MEMsel,
                                makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
+  print(paste("model", j, "created"))
+  
+  
   
   vpSpp <- get_VPresults(model, MEMsel = MEMsel, numClusters = 4,
                          makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
+  print(paste("vpspp", j, "created"))
+  
+  
   
   vpSites <- get_VPresults_SITE(model, MEMsel = MEMsel, numClusters = 4,
                                 makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
+  print(paste("vpsites", j, "created"))
   
 }
 
