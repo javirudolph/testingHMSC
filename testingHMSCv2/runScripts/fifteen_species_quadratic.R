@@ -124,6 +124,25 @@ for(j in 1:4){
 }
 
 
+# Organize Data -----------------------------------------------------------
+
+for(i in 1:4){
+  loopscen <- paste0("scenario", i)
+  save_csv_and_plots(loopscen)
+  print(i)
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
