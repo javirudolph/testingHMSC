@@ -2,7 +2,7 @@
 
 # Functions to modify and organize the dataframes from the VP output and get ready for plotting
 
-doItAll_twosppNichecomp <- function(outPath, scenarioNum, indSites = FALSE){
+doItAll_dataWrangling <- function(outPath, scenarioNum, indSites = FALSE){
   
   
   if(indSites == TRUE){
@@ -118,5 +118,24 @@ doItAll_twosppNichecomp <- function(outPath, scenarioNum, indSites = FALSE){
            scenario = scenarioNum) %>% 
     left_join(., prevalence) -> fullData
   return(fullData)
+  
+}
+
+
+# csv and figures ---------------------------------------------------------
+
+save_csv_and_plots <- function(scenario){
+  sppcsv <- doItAll_twosppNichecomp(outPath = folderpath, scenarioNum = scenario, indSites = FALSE)
+  write.csv(sppcsv, file = paste0(folderpath, "csvFiles/", scenario, "spp.csv"))
+  sppcsv %>% 
+    make_tern_plot(., varShape = "iteration", varColor = "nicheOpt") +
+    labs(title = scenario)
+  ggsave(filename = paste0(folderpath, "figures/", scenario, "spp.png"), dpi = 300, width = 9, height = 4.5)
+  
+  sitescsv <- doItAll_twosppNichecomp(outPath = folderpath, scenarioNum = scenario, indSites = TRUE)
+  write.csv(sitescsv, file = paste0(folderpath, "csvFiles/", scenario, "sites.csv"))
+  make_tern_plot(sitescsv, varShape = "iteration", varColor = "richness") +
+    labs(title=scenario)
+  ggsave(filename = paste0(folderpath, "figures/", scenario, "sites.png"), dpi = 300, width = 9, height = 4.5)
   
 }
