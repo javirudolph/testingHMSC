@@ -125,14 +125,14 @@ doItAll_dataWrangling <- function(outPath, scenarioNum, indSites = FALSE){
 # csv and figures ---------------------------------------------------------
 
 save_csv_and_plots <- function(scenario){
-  sppcsv <- doItAll_twosppNichecomp(outPath = folderpath, scenarioNum = scenario, indSites = FALSE)
+  sppcsv <- doItAll_dataWrangling(outPath = folderpath, scenarioNum = scenario, indSites = FALSE)
   write.csv(sppcsv, file = paste0(folderpath, "csvFiles/", scenario, "spp.csv"))
   sppcsv %>% 
     make_tern_plot(., varShape = "iteration", varColor = "nicheOpt") +
     labs(title = scenario)
   ggsave(filename = paste0(folderpath, "figures/", scenario, "spp.png"), dpi = 300, width = 9, height = 4.5)
   
-  sitescsv <- doItAll_twosppNichecomp(outPath = folderpath, scenarioNum = scenario, indSites = TRUE)
+  sitescsv <- doItAll_dataWrangling(outPath = folderpath, scenarioNum = scenario, indSites = TRUE)
   write.csv(sitescsv, file = paste0(folderpath, "csvFiles/", scenario, "sites.csv"))
   make_tern_plot(sitescsv, varShape = "iteration", varColor = "richness") +
     labs(title=scenario)
