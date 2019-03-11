@@ -31,7 +31,7 @@ MEMsel <- readRDS("outputs/fixedLandscapes/orig-no-seed-MEMsel.RDS")
 
 
 savedate <- format(Sys.Date(), "%Y%m%d")
-folderpath <- paste0("outputs/", savedate, "-fifteen_species_scenarios/")
+folderpath <- paste0("outputs/", savedate, "-fifteen_species_scenarios_gaussian/")
 
 if(dir.exists(folderpath) == FALSE){
   dir.create(folderpath)
