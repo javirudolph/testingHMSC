@@ -21,12 +21,13 @@ make_tern_plot <- function(figData, varShape = NULL, varColor = NULL){
     theme_minimal() +
     guides(size = guide_legend(order = 1,
                                title = expression(paste(R^{2}))),
-           shape = guide_legend(order = 2,
-                                title = varShape,
-                                override.aes = list(size = 3)),
+           shape = guide_legend("none"),
+           # shape = guide_legend(order = 2,
+           #                      title = varShape,
+           #                      override.aes = list(size = 3)),
            col = guide_colourbar(title = varColor,
                                  order = 3)) +
     theme(#legend.position = "bottom", legend.box = "vertical",
       panel.grid = element_line(color = "darkgrey"),
-      axis.title = element_text(size = 8))
+      axis.title = element_text(size = 7))
 }
