@@ -17,6 +17,22 @@ source("functions/data_wrangling_fx.R")
 source("functions/make_tern_plot_fx.R")
 
 
+# Replace with quadratic --------------------------------------------------
+# I'm basically overwriting the original function with this one that has the quadratic term. 
+# It's not an elegant way, but we can make an if statement later on, so you can choose which one to go with. 
+S_f <- function(E, u_c, s_c) {
+  R <- ncol(u_c)
+  N <- nrow(E)
+  D <- ncol(E)
+  S <- matrix(1, nr = N, nc = R)
+  for(i in 1:D){
+    optima <- matrix(u_c[i,],nrow = N,ncol = R,byrow = TRUE)
+    breadth <- matrix(s_c[i,],nrow = N,ncol = R,byrow = TRUE)
+    S <- S * ((-1 / (breadth/2)^2) * (E[,i] - optima)^2 + 1)
+  }
+  return(S)
+}
+
 
 # OrigLandscape -----------------------------------------------------------
 
@@ -29,7 +45,7 @@ MEMsel <- readRDS("outputs/fixedLandscapes/orig-no-seed-MEMsel.RDS")
 
 
 savedate <- format(Sys.Date(), "%Y%m%d")
-folderpath <- paste0("outputs/", savedate, "-fifteen_species_fig3_gaussian/")
+folderpath <- paste0("outputs/", savedate, "-fifteen_species_fig3_quadratic/")
 
 if(dir.exists(folderpath) == FALSE){
   dir.create(folderpath)
@@ -72,7 +88,7 @@ saveRDS(scen3pars, file = paste0(folderpath, "scenario3-params.RDS"))
 
 
 scenarioPars <- list(scen1pars = scen1pars, scen2pars = scen2pars, 
-             scen3pars = scen3pars)
+                     scen3pars = scen3pars)
 
 
 # Run cycles --------------------------------------------------------------
@@ -81,8 +97,8 @@ for(j in 1:3){
   namesrds <- paste0("scenario", j)
   
   sims <- metacom_sim4HMSC_multParams(XY = XY, E = E, pars = scenarioPars[[j]],
-                           nsteps = 200, occupancy = 0.8, niter = 5,
-                           makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
+                                      nsteps = 200, occupancy = 0.8, niter = 5,
+                                      makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
   print(paste("sims", j, "created"))
   
@@ -105,14 +121,3 @@ for(j in 1:3){
   print(paste("vpsites", j, "created"))
   
 }
-
-
-# Organize data to plot ---------------------------------------------------
-
-
-
-
-
-
-
-
