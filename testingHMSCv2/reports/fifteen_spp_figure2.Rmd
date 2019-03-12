@@ -1,0 +1,161 @@
+---
+title: "Figure 2 - comparisons between gaussian and quadratic response to environment"
+author: "Javiera Rudolph"
+date: "March 12, 2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+
+library(tidyverse)
+library(ggtern)
+```
+
+```{r functions, include=FALSE}
+
+source("functions/data_wrangling_fx.R")
+source("functions/make_tern_plot_fx.R")
+
+arrange_plots <- function(folderpath, scenario){
+  doItAll_dataWrangling(outPath = folderpath, scenarioNum = scenario, indSites = FALSE) %>% 
+    make_tern_plot(., varShape = "iteration", varColor = "nicheOpt") -> sppPlot
+  
+  sitescsv <- doItAll_dataWrangling(outPath = folderpath, scenarioNum = scenario, indSites = TRUE)
+  make_tern_plot(sitescsv, varShape = "iteration", varColor = "richness") -> sitesPlot
+  
+  grid.arrange(arrangeGrob(sppPlot),
+               arrangeGrob(sitesPlot),
+               ncol = 2)
+}
+
+get_params_table <- function(folderpath, scenario){
+  params <- with(readRDS(paste0(folderpath, scenario, "-params.RDS")), {
+    enframe(u_c[1,], name = "species",value =  "nicheOpt") %>% 
+      left_join(., enframe(s_c[1,], name = "species", value =  "nicheBreadth")) %>% 
+      left_join(., enframe(c_0, name = "species", value =  "colProb")) %>% 
+      mutate(dispersal = alpha, 
+             species = as.character(species), 
+             intercol = d_c, 
+             interext = d_e)
+  })
+  
+  prevalence <- readRDS(paste0(folderpath, scenario, "-metacomSim.RDS")) %>% 
+  set_names(imap(., ~ paste0("iter_", .y))) %>% 
+  map(., colSums) %>%
+  bind_cols() %>% 
+  rownames_to_column(var = "species") %>% 
+  gather(., key = "iteration", value = "prevalence", -species) %>% 
+  group_by(., species) %>% 
+  summarise(., avPrevalence = mean(prevalence)) 
+  
+  allpars <- left_join(params, prevalence)
+}
+
+```
+
+```{r setFolderpaths}
+
+gaussianPath <- "outputs/20190311-fifteen_species_scenarios_gaussian/"
+quadraticPath <- "outputs/20190310-fifteen_species_scenarios/"
+
+```
+
+
+# Scenario 1 - Parameters
+```{r}
+scenario <- "scenario1"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 1 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 1 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
+
+
+
+# Scenario 2 - Parameters
+```{r}
+scenario <- "scenario2"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 2 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 2 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
+
+
+
+# Scenario 3 - Parameters
+```{r}
+scenario <- "scenario3"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 3 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 3 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 4 - Parameters
+```{r}
+scenario <- "scenario4"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 4 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 4 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
