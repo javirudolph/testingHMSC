@@ -1,0 +1,247 @@
+---
+title: "Two species niche comparisons between gaussian and quadratic response to environment"
+author: "Javiera Rudolph"
+date: "March 12, 2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+
+library(tidyverse)
+library(ggtern)
+```
+
+
+```{r setFolderPaths}
+
+
+source("functions/rmd_figure_prep_fx.R")
+gaussianPath <- "outputs/20190304-two_spp_niche_comparisons/"
+quadraticPath <- "outputs/20190309-two_spp_niche_comparisons_quadratic/"
+
+
+```
+
+# Scenario 1 - Parameters
+```{r}
+scenario <- "scenario1"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 1 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 1 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
+
+
+
+# Scenario 2 - Parameters
+```{r}
+scenario <- "scenario2"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 2 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 2 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
+
+
+
+# Scenario 3 - Parameters
+```{r}
+scenario <- "scenario3"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 3 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 3 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
+
+# Scenario 4 - Parameters
+```{r}
+scenario <- "scenario4"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 4 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 4 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 5 - Parameters
+```{r}
+scenario <- "scenario5"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 5 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 5 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
+
+
+
+# Scenario 6 - Parameters
+```{r}
+scenario <- "scenario6"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 6 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 6 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
+
+
+
+
+
+# Scenario 7 - Parameters
+```{r}
+scenario <- "scenario7"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 7 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 7 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
+
+
+
+# Scenario 8 - Parameters
+```{r}
+scenario <- "scenario8"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 8 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 8 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
+
+
+
+# Scenario 9 - Parameters
+```{r}
+scenario <- "scenario9"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+knitr::kable(parstable)
+```
+
+
+# Scenario 9 - Gaussian response
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+# Scenario 9 - Quadratic response
+
+```{r, fig.width=10, fig.height=6}
+folderpath <- quadraticPath
+arrange_plots(folderpath, scenario)
+```
