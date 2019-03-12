@@ -122,7 +122,7 @@ We consider a discrete-time Markovian process to represent the dynamics of prese
 Following a colonization event from time $t$ to $t + \Delta$ corresponds to:
 
 
-$$P\left(X_{i,z,t+\Delta t}=1│X_{i,z,t}=0\right)=I_{i,z,t} S_{i,z,t} C_{i,z,t}$$
+$$P\left(X_{i,z,t+{\Delta}t}=1│X_{i,z,t}=0\right)=I_{i,z,t} S_{i,z,t} C_{i,z,t}$$
 
 
 where $I_{i,z,t}$ is the number of immigrants of species $i$ reaching patch $z$ at time $t$, $S_{i,z,t}$ is the effect of environmental filtering on the probability of establishing a viable local population and $C_{i,z,t}$ is the effect of ecological interactions on the establishment probability. We note that because we represent a stochastic process, the product of these three functions has to be bounded between 0 and 1. We consequently define these quantities:
