@@ -41,3 +41,4 @@ rsconnect/
 *.RDS
 *.html
 /output/
+/scratch/
