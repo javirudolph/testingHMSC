@@ -273,11 +273,11 @@ save_csv_and_plots <- function(scenario){
   
 }
 
-for(i in 1:9){
-  loopscen <- paste0("scenario", i)
-  save_csv_and_plots(loopscen)
-  print(i)
-}
+# for(i in 1:9){
+#   loopscen <- paste0("scenario", i)
+#   save_csv_and_plots(loopscen)
+#   print(i)
+# }
 
 
 
