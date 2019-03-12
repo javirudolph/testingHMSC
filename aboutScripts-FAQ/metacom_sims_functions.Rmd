@@ -2,9 +2,7 @@
 title: "Metacommunity Simulation Functions"
 author: "Javiera Rudolph"
 date: "February 8, 2019"
-output: 
-  html_document:
-    keep_md: true
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
