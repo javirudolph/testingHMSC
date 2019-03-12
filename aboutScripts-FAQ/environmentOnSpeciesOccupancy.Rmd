@@ -40,7 +40,7 @@ R <- 15
 u_c <- matrix(nrow = D, ncol = R)
 u_c[1,] <- seq(0.1, 0.9, length = R)
 
-s_c <- matrix(0.2, nrow = D, ncol = R)
+s_c <- matrix(1, nrow = D, ncol = R)
 
 E <- readRDS("testingHMSCv2/outputs/fixedLandscapes/orig-no-seed-E.RDS")
 ```
@@ -112,6 +112,8 @@ S_f_v2 <- function(E, u_c, s_c) {
 
 ```{r}
 # With this one you get a lot of negative values, so should we remove them, or just make them 0?
+# Broad niche has to be big enough for the environmentto barely have an effect. A higher number would look closer to the curves above with a gaussian response. 
+s_c <- matrix(2, nrow = D, ncol = R)
 data <- S_f_v2(E = E, u_c = u_c, s_c = s_c)
 
 
