@@ -41,16 +41,6 @@ get_params_table <- function(folderpath, scenario){
              interext = d_e)
   })
   
-  prevalence <- readRDS(paste0(folderpath, scenario, "-metacomSim.RDS")) %>% 
-  set_names(imap(., ~ paste0("iter_", .y))) %>% 
-  map(., colSums) %>%
-  bind_cols() %>% 
-  rownames_to_column(var = "species") %>% 
-  gather(., key = "iteration", value = "prevalence", -species) %>% 
-  group_by(., species) %>% 
-  summarise(., avPrevalence = mean(prevalence)) 
-  
-  allpars <- left_join(params, prevalence)
 }
 
 ```
