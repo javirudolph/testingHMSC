@@ -76,7 +76,7 @@ scen1pars <- prep_pars(N = 1000, D = 1, R = 15, breadth = 0.2, nicheOpt = NULL, 
 
 #Scenario2: no interactions, broad niche
 
-scen2pars <- prep_pars(N = 1000, D = 1, R = 15, breadth = 1, nicheOpt = NULL, alpha = 0.005,
+scen2pars <- prep_pars(N = 1000, D = 1, R = 15, breadth = 2, nicheOpt = NULL, alpha = 0.005,
                        interx_col = 0, interx_ext = 0, makeRDS = TRUE, whereToSave = folderpath, objName = "scenario2")
 
 #Scenario3: with interactions, narrow niche
@@ -86,7 +86,7 @@ scen3pars <- prep_pars(N = 1000, D = 1, R = 15, breadth = 0.2, nicheOpt = NULL, 
 
 #Scenario4: with interactions, broad niche
 
-scen4pars <- prep_pars(N = 1000, D = 1, R = 15, breadth = 1, nicheOpt = NULL, alpha = 0.005,
+scen4pars <- prep_pars(N = 1000, D = 1, R = 15, breadth = 2, nicheOpt = NULL, alpha = 0.005,
                        interx_col = 1.5, interx_ext = 1.5, makeRDS = TRUE, whereToSave = folderpath, objName = "scenario4")
 
 pars <- list(scen1pars = scen1pars, scen2pars = scen2pars, 
@@ -125,12 +125,12 @@ for(j in 1:4){
 
 
 # Organize Data -----------------------------------------------------------
-
-for(i in 1:4){
-  loopscen <- paste0("scenario", i)
-  save_csv_and_plots(loopscen)
-  print(i)
-}
+# 
+# for(i in 1:4){
+#   loopscen <- paste0("scenario", i)
+#   save_csv_and_plots(loopscen)
+#   print(i)
+# }
 
 
 
