@@ -83,7 +83,8 @@ where *I*<sub>*i*, *z*, *t*</sub> is the number of immigrants of species *i*
 ### Immigration
 
 The effect of immigration is given by:
-$$I\_{i,z,t}=\\frac{\\sum k(z,\\omega) X\_{i,\\omega,t}}{\\sum k(z,\\omega)}$$
+
+$$I\_{i,z,t} = \\frac{\\sum k(z,\\omega ) X\_{i,\\omega ,t}}{\\sum k(z,\\omega)}$$
 
 which is a weighted average of the occurrence probability of species *i* in the neighborhood of *z*. The function *k*(*z*, *ω*) is a dispersal kernel that depends on the location of patch *z* and the neighborhood *ω*. For convenience, we consider an exponential function of the Euclidean distance between localities. We add to the kernel a low distance and neighborhood-independent constant *m* in order to account for immigration from outside the simulated metacommunity. This assumption is required to prevent total extinction by drift under perfectly neutral dynamics.
 
