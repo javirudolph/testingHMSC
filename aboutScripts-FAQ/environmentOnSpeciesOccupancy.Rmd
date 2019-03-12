@@ -7,13 +7,13 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 
 library(tidyverse)
 ```
 
 
-```{r OrigFunction}
+```{r OrigFunction, echo=TRUE}
 # Environment -------------------------------------------------------------
 # The effect of the environment on the local performance and colonization
 
@@ -31,9 +31,8 @@ S_f <- function(E, u_c, s_c) {
 }
 ```
 
-The original parameters  
 
-```{r}
+```{r OrigParms}
 
 D <- 1
 R <- 15
@@ -47,21 +46,13 @@ E <- readRDS("testingHMSCv2/outputs/fixedLandscapes/orig-no-seed-E.RDS")
 ```
 
 
-Result: effect on environment on the local performance and colonization:
-
 ```{r}
 data <- S_f(E = E, u_c = u_c, s_c = s_c)
 ```
 
-We get a matrix in which each row is a site, with it's environmental variable, and each column is a species. When I look at these, they don't look normal. So, now I'm confused.  
 
-```{r}
-hist(data[,3])
-```
 
-Edit the data structure so I can use ggplot:
-
-```{r}
+```{r editStruc}
 
 longformatData <- as.data.frame(data, row.names = c(1:1000)) %>% 
   set_names(., c(paste0("spp-", 1:15))) %>% 
@@ -71,7 +62,6 @@ longformatData <- as.data.frame(data, row.names = c(1:1000)) %>%
 ```
 
 
-With organized data I can plot it and see by species:
 
 ```{r}
 longformatData %>% 
@@ -86,6 +76,7 @@ longformatData %>%
 Same data, different visualization:
 
 ```{r}
+
 longformatData %>% 
   ggplot(., aes(x = Evalues, y = occupancy, group = Species)) +
   geom_line() +
@@ -98,10 +89,10 @@ longformatData %>%
 
 
 
-Now, the task is to change this to a parabola instead. I need to define the maximum amplitude to be 1, as the maximum occupancy... and I guess we need to determine the other values as to how spread it will be? based on the breadth. Seems straightforward. 
+Change the response to a quadratic function instead. I used a vertex form, $y = a(x-h) + k$, for which I defined the vertex to be at x = niche optima and y = maximum occupancy(1). The roots of the parabola are set to the minimum and maximum niche values based on the niche spread.
 
 
-```{r parabolaFunction}
+```{r parabolaFunction, echo=TRUE}
 # Environment -------------------------------------------------------------
 # The effect of the environment on the local performance and colonization
 
@@ -119,8 +110,8 @@ S_f_v2 <- function(E, u_c, s_c) {
 }
 ```
 
-Generate data 
 ```{r}
+# With this one you get a lot of negative values, so should we remove them, or just make them 0?
 data <- S_f_v2(E = E, u_c = u_c, s_c = s_c)
 
 
@@ -128,7 +119,8 @@ longformatData_v2 <- as.data.frame(data, row.names = c(1:1000)) %>%
   set_names(., c(paste0("spp-", 1:15))) %>% 
   mutate(., Evalues = E) %>% 
   gather(., key = "Species", value = "occupancy", -Evalues) %>% 
-  mutate(., Species = factor(Species, levels = unique(Species)))
+  mutate(., Species = factor(Species, levels = unique(Species)),
+         occupancy = ifelse(occupancy < 0, 0, occupancy))
 ```
 
 Plot
@@ -140,11 +132,11 @@ longformatData_v2 %>%
   labs(title = "Species response to the environment",
        x = "Environment values", 
        y = "Species occupancy") +
-  lims(y = c(-0.1, 1.1)) +
+  lims(y = c(0, 1.1)) +
   theme_bw()
 ```
 
-Facet wrap plot
+
 ```{r}
 longformatData_v2 %>% 
   ggplot(., aes(x = Evalues, y = occupancy)) +
@@ -152,7 +144,7 @@ longformatData_v2 %>%
   labs(title = "Species response to the environment",
        x = "Environment values", 
        y = "Species occupancy") +
-  lims(y = c(-0.1, 1.1)) +
+  lims(y = c(0, 1.1)) +
   theme_bw() +
   facet_wrap(~Species)
 ```
