@@ -51,40 +51,24 @@ metacom_sim4HMSC_multParams <- function(XY, E, pars, nsteps,
                                         whereToSave = NULL,
                                         objName = NULL){
   
-  N <- pars$N
-  D <- pars$D
-  R <- pars$R
-  
-  Y0 <- ifelse(matrix(runif(N * D), nrow = N, ncol = R) < occupancy, 1, 0)
-  
-  res <- vector("list", length = niter)
-  for(i in 1:niter){
-    run <- mainfx(XY, E, pars, Y0, nsteps)
-    res[[i]] <- run[[nsteps]]
-  }
-  
-  
-  if(is.list(pars) == TRUE){
     
     res <- vector("list", length = niter)
-    
     for(i in 1:niter){
-      parsRes <- NULL
-      for(pp in 1:length(pars)){
-        pars <- pars[[pp]]
+      bindruns <- NULL
+      for(k in 1:length(pars)){
+        subpars <- pars[[k]]
         
-        N <- pars$N
-        D <- pars$D
-        R <- pars$R
+        N <- subpars$N
+        D <- subpars$D
+        R <- subpars$R
         
         Y0 <- ifelse(matrix(runif(N * D), nrow = N, ncol = R) < occupancy, 1, 0)
-        run <- mainfx(XY, E, pars, Y0, nsteps)
-        parsRes <- cbind(parsRes, run[[nsteps]])
-        
+        run <- mainfx(XY, E, subpars, Y0, nsteps)
+        lastrun <- run[[nsteps]]
+        bindruns <- cbind(bindruns, lastrun)
       }
-      res[[i]] <- parsRes
+      res[[i]] <- bindruns
     }
-  }
   
   if(makeRDS == TRUE){
     nameFile <- paste0(whereToSave, objName, "-metacomSim.RDS")
