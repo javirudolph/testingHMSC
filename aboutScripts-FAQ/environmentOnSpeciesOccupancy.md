@@ -66,3 +66,5 @@ Try to superimpose both curves:
 ![](environmentOnSpeciesOccupancy_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
 ![](environmentOnSpeciesOccupancy_files/figure-markdown_github/unnamed-chunk-13-1.png)
+
+![](environmentOnSpeciesOccupancy_files/figure-markdown_github/unnamed-chunk-14-1.png)
