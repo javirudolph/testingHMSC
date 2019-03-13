@@ -48,7 +48,7 @@ get_params_table <- function(folderpath, scenario){
 ```{r setFolderpaths}
 
 gaussianPath <- "outputs/20190311-fifteen_species_scenarios_gaussian/"
-quadraticPath <- "outputs/20190310-fifteen_species_scenarios/"
+quadraticPath <- "outputs/20190312-fifteen_species_fig2_quadratic/"
 
 ```
 
