@@ -289,3 +289,31 @@ dat_both %>%
   lims(y = c(0,1))+
   facet_wrap(~Species)
 ```
+
+```{r}
+breadthGaussian <- 0.2
+breadthQuadratic <- 0.5
+
+s_c <- matrix(breadthGaussian, nrow = D, ncol = R)
+data <- S_f(E = E, u_c = u_c, s_c = s_c)
+longdata <- longdata_fx(data)
+longdata$response <- "gaussian"
+
+
+s_c <- matrix(breadthQuadratic, nrow = D, ncol = R)
+data2 <- S_f_v2(E = E, u_c = u_c, s_c = s_c)
+longdata2 <- longdata_fx(data2)
+longdata2$response <- "quadratic"
+
+dat_both <- rbind.data.frame(longdata, longdata2)
+
+dat_both %>% 
+  ggplot(., aes(x = Evalues, y = occupancy, color = response)) +
+  geom_line() +
+  labs(title = paste("Gaussian = ", breadthGaussian, "Quadratic = ", breadthQuadratic),
+       x = "Environment values", 
+       y = "Species occupancy") +
+  theme_bw() +
+  lims(y = c(0,1))+
+  facet_wrap(~Species)
+```
