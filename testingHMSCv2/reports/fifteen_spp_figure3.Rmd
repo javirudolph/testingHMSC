@@ -1,0 +1,20 @@
+---
+title: "Figure 3 - Comparisons between gaussian and quadratic response to the environment"
+author: "Javiera Rudolph"
+date: "March 13, 2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+
+library(tidyverse)
+library(ggtern)
+```
+
+```{r functions}
+source("functions/rmd_figure_prep_fx.R")
+
+```
+
