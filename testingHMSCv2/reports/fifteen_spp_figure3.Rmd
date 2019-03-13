@@ -15,8 +15,6 @@ library(ggtern)
 
 ```{r functions}
 
-source("functions/rmd_figure_prep_fx.R")
-
 get_params_table <- function(folderpath, scenario){
   parsList <- readRDS(paste0(folderpath, scenario, "-params.RDS"))
   fullPars <-  data.frame()
@@ -169,6 +167,51 @@ organize_vp_overlaps <- function(folderpath, scenario, indSites = FALSE){
 }
 
 
+make_tern_plot <- function(figData, varShape = NULL, varColor = NULL){
+  figData %>% 
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+    scale_T_continuous(limits=c(0,1.0),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    scale_L_continuous(limits=c(0.0,1),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    scale_R_continuous(limits=c(0.0,1.0),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    labs(x = "Environment",
+         y = "Codistribution",
+         z = "Spatial") +
+    geom_point(aes_string(shape = varShape, color = varColor), alpha = 0.7) +
+    theme_minimal() +
+    guides(size = guide_legend(order = 1,
+                               title = expression(paste(R^{2}))),
+           shape = guide_legend("none"),
+           # shape = guide_legend(order = 2,
+           #                      title = varShape,
+           #                      override.aes = list(size = 3)),
+           col = guide_colourbar(title = varColor,
+                                 order = 3)) +
+    theme(#legend.position = "bottom", legend.box = "vertical",
+      panel.grid = element_line(color = "darkgrey"),
+      axis.title = element_text(size = 7))
+}
+  
+
+# Arrange plots -----------------------------------------------------------
+arrange_plots <- function(folderpath, scenario, sppColor){
+  organize_vp_overlaps(folderpath, scenario, indSites = FALSE) %>% 
+    make_tern_plot(., varShape = "iteration", varColor = sppColor) -> sppPlot
+  
+  organize_vp_overlaps(folderpath, scenario, indSites = TRUE) %>% 
+  make_tern_plot(., varShape = "iteration", varColor = "richness") -> sitesPlot
+  
+  grid.arrange(arrangeGrob(sppPlot),
+               arrangeGrob(sitesPlot),
+               ncol = 2)
+}
+
+
 ```
 
 ```{r folderPaths}
@@ -189,7 +232,7 @@ knitr::kable(parstable)
 # Scenario 1 - Gaussian response
 ```{r, fig.width=10, fig.height=6}
 
-arrange_plots(folderpath, scenario)
+arrange_plots(folderpath, scenario, sppColor = "intercol")
 ```
 
 
@@ -197,7 +240,7 @@ arrange_plots(folderpath, scenario)
 
 ```{r, fig.width=10, fig.height=6}
 folderpath <- quadraticPath
-arrange_plots(folderpath, scenario)
+arrange_plots(folderpath, scenario, sppColor = "intercol")
 ```
 
 
@@ -214,7 +257,7 @@ knitr::kable(parstable)
 # Scenario 2 - Gaussian response
 ```{r, fig.width=10, fig.height=6}
 
-arrange_plots(folderpath, scenario)
+arrange_plots(folderpath, scenario, sppColor = "dispersal")
 ```
 
 
@@ -222,7 +265,7 @@ arrange_plots(folderpath, scenario)
 
 ```{r, fig.width=10, fig.height=6}
 folderpath <- quadraticPath
-arrange_plots(folderpath, scenario)
+arrange_plots(folderpath, scenario, sppColor = "dispersal")
 ```
 
 
@@ -239,7 +282,7 @@ knitr::kable(parstable)
 # Scenario 3 - Gaussian response
 ```{r, fig.width=10, fig.height=6}
 
-arrange_plots(folderpath, scenario)
+arrange_plots(folderpath, scenario, sppColor = "dispersal")
 ```
 
 
@@ -247,7 +290,18 @@ arrange_plots(folderpath, scenario)
 
 ```{r, fig.width=10, fig.height=6}
 folderpath <- quadraticPath
-arrange_plots(folderpath, scenario)
+arrange_plots(folderpath, scenario, sppColor = "dispersal")
+```
+
+
+```{r save csvFilesMathew, eval=FALSE}
+
+scen3spp <- organize_vp_overlaps(folderpath, scenario, indSites = FALSE)
+write.csv(scen3spp, file = paste0(folderpath, "csvFiles/scen3spp.csv"))
+
+scen3sites <- organize_vp_overlaps(folderpath, scenario, indSites = TRUE)
+write.csv(scen3spp, file = paste0(folderpath, "csvFiles/scen3sites.csv"))
+
 ```
 
 
