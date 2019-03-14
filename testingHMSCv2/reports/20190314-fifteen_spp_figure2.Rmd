@@ -1,0 +1,199 @@
+---
+title: "Figure 2 - comparisons between gaussian and quadratic response to environment"
+author: "Javiera Rudolph"
+date: "March 12, 2019"
+output: github_document
+---
+
+
+The results in this document correspond to the comparisons between gaussian and quadratic responses to the environment. We realized that using the same niche breadth in the gaussian and quadratic responses was dramatically different. The area under the curve of the parabola is significantly smaller, making the response to the environment extremely restricted. Therefore, we modified the parameters so that we could mantain a similar response when using a quadratic and gaussian response. Specifically, the quadratic function uses a larger niche breadth so keep a similar area under the curve as the gaussian response. When editing this function (S_f: response to environment), using a parabola would give us negative values for areas outside the range of occurence. This might influence interactions, so we decided to rerun the scripts with all negative values in the response to environment set equal to zero. This is shown in the third figure of each scenario. 
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+
+library(tidyverse)
+library(ggtern)
+```
+
+```{r functions, include=FALSE}
+
+source("functions/data_wrangling_fx.R")
+source("functions/make_tern_plot_fx.R")
+
+arrange_plots <- function(folderpath, scenario){
+  doItAll_dataWrangling(outPath = folderpath, scenarioNum = scenario, indSites = FALSE) %>% 
+    make_tern_plot(., varShape = "iteration", varColor = "nicheOpt") -> sppPlot
+  
+  sitescsv <- doItAll_dataWrangling(outPath = folderpath, scenarioNum = scenario, indSites = TRUE)
+  make_tern_plot(sitescsv, varShape = "iteration", varColor = "richness") -> sitesPlot
+  
+  grid.arrange(arrangeGrob(sppPlot),
+               arrangeGrob(sitesPlot),
+               ncol = 2)
+}
+
+get_params_table <- function(folderpath, scenario){
+  params <- with(readRDS(paste0(folderpath, scenario, "-params.RDS")), {
+    enframe(u_c[1,], name = "species",value =  "nicheOpt") %>% 
+      left_join(., enframe(s_c[1,], name = "species", value =  "nicheBreadth")) %>% 
+      left_join(., enframe(c_0, name = "species", value =  "colProb")) %>% 
+      mutate(dispersal = alpha, 
+             species = as.character(species), 
+             intercol = d_c, 
+             interext = d_e)
+  })
+  
+}
+
+```
+
+```{r setFolderpaths}
+
+gaussianPath <- "outputs/20190311-fifteen_species_scenarios_gaussian/"
+quadraticPath <- "outputs/20190313-fifteen_species_fig2_quadratic/"
+quadraticPathNoNegs <- "outputs/20190314-fifteen_species_fig2_quadratic_nonegs/"
+
+```
+
+
+# Scenario 1
+## Scenario 1- Gaussian response
+```{r}
+scenario <- "scenario1"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)
+parstable <- parstable[1,3:7]
+knitr::kable(parstable)
+```
+
+
+
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+## Scenario 1 - Quadratic response
+
+```{r}
+folderpath <- quadraticPath
+parstable <- get_params_table(folderpath, scenario)
+parstable <- parstable[1,3:7]
+knitr::kable(parstable)
+```
+
+```{r, fig.width=10, fig.height=6}
+arrange_plots(folderpath, scenario)
+```
+
+### No negative values in the response
+```{r, fig.width=10, fig.height=6}
+arrange_plots(quadraticPathNoNegs, scenario)
+```
+
+# Scenario 2
+## Scenario 2 - Gaussian response
+```{r}
+scenario <- "scenario2"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)[1,3:7]
+knitr::kable(parstable)
+```
+
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+## Scenario 2 - Quadratic response
+
+```{r}
+folderpath <- quadraticPath
+parstable <- get_params_table(folderpath, scenario)[1,3:7]
+knitr::kable(parstable)
+```
+
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+### No negative values in the response
+```{r, fig.width=10, fig.height=6}
+arrange_plots(quadraticPathNoNegs, scenario)
+```
+
+
+
+# Scenario 3
+## Scenario 3 - Gaussian response
+```{r}
+scenario <- "scenario3"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)[1,3:7]
+knitr::kable(parstable)
+```
+
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+## Scenario 3 - Quadratic response
+
+```{r}
+folderpath <- quadraticPath
+parstable <- get_params_table(folderpath, scenario)[1,3:7]
+knitr::kable(parstable)
+```
+
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+### No negative values in the response
+```{r, fig.width=10, fig.height=6}
+arrange_plots(quadraticPathNoNegs, scenario)
+```
+
+
+
+# Scenario 4
+## Scenario 4 - Gaussian response
+```{r}
+scenario <- "scenario4"
+folderpath <- gaussianPath
+parstable <- get_params_table(folderpath, scenario)[1,3:7]
+knitr::kable(parstable)
+```
+
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+## Scenario 4 - Quadratic response
+
+```{r}
+folderpath <- quadraticPath
+parstable <- get_params_table(folderpath, scenario)[1,3:7]
+knitr::kable(parstable)
+```
+
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario)
+```
+
+
+### No negative values in the response
+```{r, fig.width=10, fig.height=6}
+arrange_plots(quadraticPathNoNegs, scenario)
+```
+
