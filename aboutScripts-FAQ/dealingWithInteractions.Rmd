@@ -5,26 +5,111 @@ date: "March 15, 2019"
 output: github_document
 ---
 
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = FALSE)
+
+library(tidyverse)
 ```
 
-## R Markdown
+This is the interactions matrix that we have been using for all the scenarios:
+```{r}
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+R <- 15
+D <- 1
+N <- 1000
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+# Interaction matrix
+  A <- matrix(0, ncol = R, nrow = R)
+  d <- as.matrix(dist(c(1:R), upper = TRUE, diag = TRUE))
+  A[d <= 1] <- -1
+  diag(A) <- 0
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+```{r}
+A %>% 
+  as.data.frame() %>% 
+  rownames_to_column() %>% 
+  set_names(., nm = c("species1", 1:15)) %>% 
+  gather(., species2, value, -species1) %>% 
+  mutate(., species1 = factor(species1, levels = unique(species1)),
+         species2 = factor(species2, levels = unique(species2))) %>% 
+  ggplot(., aes(x = species1, y = species2, fill = value)) +
+  geom_tile()
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+This is what we've used for the initial occupancy matrix:
+```{r}
+occupancy <- 0.8
+Y0 <- ifelse(matrix(runif(N * D), nrow = N, ncol = R) < occupancy, 1, 0)
+
+Y0 %>% 
+  as.data.frame() %>% 
+  rownames_to_column() %>% 
+  set_names(., nm = c("sites", 1:15)) %>% 
+  gather(., species, value, -sites) %>% 
+  mutate(., species = factor(species, levels = unique(species))) %>% 
+  ggplot(., aes(x = sites, y = species, fill = value)) +
+  geom_tile()
+
+```
+
+
+
+The colonization functions based on the interactions is as follows:
+
+```{r}
+# Interactions ------------------------------------------------------------
+# First get the sum of ecological interactions
+
+sum_interactions <- function(A = "Species interactions matrix",
+                             Y = "Species occurrence matrix"){
+  t(A %*% t(Y))
+}
+
+# Then the effect of interactions on colonization
+
+C_f <- function(v = "Sum interactions",
+                d_c = "Sensitivity to interactions",
+                c_0 = "Colonization at zero interactions",
+                c_max = "Colonization at max interactions"){
+  
+  c_max * (1 + ((1 / c_0) - 1) * exp(-v * d_c))^-1
+  # Is this the same as: 
+  # c_max / (1 + ((1 / c_0) - 1) * exp(-v * d_c))
+  
+}
+```
+
+Sum interactions:
+
+```{r}
+v <- sum_interactions(A, Y0)
+
+v  %>% 
+  as.data.frame() %>% 
+  rownames_to_column() %>% 
+  set_names(., nm = c("sites", 1:15)) %>% 
+  gather(., species, value, -sites) %>% 
+  mutate(., species = factor(species, levels = unique(species))) %>% 
+  ggplot(., aes(x = sites, y = species, fill = value)) +
+  geom_tile()
+```
+
+What is the output of the function?
+
+```{r}
+
+#Colonization function
+c_0 <- rep(0.4, R) # Colonization at 0 interactions
+c_max <- rep(1, R) # Colonization at max interactions
+d_c <- 0
+
+data <- C_f(v, d_c, c_0, c_max)
+
+```
+
