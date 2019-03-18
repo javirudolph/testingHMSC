@@ -14,6 +14,12 @@ source("functions/metacom_sim_fx.R")
 source("functions/main_sim_fx.R")
 source("functions/full_process_fx.R")
 
+# OrigLandscape -----------------------------------------------------------
+
+XY <- readRDS("outputs/fixedLandscapes/orig-no-seed-XY.RDS")
+E <- readRDS("outputs/fixedLandscapes/orig-no-seed-E.RDS")
+MEMsel <- readRDS("outputs/fixedLandscapes/orig-no-seed-MEMsel.RDS")
+
 
 # Replace with quadratic --------------------------------------------------
 # I'm basically overwriting the original function with this one that has the quadratic term. 
