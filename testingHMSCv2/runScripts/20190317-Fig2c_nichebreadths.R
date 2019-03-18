@@ -116,7 +116,7 @@ if(dir.exists(folderpath) == FALSE){
 
 # Niche breadth -----------------------------------------------------------
 
-nch_breadth <- seq(from = 0.2, to = 2, length.out = 10)
+nch_breadth <- seq(from = 0.5, to = 2, by = 0.1)
 
 
 # Run cycles --------------------------------------------------------------
