@@ -70,7 +70,6 @@ knitr::kable(parstable)
 
 
 ```{r, fig.width=10, fig.height=6}
-
 arrange_plots(folderpath, scenario)
 ```
 
