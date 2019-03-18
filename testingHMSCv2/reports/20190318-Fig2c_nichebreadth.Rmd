@@ -47,6 +47,26 @@ get_params_table <- function(folderpath, scenario){
 
 ```
 
+```{r NicheFigures}
+
+S_f_v2 <- function(E, u_c, s_c) {
+  R <- ncol(u_c)
+  N <- nrow(E)
+  D <- ncol(E)
+  S <- matrix(1, nr = N, nc = R)
+  for(i in 1:D){
+    optima <- matrix(u_c[i,],nrow = N,ncol = R,byrow = TRUE)
+    breadth <- matrix(s_c[i,],nrow = N,ncol = R,byrow = TRUE)
+    S <- S * ((-1 / (breadth/2)^2) * (E[,i] - optima)^2 + 1)
+  }
+  return(S)
+}
+
+
+```
+
+
+
 ```{r setFolderPaths}
 
 fig2c <- "outputs/20190317-fig2c_quad/"
@@ -60,34 +80,58 @@ fig2c_nonegs <- "outputs/20190318-fig2c_quad_nonegs/"
 # Scenario1
 ```{r}
 scenario <- "scenario1"
-get_params_table(fig2c, scenario) %>% knitr::kable()
+pars <- get_params_table(fig2c, scenario)
+knitr::kable(pars)
 ```
 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.height=2, fig.width=6}
+ggplot(data = data.frame(x = seq(from = 0, to = 1, by = 0.01)), aes(x = x)) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[1]/2)^2) * (x-pars$nicheOpt[1])^2 + 1}) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[2]/2)^2) * (x-pars$nicheOpt[2])^2 + 1}) +
+  lims(y = c(-0.1,1.1), x = c(-0.01, 1.1)) +
+  labs(x = "Niche values", y = "occupancy") +
+  theme_bw()
+
+```
+
+
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c, scenario)
 ```
 
 No negatives 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c_nonegs, scenario)
 ```
+
 
 # Scenario2
 ```{r}
 scenario <- "scenario2"
-get_params_table(fig2c, scenario) %>% knitr::kable()
+pars <- get_params_table(fig2c, scenario)
+knitr::kable(pars)
+```
+
+```{r, fig.height=2, fig.width=6}
+ggplot(data = data.frame(x = seq(from = 0, to = 1, by = 0.01)), aes(x = x)) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[1]/2)^2) * (x-pars$nicheOpt[1])^2 + 1}) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[2]/2)^2) * (x-pars$nicheOpt[2])^2 + 1}) +
+  lims(y = c(-0.1,1.1), x = c(-0.01, 1.1)) +
+  labs(x = "Niche values", y = "occupancy") +
+  theme_bw()
+
 ```
 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c, scenario)
 ```
 
 No negatives 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c_nonegs, scenario)
 ```
 
@@ -95,17 +139,29 @@ arrange_plots(fig2c_nonegs, scenario)
 # Scenario3
 ```{r}
 scenario <- "scenario3"
-get_params_table(fig2c, scenario) %>% knitr::kable()
+pars <- get_params_table(fig2c, scenario)
+knitr::kable(pars)
 ```
 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.height=2, fig.width=6}
+ggplot(data = data.frame(x = seq(from = 0, to = 1, by = 0.01)), aes(x = x)) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[1]/2)^2) * (x-pars$nicheOpt[1])^2 + 1}) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[2]/2)^2) * (x-pars$nicheOpt[2])^2 + 1}) +
+  lims(y = c(-0.1,1.1), x = c(-0.01, 1.1)) +
+  labs(x = "Niche values", y = "occupancy") +
+  theme_bw()
+
+```
+
+
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c, scenario)
 ```
 
 No negatives 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c_nonegs, scenario)
 ```
 
@@ -113,118 +169,202 @@ arrange_plots(fig2c_nonegs, scenario)
 # Scenario4
 ```{r}
 scenario <- "scenario4"
-get_params_table(fig2c, scenario) %>% knitr::kable()
+pars <- get_params_table(fig2c, scenario)
+knitr::kable(pars)
 ```
 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.height=2, fig.width=6}
+ggplot(data = data.frame(x = seq(from = 0, to = 1, by = 0.01)), aes(x = x)) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[1]/2)^2) * (x-pars$nicheOpt[1])^2 + 1}) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[2]/2)^2) * (x-pars$nicheOpt[2])^2 + 1}) +
+  lims(y = c(-0.1,1.1), x = c(-0.01, 1.1)) +
+  labs(x = "Niche values", y = "occupancy") +
+  theme_bw()
+
+```
+
+
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c, scenario)
 ```
 
 No negatives 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c_nonegs, scenario)
 ```
 
 # Scenario5
 ```{r}
 scenario <- "scenario5"
-get_params_table(fig2c, scenario) %>% knitr::kable()
+pars <- get_params_table(fig2c, scenario)
+knitr::kable(pars)
 ```
 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.height=2, fig.width=6}
+ggplot(data = data.frame(x = seq(from = 0, to = 1, by = 0.01)), aes(x = x)) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[1]/2)^2) * (x-pars$nicheOpt[1])^2 + 1}) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[2]/2)^2) * (x-pars$nicheOpt[2])^2 + 1}) +
+  lims(y = c(-0.1,1.1), x = c(-0.01, 1.1)) +
+  labs(x = "Niche values", y = "occupancy") +
+  theme_bw()
+
+```
+
+
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c, scenario)
 ```
 
 No negatives 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c_nonegs, scenario)
 ```
 
 # Scenario6
 ```{r}
 scenario <- "scenario6"
-get_params_table(fig2c, scenario) %>% knitr::kable()
+pars <- get_params_table(fig2c, scenario)
+knitr::kable(pars)
 ```
 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.height=2, fig.width=6}
+ggplot(data = data.frame(x = seq(from = 0, to = 1, by = 0.01)), aes(x = x)) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[1]/2)^2) * (x-pars$nicheOpt[1])^2 + 1}) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[2]/2)^2) * (x-pars$nicheOpt[2])^2 + 1}) +
+  lims(y = c(-0.1,1.1), x = c(-0.01, 1.1)) +
+  labs(x = "Niche values", y = "occupancy") +
+  theme_bw()
+
+```
+
+
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c, scenario)
 ```
 
 No negatives 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c_nonegs, scenario)
 ```
 
 # Scenario7
 ```{r}
 scenario <- "scenario7"
-get_params_table(fig2c, scenario) %>% knitr::kable()
+pars <- get_params_table(fig2c, scenario)
+knitr::kable(pars)
 ```
 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.height=2, fig.width=6}
+ggplot(data = data.frame(x = seq(from = 0, to = 1, by = 0.01)), aes(x = x)) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[1]/2)^2) * (x-pars$nicheOpt[1])^2 + 1}) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[2]/2)^2) * (x-pars$nicheOpt[2])^2 + 1}) +
+  lims(y = c(-0.1,1.1), x = c(-0.01, 1.1)) +
+  labs(x = "Niche values", y = "occupancy") +
+  theme_bw()
+
+```
+
+
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c, scenario)
 ```
 
 No negatives 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c_nonegs, scenario)
 ```
 
 # Scenario8
 ```{r}
 scenario <- "scenario8"
-get_params_table(fig2c, scenario) %>% knitr::kable()
+pars <- get_params_table(fig2c, scenario)
+knitr::kable(pars)
 ```
 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.height=2, fig.width=6}
+ggplot(data = data.frame(x = seq(from = 0, to = 1, by = 0.01)), aes(x = x)) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[1]/2)^2) * (x-pars$nicheOpt[1])^2 + 1}) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[2]/2)^2) * (x-pars$nicheOpt[2])^2 + 1}) +
+  lims(y = c(-0.1,1.1), x = c(-0.01, 1.1)) +
+  labs(x = "Niche values", y = "occupancy") +
+  theme_bw()
+
+```
+
+
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c, scenario)
 ```
 
 No negatives 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c_nonegs, scenario)
 ```
 
 # Scenario9
 ```{r}
 scenario <- "scenario9"
-get_params_table(fig2c, scenario) %>% knitr::kable()
+pars <- get_params_table(fig2c, scenario)
+knitr::kable(pars)
 ```
 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.height=2, fig.width=6}
+ggplot(data = data.frame(x = seq(from = 0, to = 1, by = 0.01)), aes(x = x)) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[1]/2)^2) * (x-pars$nicheOpt[1])^2 + 1}) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[2]/2)^2) * (x-pars$nicheOpt[2])^2 + 1}) +
+  lims(y = c(-0.1,1.1), x = c(-0.01, 1.1)) +
+  labs(x = "Niche values", y = "occupancy") +
+  theme_bw()
+
+```
+
+
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c, scenario)
 ```
 
 No negatives 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c_nonegs, scenario)
 ```
 
 # Scenario10
 ```{r}
 scenario <- "scenario10"
-get_params_table(fig2c, scenario) %>% knitr::kable()
+pars <- get_params_table(fig2c, scenario)
+knitr::kable(pars)
 ```
 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.height=2, fig.width=6}
+ggplot(data = data.frame(x = seq(from = 0, to = 1, by = 0.01)), aes(x = x)) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[1]/2)^2) * (x-pars$nicheOpt[1])^2 + 1}) +
+  stat_function(fun = function(x){(-1/(pars$nicheBreadth[2]/2)^2) * (x-pars$nicheOpt[2])^2 + 1}) +
+  lims(y = c(-0.1,1.1), x = c(-0.01, 1.1)) +
+  labs(x = "Niche values", y = "occupancy") +
+  theme_bw()
+
+```
+
+
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c, scenario)
 ```
 
 No negatives 
 
-```{r, fig.width=10, fig.height=6}
+```{r, fig.width=10, fig.height=4}
 arrange_plots(fig2c_nonegs, scenario)
 ```
