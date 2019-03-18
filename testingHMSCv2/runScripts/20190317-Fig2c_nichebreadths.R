@@ -45,7 +45,7 @@ MEMsel <- readRDS("outputs/fixedLandscapes/orig-no-seed-MEMsel.RDS")
 # Create folder to save outputs -------------------------------------------
 
 savedate <- format(Sys.Date(), "%Y%m%d")
-folderpath <- paste0("outputs/", savedate, "-fig2c_quadratic_niche_explr/")
+folderpath <- paste0("outputs/", savedate, "-fig2c_quad/")
 
 if(dir.exists(folderpath) == FALSE){
   dir.create(folderpath)
@@ -62,8 +62,8 @@ nch_breadth <- seq(from = 0.2, to = 2, length.out = 10)
 for(j in 1:length(nch_breadth)){
   namesrds <- paste0("scenario", j)
   
-  pars <- prep_pars(N = 1000, D = 1, R = 2,
-                    nicheOpt = nicheOpt2spp, breadth = nch_breadth[i], alpha = 0.005,
+  pars <- prep_pars(N = 1000, D = 1, R = 15,
+                    nicheOpt = NULL, breadth = nch_breadth[j], alpha = 0.005,
                     interx_col = 1.5, interx_ext = 1.5, makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
   sims <- metacom_sim4HMSC(XY = XY, E = E, pars = pars,
@@ -107,7 +107,7 @@ S_f <- function(E, u_c, s_c) {
 # Create folder to save outputs -------------------------------------------
 
 savedate <- format(Sys.Date(), "%Y%m%d")
-folderpath <- paste0("outputs/", savedate, "-fig2c_quadratic_niche_explr_nonegs/")
+folderpath <- paste0("outputs/", savedate, "-fig2c_quad_nonegs/")
 
 if(dir.exists(folderpath) == FALSE){
   dir.create(folderpath)
@@ -124,8 +124,8 @@ nch_breadth <- seq(from = 0.2, to = 2, length.out = 10)
 for(j in 1:length(nch_breadth)){
   namesrds <- paste0("scenario", j)
   
-  pars <- prep_pars(N = 1000, D = 1, R = 2,
-                    nicheOpt = nicheOpt2spp, breadth = nch_breadth[i], alpha = 0.005,
+  pars <- prep_pars(N = 1000, D = 1, R = 15,
+                    nicheOpt = NULL, breadth = nch_breadth[j], alpha = 0.005,
                     interx_col = 1.5, interx_ext = 1.5, makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
   sims <- metacom_sim4HMSC(XY = XY, E = E, pars = pars,
