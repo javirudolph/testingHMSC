@@ -1,0 +1,16 @@
+---
+title: "Fig2c - whend does niche breadth allow interaction?"
+author: "Javiera Rudolph"
+date: "March 18, 2019"
+output: github_document
+---
+
+We tried changing the niche breadth (increase) to allow for interactions to play a role in the Figure2c scenario. It didn't work so now we are trying to test a range of niche breadths to see at which point we are able to see interactions. 
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+
+library(tidyverse)
+library(ggtern)
+```
