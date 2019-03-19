@@ -1,0 +1,84 @@
+---
+title: "Figure 2c - niche breadth and species interactions"
+author: "Javiera Rudolph"
+date: "March 19, 2019"
+output:
+  github_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning=FALSE)
+
+library(tidyverse)
+library(ggtern)
+```
+
+```{r scriptSetup}
+source("functions/rmd_figure_prep_fx.R")
+folderpath <- "outputs/20190318-fig2c_quad/"
+```
+
+
+```{r Fxs}
+draw_parabolas <- function(pars){
+  parabola <- function(x, nicheBreadth, nicheOpt) (-1 / (nicheBreadth / 2)^2) * (x - nicheOpt)^2 + 1
+parabolas <- pars %>% 
+  pmap(., function(...){
+    dots <- tibble(...)
+    stat_function(data = dots, aes(x = 0, color = nicheOpt),
+                  fun = function(x) parabola(x, dots$nicheBreadth, dots$nicheOpt),
+                  xlim = c(0,1))
+  })
+
+ggplot() + parabolas + 
+  lims(y=c(-0.01,1)) + 
+  theme_bw()
+}
+
+arrange_plots <- function(folderpath, scenario, colorSpp, colorSites, title){
+  organize_vp_overlaps(folderpath, scenario, indSites = FALSE) %>% 
+    make_tern_plot(., varShape = "iteration", varColor = colorSpp) +
+    scale_color_viridis_c()-> sppPlot
+  
+  organize_vp_overlaps(folderpath, scenario, indSites = TRUE) %>% 
+  make_tern_plot(., varShape = "iteration", varColor = colorSites) -> sitesPlot
+  
+  grid.arrange(arrangeGrob(sppPlot),
+               arrangeGrob(sitesPlot),
+               ncol = 2, left = title)
+}
+
+
+```
+
+
+## Introduction
+In all of these scenarios we are using 15 species, with a niche optima for each of them evenly spaced from 0 to 1. The niche breadth is the same for all species and the specific value for each scenario is shown on the title of thefigures. These response curves were generated using a quadratic response.
+
+## Ternary plots
+```{r fig.width=14, fig.height=4}
+for(i in 1:16){
+  scenario <- paste0("scenario", i)
+  pars <- get_params_table(folderpath, scenario)
+  
+  arrange_plots(folderpath, scenario, "nicheOpt", "richness", title = paste(scenario, "- breadth:", pars$nicheBreadth[1]))
+}
+```
+
+
+## Quadratic response to environment
+```{r  fig.width=14, fig.height=4}
+for(i in 1:16){
+  
+  scenario <- paste0("scenario", i)
+  pars <- get_params_table(folderpath, scenario)
+  
+  figure <- draw_parabolas(pars) + 
+    labs(title = paste(scenario, "- nichebreadth:", pars$nicheBreadth[1])) + 
+    scale_color_viridis_c()
+  print(figure)
+}
+```
+
