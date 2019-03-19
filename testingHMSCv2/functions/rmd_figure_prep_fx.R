@@ -200,15 +200,16 @@ make_tern_plot <- function(figData, varShape = NULL, varColor = NULL){
   
 
 # Arrange plots -----------------------------------------------------------
-arrange_plots <- function(folderpath, scenario){
+arrange_plots <- function(folderpath, scenario, colorSpp, colorSites, leftlabel){
   organize_vp_overlaps(folderpath, scenario, indSites = FALSE) %>% 
-    make_tern_plot(., varShape = "iteration", varColor = "nicheOpt") -> sppPlot
+    make_tern_plot(., varShape = "iteration", varColor = colorSpp) -> sppPlot
   
   organize_vp_overlaps(folderpath, scenario, indSites = TRUE) %>% 
-  make_tern_plot(., varShape = "iteration", varColor = "richness") -> sitesPlot
+  make_tern_plot(., varShape = "iteration", varColor = colorSites) -> sitesPlot
   
   grid.arrange(arrangeGrob(sppPlot),
                arrangeGrob(sitesPlot),
-               ncol = 2)
+               ncol = 2, left = leftlabel)
 }
+
 
