@@ -1,0 +1,89 @@
+---
+title: "Species by Species covariance (or correlation) matrix"
+author: "Javiera Rudolph"
+date: "March 21, 2019"
+output: github_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+
+library(tidyverse)
+library(ggtern)
+library(HMSC)
+library(reshape2)
+library(corrplot)
+library(circlize)
+```
+
+```{r}
+folderpath <- "outputs/20190320-fig2c_range_interactions/"
+rastPlot <- function(data, title = "title", xlabel = "x", ylabel = "y"){
+  ggplot(melt(data), aes(x = Var1, y = Var2, fill = value)) +
+    geom_tile() +
+    theme(axis.text = element_blank(),
+          legend.title = element_blank()) +
+    scale_fill_viridis_c(alpha = 0.5) +
+    labs(title = title,
+         x = xlabel,
+         y = ylabel) +
+    theme_bw()
+}
+```
+
+```{r}
+hmscfile <- readRDS(paste0(folderpath, "scenario1-model.RDS"))
+
+assoMat <- corRandomEff(hmscfile[[2]])
+chordDiagram(assoMat[, , 1, 1], symmetric = TRUE)
+
+```
+
+```{r}
+siteMean <- apply(assoMat[ , , , 1], 1:2, mean)
+#plotMean <- apply(assoMat[ , , , 2], 1:2, mean)
+```
+
+
+```{r}
+siteDrawCol <- matrix(NA, nrow = nrow(siteMean), ncol = ncol(siteMean))
+siteDrawCol[which(siteMean > 0.4, arr.ind=TRUE)]<-"red"
+siteDrawCol[which(siteMean < -0.4, arr.ind=TRUE)]<-"blue"
+# Build matrix of "significance" for corrplot
+siteDraw <- siteDrawCol
+siteDraw[which(!is.na(siteDraw), arr.ind = TRUE)] <- 0
+siteDraw[which(is.na(siteDraw), arr.ind = TRUE)] <- 1
+siteDraw <- matrix(as.numeric(siteDraw), nrow = nrow(siteMean), ncol = ncol(siteMean))
+```
+
+```{r matrixA}
+  # # Interaction matrix
+R <- 15
+  A = matrix(0,nr=R,nc=R)
+  d = as.matrix(dist(c(1:R),upper=TRUE,diag=T))
+  A[d<=1] = -1
+  diag(A) = 0
+  
+  plot_A <- rastPlot(A, title = "A - Interaction matrix")
+
+```
+
+```{r}
+modelMat <- rastPlot(siteDraw, title = "Model")
+```
+
+```{r}
+grid.arrange(plot_A, modelMat)
+```
+
+```{r}
+par(mfrow=c(1,2))
+Colour <- colorRampPalette(c("blue", "white", "red"))(200)
+corrplot(siteMean, method = "color", col = Colour, type = "lower",
+diag = FALSE, p.mat = siteDraw, tl.srt = 45)
+corrplot(A, method = "color", col = Colour, type = "lower",
+diag = FALSE, p.mat = siteDraw, tl.srt = 45)
+```
+
