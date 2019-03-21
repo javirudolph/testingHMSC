@@ -51,12 +51,12 @@ if(dir.exists(folderpath) == FALSE){
 
 # Interaction terms -----------------------------------------------------------
 
-inter_val <- seq(from = 0.5, to = 1.5, length.out = 10)
+inter_val <- seq(from = 0.5, to = 1.5, by = 0.1)
 
 
 # Run cycles --------------------------------------------------------------
 
-for(j in 1:length(nch_breadth)){
+for(j in 1:length(inter_val)){
   namesrds <- paste0("scenario", j)
   
   pars <- prep_pars(N = 1000, D = 1, R = 15,

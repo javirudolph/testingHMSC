@@ -1,0 +1,58 @@
+---
+title: "Figure 2c - species interactions"
+author: "Javiera Rudolph"
+date: "March 21, 2019"
+output:
+  github_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning=FALSE)
+
+library(tidyverse)
+library(ggtern)
+```
+
+```{r scriptSetup}
+source("functions/rmd_figure_prep_fx.R")
+folderpath <- "outputs/20190320-fig2c_range_interactions/"
+```
+
+
+```{r Fxs}
+
+arrange_plots <- function(folderpath, scenario, colorSpp, colorSites, title){
+  organize_vp_overlaps(folderpath, scenario, indSites = FALSE) %>% 
+    make_tern_plot(., varShape = "iteration", varColor = colorSpp) +
+    scale_color_viridis_c()-> sppPlot
+  
+  organize_vp_overlaps(folderpath, scenario, indSites = TRUE) %>% 
+  make_tern_plot(., varShape = "iteration", varColor = colorSites) -> sitesPlot
+  
+  grid.arrange(arrangeGrob(sppPlot),
+               arrangeGrob(sitesPlot),
+               ncol = 2, left = title)
+}
+
+
+```
+
+
+## Introduction
+In all of these scenarios we are using 15 species, with a niche optima for each of them evenly spaced from 0 to 1. The niche breadth is set to 0.8 using a quadratic response to the environment. We are exploring a range of values for species interactions, from 0.5 to 1.5, which are applied to both the effect of interactions on colonization and on extinction.
+
+## Ternary plots
+```{r fig.width=14, fig.height=4}
+for(i in 1:11){
+  scenario <- paste0("scenario", i)
+  pars <- get_params_table(folderpath, scenario)
+  
+  arrange_plots(folderpath, scenario, "nicheOpt", "richness", title = paste(scenario, "- interactions:", pars$intercol[1]))
+}
+```
+
+
+
+
