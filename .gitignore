@@ -45,3 +45,5 @@ rsconnect/
 
 fig3c-species.csv
 fig3c-sites.csv
+
+*.csv
