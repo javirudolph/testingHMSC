@@ -55,7 +55,7 @@ organize_vp_overlaps <- function(folderpath, scenario, indSites = FALSE){
       rownames_to_column(var = "sites") %>% 
       gather(., key = "iteration", value = "richness", -sites) %>% 
       mutate(identifier = paste0("site", sites, "_", iteration)) %>% 
-      select(., -c(sites, iteration))
+      dplyr::select(., -c(sites, iteration))
     
     
     
@@ -134,7 +134,7 @@ organize_vp_overlaps <- function(folderpath, scenario, indSites = FALSE){
     rownames_to_column(var = "species") %>% 
     gather(., key = "iteration", value = "prevalence", -species) %>% 
     mutate(identifier = paste0("spp", species, "_", iteration)) %>% 
-    select(., -c(species, iteration))
+    dplyr::select(., -c(species, iteration))
   
   
   
@@ -263,3 +263,35 @@ knitr::kable(parstable)
 
 arrange_plots(folderpath, scenario, colorSpp = "dispersal", title = "Figure 3c - with interx")
 ```
+
+```{r, fig.width=10, fig.height=6}
+
+arrange_plots(folderpath, scenario, colorSpp = "nicheOpt", title = "Figure 3c - with interx")
+```
+
+```{r, eval=FALSE}
+# Save csv files for Mathew
+
+sppDF <- organize_vp_overlaps(folderpath, scenario, indSites = FALSE)
+sppDF %>% 
+  mutate(scenario = "Fig3c",
+         prevalence = prevalence/1000) -> sppDF
+write.csv(sppDF, file = paste0(folderpath, "fig3c-species.csv"))
+
+sitesDF <- organize_vp_overlaps(folderpath, scenario, indSites = TRUE)
+
+E <- readRDS("outputs/fixedLandscapes/orig-no-seed-E.RDS")
+XY <- readRDS("outputs/fixedLandscapes/orig-no-seed-XY.RDS")
+
+sitesDF %>% 
+  mutate(site = str_sub(identifier, start = 1, end = 5),
+         scenario = "Fig3c",
+         E = rep(E, 5),
+         X = as.numeric(rep(XY[,1], 5)),
+         Y = as.numeric(rep(XY[,2], 5))) -> sitesDF
+
+write.csv(sitesDF, file = paste0(folderpath, "fig3c-sites.csv"))
+
+
+```
+
