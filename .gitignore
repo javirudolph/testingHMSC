@@ -42,3 +42,6 @@ rsconnect/
 *.html
 /output/
 /scratch/
+
+fig3c-species.csv
+fig3c-sites.csv
