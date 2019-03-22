@@ -14,7 +14,7 @@ folderpath <- "outputs/MANUSCRIPT/"
 
 # Both the functions used and the original landscape used for this can be found on the github repository: 
 # for the functions: https://github.com/javirudolph/testingHMSC/tree/master/testingHMSCv2/functions
-# for the original landscape
+# for the original landscape: https://github.com/javirudolph/testingHMSC/tree/master/testingHMSCv2/outputs/fixedLandscapes
 
 
 # LIBRARIES ---------------------------------------------------------------
@@ -104,7 +104,7 @@ scen1pars <- list(scen1_a = prep_pars(N = 1000, D = 1, R = 7, breadth = 0.8, nic
                                       interx_col = 0, interx_ext = 0, makeRDS = FALSE),
                   scen1_b = prep_pars(N = 1000, D = 1, R = 8, breadth = 0.8, nicheOpt = NULL, alpha = 0.005,
                                       interx_col = 1.5, interx_ext = 1.5, makeRDS = FALSE))
-saveRDS(scen1pars, file = paste0(folderpath, "scenario1-params.RDS"))
+saveRDS(scen1pars, file = paste0(folderpath, "FIG3A-params.RDS"))
 
 
 # FIG3B: a third of the species with low, med and high dispersal levels, without interactions.
@@ -115,7 +115,7 @@ scen2pars <- list(scen2_a = prep_pars(N = 1000, D = 1, R = 5, breadth = 0.8, nic
                                       interx_col = 0, interx_ext = 0, makeRDS = FALSE),
                   scen2_c = prep_pars(N = 1000, D = 1, R = 5, breadth = 0.8, nicheOpt = NULL, alpha = 0.015,
                                       interx_col = 0, interx_ext = 0, makeRDS = FALSE))
-saveRDS(scen2pars, file = paste0(folderpath, "scenario2-params.RDS"))
+saveRDS(scen2pars, file = paste0(folderpath, "FIG3B-params.RDS"))
 
 
 # FIG3B: a third of the species with low, med and high dispersal levels, with interactions.
@@ -126,7 +126,7 @@ scen3pars <- list(scen3_a = prep_pars(N = 1000, D = 1, R = 5, breadth = 0.8, nic
                                       interx_col = 1.5, interx_ext = 1.5, makeRDS = FALSE),
                   scen3_c = prep_pars(N = 1000, D = 1, R = 5, breadth = 0.8, nicheOpt = NULL, alpha = 0.015,
                                       interx_col = 1.5, interx_ext = 1.5, makeRDS = FALSE))
-saveRDS(scen3pars, file = paste0(folderpath, "scenario3-params.RDS"))
+saveRDS(scen3pars, file = paste0(folderpath, "FIG3B-params.RDS"))
 
 
 scenarioPars <- list(scen1pars = scen1pars, scen2pars = scen2pars, 
@@ -143,15 +143,15 @@ for(j in 1:3){
                                       makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
   
-  model <- metacom_as_HMSCdata(sims, numClusters = 4, E = E, MEMsel = MEMsel,
+  model <- metacom_as_HMSCdata(sims, numClusters = ncores, E = E, MEMsel = MEMsel,
                                makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
   
-  vpSpp <- get_VPresults(model, MEMsel = MEMsel, numClusters = 4,
+  vpSpp <- get_VPresults(model, MEMsel = MEMsel, numClusters = ncores,
                          makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
   
-  vpSites <- get_VPresults_SITE(model, MEMsel = MEMsel, numClusters = 4,
+  vpSites <- get_VPresults_SITE(model, MEMsel = MEMsel, numClusters = ncores,
                                 makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
 }
