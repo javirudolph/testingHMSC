@@ -49,4 +49,5 @@ fig3c-sites.csv
 *.csv
 
 # We do want to include the RDS files for the landscape
-!testingHMSCv2/outputs/fixedLandscapes/
+!/fixedLandscapes/*.RDS
+
