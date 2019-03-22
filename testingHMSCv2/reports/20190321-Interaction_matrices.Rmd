@@ -8,44 +8,72 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
-knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 
 library(tidyverse)
 library(ggtern)
 library(HMSC)
-library(reshape2)
 library(corrplot)
 library(circlize)
 ```
 
-```{r}
-folderpath <- "outputs/20190320-fig2c_range_interactions/"
-rastPlot <- function(data, title = "title", xlabel = "x", ylabel = "y"){
-  ggplot(melt(data), aes(x = Var1, y = Var2, fill = value)) +
-    geom_tile() +
-    theme(axis.text = element_blank(),
-          legend.title = element_blank()) +
-    scale_fill_viridis_c(alpha = 0.5) +
-    labs(title = title,
-         x = xlabel,
-         y = ylabel) +
-    theme_bw()
-}
+```{r functions}
+source("functions/rmd_figure_prep_fx.R")
+
 ```
 
-```{r}
-hmscfile <- readRDS(paste0(folderpath, "scenario1-model.RDS"))
+We would like to get the species to species interaction matrices for each of the scenarios being tested. When setting up the metacommunity simulations, an interaction matrix, **A**, was used. We would like to compare the interaction matrix resulting from the model to the one used in the simulation. From the original code, this matrix **A** is defined as:
 
-assoMat <- corRandomEff(hmscfile[[2]])
+```{r matrixA}
+# Interaction matrix
+R <- 15
+A = matrix(0,nr=R,nc=R)
+d = as.matrix(dist(c(1:R),upper=TRUE,diag=T))
+A[d<=1] = -1
+diag(A) = 0
+
+A
+
+```
+
+Using the example from scenario in Figure 2c, fow which we used the following simulation parameters:
+
+```{r}
+folderpath <- "outputs/20190318-fig2c_quad/"
+params <- get_params_table(folderpath, "scenario4")
+params %>% 
+  knitr::kable()
+```
+
+And we obtained the following results:
+
+```{r fig.width=14, fig.height=4}
+arrange_plots(folderpath, "scenario4", colorSpp = "nicheOpt", colorSites = "richness", leftlabel = "Fig2c")
+```
+
+When we look at the structure of the HMSC object created for this scenario, it has 5 iterations. In the resulting figures, each iteration has a different shape. Does this mean that we should get a species interaction matrix for each one of these iterations? 
+```{r}
+modelfile <- readRDS(paste0(folderpath, "scenario4-model.RDS"))
+```
+
+```{r, fig.height=14, fig.width=14}
+par(mfrow=c(3,2))
+
+for(i in 1:5){
+assoMat <- corRandomEff(modelfile[[i]])
 chordDiagram(assoMat[, , 1, 1], symmetric = TRUE)
+}
 
 ```
+
+When we want to look at the matrix, I am confused about the siteMean vs plotMean. Keep in mind that this site mean is using only one of the iterations. 
 
 ```{r}
 siteMean <- apply(assoMat[ , , , 1], 1:2, mean)
 #plotMean <- apply(assoMat[ , , , 2], 1:2, mean)
 ```
 
+I took this example from the vignette, and I am not sure where the 0.4 value comes from. 
 
 ```{r}
 siteDrawCol <- matrix(NA, nrow = nrow(siteMean), ncol = ncol(siteMean))
@@ -58,31 +86,13 @@ siteDraw[which(is.na(siteDraw), arr.ind = TRUE)] <- 1
 siteDraw <- matrix(as.numeric(siteDraw), nrow = nrow(siteMean), ncol = ncol(siteMean))
 ```
 
-```{r matrixA}
-  # # Interaction matrix
-R <- 15
-  A = matrix(0,nr=R,nc=R)
-  d = as.matrix(dist(c(1:R),upper=TRUE,diag=T))
-  A[d<=1] = -1
-  diag(A) = 0
-  
-  plot_A <- rastPlot(A, title = "A - Interaction matrix")
-
-```
-
-```{r}
-modelMat <- rastPlot(siteDraw, title = "Model")
-```
-
-```{r}
-grid.arrange(plot_A, modelMat)
-```
-
+In this case, the figure to the right is what would be our simulation matrix of interactions, **A**.
 ```{r}
 par(mfrow=c(1,2))
 Colour <- colorRampPalette(c("blue", "white", "red"))(200)
 corrplot(siteMean, method = "color", col = Colour, type = "lower",
 diag = FALSE, p.mat = siteDraw, tl.srt = 45)
+
 corrplot(A, method = "color", col = Colour, type = "lower",
 diag = FALSE, p.mat = siteDraw, tl.srt = 45)
 ```
