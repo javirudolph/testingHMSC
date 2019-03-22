@@ -2,6 +2,8 @@
 
 This repository contains some of the code associated to the manuscript "Rethinking Metacommunity Ecology". It has all the scripts associated to the simulations and analysis, but not RDS or data files. All data files should be able to be recreated by the user with the provided scripts. 
 
+The master run for the manuscript results is [here](https://github.com/javirudolph/testingHMSC/blob/master/testingHMSCv2/runScripts/MANUSCRIPT-RUNS.R)
+
 
 Some information on the folders:  
 * [**HMSC-DGravel2016**](https://github.com/javirudolph/testingHMSC/tree/master/hmsc-DGravel2016) - this project contains the original scripts provided in the dropbox folder in January 2019.  
