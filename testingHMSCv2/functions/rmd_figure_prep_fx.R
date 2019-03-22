@@ -57,7 +57,7 @@ organize_vp_overlaps <- function(folderpath, scenario, indSites = FALSE){
       rownames_to_column(var = "sites") %>% 
       gather(., key = "iteration", value = "richness", -sites) %>% 
       mutate(identifier = paste0("site", sites, "_", iteration)) %>% 
-      select(., -c(sites, iteration))
+      dplyr::select(., -c(sites, iteration))
     
     
     
@@ -128,7 +128,7 @@ organize_vp_overlaps <- function(folderpath, scenario, indSites = FALSE){
     rownames_to_column(var = "species") %>% 
     gather(., key = "iteration", value = "prevalence", -species) %>% 
     mutate(identifier = paste0("spp", species, "_", iteration)) %>% 
-    select(., -c(species, iteration))
+    dplyr::select(., -c(species, iteration))
   
   
   
