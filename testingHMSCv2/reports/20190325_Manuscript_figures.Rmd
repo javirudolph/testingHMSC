@@ -199,8 +199,9 @@ species_plot <- function(data, scenario, colorVar = NULL){
          x = "Environment",
          y = "Codistribution",
          z = "Spatial") +
+    scale_color_viridis_d() +
     scale_size_area(limits = c(0,1), breaks = seq(0,1,0.1)) +
-    guides(color = guide_legend("none"), 
+    guides(color = guide_legend(title = paste(colorVar)), 
            size = guide_legend(title = expression(R^2))) +
     theme(panel.grid = element_line(color = "darkgrey"),
           axis.title = element_text(size = 8))
@@ -224,6 +225,7 @@ sites_dens_plot <- function(data, scenario){
          x = "Environment",
          y = "Codistribution",
          z = "Spatial") +
+    scale_fill_viridis_c() +
     guides(fill = guide_legend(title = "Density"),
            alpha = guide_legend("none")) +
     theme(panel.grid = element_line(color = "darkgrey"),
@@ -254,7 +256,8 @@ for(i in 1:4){
 sppFig3a <- get_species_data(folderpath, "FIG3A") %>% 
   left_join(., get_fig3_params(folderpath, "Fig3A"))
 
-species_plot(sppFig3a, scenario = "FIG3A", "intercol")
+species_plot(sppFig3a, scenario = "FIG3A", "intercol") +
+  scale_color_viridis_d()
 ```
 
 ```{r}
