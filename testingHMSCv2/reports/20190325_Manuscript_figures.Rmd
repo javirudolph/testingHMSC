@@ -166,9 +166,9 @@ get_fig3_params <- function(folderpath, scenario){
       enframe(u_c[1,], name = "species",value =  "nicheOpt") %>% 
         left_join(., enframe(s_c[1,], name = "species", value =  "nicheBreadth")) %>% 
         left_join(., enframe(c_0, name = "species", value =  "colProb")) %>% 
-        mutate(dispersal = alpha, 
+        mutate(dispersal = as.factor(alpha), 
                species = as.character(species + nspp), 
-               intercol = d_c, 
+               intercol = as.factor(d_c), 
                interext = d_e)})
     
     
@@ -181,10 +181,10 @@ get_fig3_params <- function(folderpath, scenario){
 
 
 # ** species_plot() it generates the species level plot, coloring by iteration
-species_plot_fig2 <- function(data, scenario){
+species_plot <- function(data, scenario, colorVar = NULL){
   data %>% 
-    ggtern(aes(x = env, z = spa, y = codist, size = r2, color = iteration)) +
-    geom_point(alpha = 0.6) +
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+    geom_point(aes_string(color = colorVar), alpha = 0.6) +
     theme_minimal() +
     scale_T_continuous(limits=c(0,1.0),
                        breaks=seq(0,1,by=0.1),
@@ -195,7 +195,6 @@ species_plot_fig2 <- function(data, scenario){
     scale_R_continuous(limits=c(0.0,1.0),
                        breaks=seq(0,1,by=0.1),
                        labels=seq(0,1,by=0.1)) +
-    scale_color_viridis_d() +
     labs(title = scenario,
          x = "Environment",
          y = "Codistribution",
@@ -211,24 +210,40 @@ species_plot_fig2 <- function(data, scenario){
 
 ```{r}
 folderpath <- "outputs/MANUSCRIPT/"
-sppFig2a <- get_species_data(folderpath, scenario = "FIG2A")
-sppFig2b <- get_species_data(folderpath, scenario = "FIG2B")
-sppFig2c <- get_species_data(folderpath, scenario = "FIG2C")
-sppFig2d <- get_species_data(folderpath, scenario = "FIG2D")
+fig2Scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D")
 
 ```
 
 
 ```{r}
-plot2a <- species_plot_fig2(sppFig2a, scenario = "FIG2A")
-plot2b <- species_plot_fig2(sppFig2b, scenario = "FIG2B")
-plot2c <- species_plot_fig2(sppFig2c, scenario = "FIG2C")
-plot2d <- species_plot_fig2(sppFig2d, scenario = "FIG2D")
-plot2a
-plot2b
-plot2c
-plot2d
-
+for(i in 1:4){
+  scenario <- fig2Scenarios[i]
+  figData <- get_species_data(folderpath, scenario)
+  plot <- species_plot(figData, scenario, colorVar = "iteration")
+  print(plot)
+}
 
 ```
 
+
+```{r}
+sppFig3a <- get_species_data(folderpath, "FIG3A") %>% 
+  left_join(., get_fig3_params(folderpath, "Fig3A"))
+
+species_plot(sppFig3a, scenario = "FIG3A", "intercol")
+```
+
+```{r}
+sppFig3b <- get_species_data(folderpath, "FIG3B") %>% 
+  left_join(., get_fig3_params(folderpath, "Fig3B"))
+
+species_plot(sppFig3b, scenario = "FIG3B", "dispersal")
+```
+
+
+```{r}
+sppFig3c <- get_species_data(folderpath, "FIG3C") %>% 
+  left_join(., get_fig3_params(folderpath, "Fig3C"))
+
+species_plot(sppFig3c, scenario = "FIG3C", "iteration")
+```
