@@ -209,8 +209,8 @@ species_plot <- function(data, scenario, colorVar = NULL, colorLegend = "none"){
   #scale_colour_brewer(palette = "Spectral") +
   #scale_color_viridis_d() +
   scale_size_area(limits = c(0,1), breaks = seq(0,1,0.2)) +
-  guides(color = guide_legend(colorLegend), 
-         size = guide_legend(title = expression(R^2))) +
+  guides(color = guide_legend(colorLegend, order = 2), 
+         size = guide_legend(title = expression(R^2), order = 1)) +
   theme(panel.grid = element_line(color = "darkgrey"),
         axis.title = element_text(size = 8))
 }
