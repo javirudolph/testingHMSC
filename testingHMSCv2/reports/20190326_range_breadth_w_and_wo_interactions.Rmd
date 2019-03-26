@@ -288,8 +288,7 @@ fp_wout <- "outputs/20190325-breadth_w_o_interactions/"
 ```
 
 
-# Figures 2a and 2c
-Testing niche breadth without species interactions:
+Testing niche breadth with and without species interactions:
 ```{r}
 values <- seq(from = 0.5, to = 2, by = 0.1)
 ```
