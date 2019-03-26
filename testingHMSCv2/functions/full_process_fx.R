@@ -121,7 +121,7 @@ metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
 
 # Variation Partitioning --------------------------------------------------
 
-get_VPresults <- function(HMSCmodel, MEMsel, numClusters, indSite = FALSE,
+get_VPresults <- function(HMSCmodel, MEMsel, numClusters,
                    makeRDS = FALSE,
                    whereToSave = NULL,
                    objName = NULL){

@@ -108,13 +108,11 @@ chordDiagram(assoMat[, , 1, 1], symmetric = TRUE)
 When we want to look at the matrix, I am confused about the siteMean vs plotMean. Keep in mind that this site mean is using only one of the iterations.
 
 ``` r
+for(i in 1:5){
+  assoMat <- corRandomEff(modelfile[[i]])
 siteMean <- apply(assoMat[ , , , 1], 1:2, mean)
 #plotMean <- apply(assoMat[ , , , 2], 1:2, mean)
-```
 
-I took this example from the vignette, and I am not sure where the 0.4 value comes from.
-
-``` r
 siteDrawCol <- matrix(NA, nrow = nrow(siteMean), ncol = ncol(siteMean))
 siteDrawCol[which(siteMean > 0.4, arr.ind=TRUE)]<-"red"
 siteDrawCol[which(siteMean < -0.4, arr.ind=TRUE)]<-"blue"
@@ -123,11 +121,7 @@ siteDraw <- siteDrawCol
 siteDraw[which(!is.na(siteDraw), arr.ind = TRUE)] <- 0
 siteDraw[which(is.na(siteDraw), arr.ind = TRUE)] <- 1
 siteDraw <- matrix(as.numeric(siteDraw), nrow = nrow(siteMean), ncol = ncol(siteMean))
-```
 
-In this case, the figure to the right is what would be our simulation matrix of interactions, **A**.
-
-``` r
 par(mfrow=c(1,2))
 Colour <- colorRampPalette(c("blue", "white", "red"))(200)
 corrplot(siteMean, method = "color", col = Colour, type = "lower",
@@ -135,6 +129,7 @@ diag = FALSE, p.mat = siteDraw, tl.srt = 45)
 
 corrplot(A, method = "color", col = Colour, type = "lower",
 diag = FALSE, p.mat = siteDraw, tl.srt = 45)
+}
 ```
 
-![](20190321-Interaction_matrices_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](20190321-Interaction_matrices_files/figure-markdown_github/unnamed-chunk-5-1.png)![](20190321-Interaction_matrices_files/figure-markdown_github/unnamed-chunk-5-2.png)![](20190321-Interaction_matrices_files/figure-markdown_github/unnamed-chunk-5-3.png)![](20190321-Interaction_matrices_files/figure-markdown_github/unnamed-chunk-5-4.png)![](20190321-Interaction_matrices_files/figure-markdown_github/unnamed-chunk-5-5.png)
