@@ -228,11 +228,11 @@ for(i in 1:length(values)){
 
 # Figures 2b and 2d
 Testing niche breadth without species interactions:
-```{r}
+```{r, eval = FALSE}
 path_with_interactions <- "outputs/20190325-breadth_with_interactions/"
 ```
 
-```{r fig.width=14, fig.height=4}
+```{r, eval = FALSE, fig.width=14, fig.height=4}
 for(i in 1:length(values)){
   scenario <- paste0("scenario", i)
   breadth <- values[i]

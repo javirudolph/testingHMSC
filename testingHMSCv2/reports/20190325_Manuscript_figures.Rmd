@@ -6,7 +6,7 @@ output: github_document
 ---
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
-knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 library(tidyverse)
 library(ggtern)
@@ -178,58 +178,105 @@ get_fig3_params <- function(folderpath, scenario){
   
   return(fullPars)
 }
+```
 
+```{r PlotFunctions}
 
 # ** species_plot() it generates the species level plot, coloring by iteration
-species_plot <- function(data, scenario, colorVar = NULL){
+species_plot <- function(data, scenario, colorVar = NULL, colorLegend = "none"){
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
-    geom_point(aes_string(color = colorVar), alpha = 0.6) +
-    theme_minimal() +
-    scale_T_continuous(limits=c(0,1.0),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    scale_L_continuous(limits=c(0.0,1),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    scale_R_continuous(limits=c(0.0,1.0),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    labs(title = scenario,
-         x = "Environment",
-         y = "Codistribution",
-         z = "Spatial") +
-    scale_color_viridis_d() +
-    scale_size_area(limits = c(0,1), breaks = seq(0,1,0.1)) +
-    guides(color = guide_legend(title = paste(colorVar)), 
-           size = guide_legend(title = expression(R^2))) +
-    theme(panel.grid = element_line(color = "darkgrey"),
-          axis.title = element_text(size = 8))
+  geom_point(aes_string(color = colorVar), alpha = 0.8) +
+  scale_T_continuous(limits=c(0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_L_continuous(limits=c(0.0,1),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_R_continuous(limits=c(0.0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  labs(title = paste(scenario, "- Species"),
+       x = "E",
+       xarrow = "Environment",
+       y = "C",
+       yarrow = "Co-Distribution",
+       z = "S", 
+       zarrow = "Spatial Autocorrelation") +
+  theme_light() +
+  theme_showarrows() +
+  #scale_colour_brewer(palette = "Set1") +
+  #scale_colour_brewer(palette = "Spectral") +
+  #scale_color_viridis_d() +
+  scale_size_area(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  guides(color = guide_legend(colorLegend), 
+         size = guide_legend(title = expression(R^2))) +
+  theme(panel.grid = element_line(color = "darkgrey"),
+        axis.title = element_text(size = 8))
+}
+
+# Plot sites by dots
+sites_plot <- function(data, scenario, colorVar = NULL, colorLegend = "none"){
+  data %>% 
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+  geom_point(aes_string(color = colorVar), alpha = 0.6) +
+  scale_T_continuous(limits=c(0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_L_continuous(limits=c(0.0,1),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_R_continuous(limits=c(0.0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  labs(title = paste(scenario, "- Sites"),
+       x = "E",
+       xarrow = "Environment",
+       y = "C",
+       yarrow = "Co-Distribution",
+       z = "S", 
+       zarrow = "Spatial Autocorrelation") +
+  theme_light() +
+  theme_showarrows() +
+  #scale_colour_brewer(palette = "Set1") +
+  #scale_colour_brewer(palette = "Spectral") +
+  #scale_color_viridis_d() +
+  scale_size_area(limits = c(0, 0.003), breaks = seq(0, 0.003, 0.0005)) +
+  guides(color = guide_legend(colorLegend), 
+         size = guide_legend(title = expression(R^2))) +
+  theme(panel.grid = element_line(color = "darkgrey"),
+        axis.title = element_text(size = 8))
 }
 
 sites_dens_plot <- function(data, scenario){
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist)) +
-    stat_density_tern(geom = "polygon", aes(alpha = ..level.., fill = ..level..))+
-    theme_minimal() +
-    scale_T_continuous(limits=c(0,1.0),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    scale_L_continuous(limits=c(0.0,1),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    scale_R_continuous(limits=c(0.0,1.0),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    labs(title = scenario,
-         x = "Environment",
-         y = "Codistribution",
-         z = "Spatial") +
-    scale_fill_viridis_c() +
-    guides(fill = guide_legend(title = "Density"),
-           alpha = guide_legend("none")) +
-    theme(panel.grid = element_line(color = "darkgrey"),
-          axis.title = element_text(size = 8))
+  stat_density_tern(geom = "polygon", aes(alpha = ..level.., fill = ..level..))+
+  theme_minimal() +
+  scale_T_continuous(limits=c(0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_L_continuous(limits=c(0.0,1),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_R_continuous(limits=c(0.0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  labs(title = paste(scenario, "- Sites"),
+       x = "E",
+       xarrow = "Environment",
+       y = "C",
+       yarrow = "Co-Distribution",
+       z = "S",
+       zarrow = "Spatial Autocorrelation") +
+  theme_light() +
+  theme_showarrows() +
+  #scale_fill_gradient(low = "yellow", high = "red") +
+  #scale_fill_gradient(los = "blue", high = "orange") +
+  guides(fill = guide_legend(title = "Density"),
+         alpha = guide_legend("none")) +
+  theme(panel.grid = element_line(color = "darkgrey"),
+        axis.title = element_text(size = 8))
 }
 ```
 
@@ -240,52 +287,100 @@ fig2Scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D")
 
 ```
 
+All of these results come from using a quadratic response to the environment
 
-```{r}
+# Figure 2
+
+## Option1
+All figures are color coded by iteration. The $R^2$ scales are shared by figures at the species level and a separate scale is shared at the sites level. 
+
+```{r fig.width=14, fig.height=6}
+
 for(i in 1:4){
   scenario <- fig2Scenarios[i]
-  figData <- get_species_data(folderpath, scenario)
-  plot <- species_plot(figData, scenario, colorVar = "iteration")
-  print(plot)
+  
+  sppData <- get_species_data(folderpath, scenario)
+  sppPlot <- species_plot(sppData, scenario, colorVar = "iteration") + 
+    scale_colour_brewer(palette = "Spectral")
+  
+  sppPlot
+  sitesData <- get_sites_data(folderpath, scenario)
+  sitesPlot <- sites_plot(sitesData, scenario, colorVar = "iteration") + 
+    scale_colour_brewer(palette = "Spectral")
+  sitesPlot
+  
+  grid.arrange(arrangeGrob(sppPlot),
+               arrangeGrob(sitesPlot), ncol = 2)
 }
 
 ```
 
+## Option 2  
 
-```{r}
-sppFig3a <- get_species_data(folderpath, "FIG3A") %>% 
-  left_join(., get_fig3_params(folderpath, "Fig3A"))
+Same results, but using a density plot for the sites level data. A higher "density" of sites is represented by the lighter color on the scale. 
+```{r fig.width=14, fig.height=6}
+for(i in 1:4){
+  scenario <- fig2Scenarios[i]
+  sppData <- get_species_data(folderpath, scenario)
+  sppPlot <- species_plot(sppData, scenario, colorVar = "iteration") +
+    scale_colour_viridis_d()
+  
+  sitesData <- get_sites_data(folderpath, scenario)
+  sitesPlot <- sites_dens_plot(sitesData, scenario) +
+    scale_fill_viridis_c()
+  
+  grid.arrange(arrangeGrob(sppPlot),
+               arrangeGrob(sitesPlot), ncol = 2)
+}
 
-species_plot(sppFig3a, scenario = "FIG3A", "intercol") +
-  scale_color_viridis_d()
 ```
 
-```{r}
-sppFig3b <- get_species_data(folderpath, "FIG3B") %>% 
-  left_join(., get_fig3_params(folderpath, "Fig3B"))
+#Figure 3  
 
-species_plot(sppFig3b, scenario = "FIG3B", "dispersal")
+
+## Option1
+
+```{r fig.height=6, fig.width=14}
+fig3Scenarios <- c("FIG3A", "FIG3B", "FIG3C")
+colorVar <- c("intercol", "dispersal", "dispersal")
+colLegend <- c("Interaction \n level", "Dispersal \n level", "Dispersal \n level")
+
+for(i in 1:3){
+  scenario <- fig3Scenarios[i]
+  
+  sppData <- get_species_data(folderpath, scenario) %>% 
+    left_join(., get_fig3_params(folderpath, scenario))
+  sppPlot <- species_plot(sppData, scenario, colorVar = colorVar[i], colorLegend = colLegend[i]) + 
+    scale_colour_brewer(palette = "Set1")
+  
+  sitesData <- get_sites_data(folderpath, scenario)
+  sitesPlot <- sites_plot(sitesData, scenario, colorVar = "iteration") +
+    scale_colour_brewer(palette = "Spectral")
+  
+  grid.arrange(arrangeGrob(sppPlot),
+               arrangeGrob(sitesPlot), ncol = 2)
+}
 ```
 
 
-```{r}
-sppFig3c <- get_species_data(folderpath, "FIG3C") %>% 
-  left_join(., get_fig3_params(folderpath, "Fig3C"))
+## Option 2
 
-species_plot(sppFig3c, scenario = "FIG3C", "iteration")
+
+```{r fig.width=14, fig.height=6}
+for(i in 1:3){
+  scenario <- fig3Scenarios[i]
+  
+  sppData <- get_species_data(folderpath, scenario) %>% 
+    left_join(., get_fig3_params(folderpath, scenario))
+  sppPlot <- species_plot(sppData, scenario, colorVar = colorVar[i], colorLegend = colLegend[i]) +
+    scale_colour_viridis_d(option = "magma")
+  
+  sitesData <- get_sites_data(folderpath, scenario)
+  sitesPlot <- sites_dens_plot(sitesData, scenario) +
+    scale_fill_viridis_c(option = "magma")
+  
+  grid.arrange(arrangeGrob(sppPlot),
+               arrangeGrob(sitesPlot), ncol = 2)
+}
+
 ```
-
-# Site figures as density
-
-```{r}
-sitesFig2a <- get_sites_data(folderpath, "FIG2A")
-species_plot(sitesFig2a, "FIG2A", colorVar = "iteration")
-```
-
-## Density plot instead
-```{r}
-sites_dens_plot(sitesFig2a, scenario = "FIG2A")
-
- 
-```
-
