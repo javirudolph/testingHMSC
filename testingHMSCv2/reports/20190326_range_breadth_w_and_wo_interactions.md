@@ -1,0 +1,11 @@
+Testing range of niche breadth with and without species interactions
+================
+Javiera Rudolph
+March 25, 2019
+
+Figures 2a and 2c
+=================
+
+Testing niche breadth without species interactions:
+
+![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-1.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-2.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-3.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-4.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-5.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-6.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-7.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-8.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-9.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-10.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-11.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-12.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-13.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-14.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-15.png)![](20190326_range_breadth_w_and_wo_interactions_files/figure-markdown_github/unnamed-chunk-2-16.png)

@@ -180,64 +180,142 @@ get_fig3_params <- function(folderpath, scenario){
   
   return(fullPars)
 }
+```
 
+```{r PlotFunctions}
 
 # ** species_plot() it generates the species level plot, coloring by iteration
-species_plot <- function(data, scenario, colorVar = NULL){
+species_plot <- function(data, plotMain, colorVar = NULL, colorLegend = "none"){
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
-    geom_point(aes_string(color = colorVar), alpha = 0.6) +
-    theme_minimal() +
-    scale_T_continuous(limits=c(0,1.0),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    scale_L_continuous(limits=c(0.0,1),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    scale_R_continuous(limits=c(0.0,1.0),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    labs(title = scenario,
-         x = "Environment",
-         y = "Codistribution",
-         z = "Spatial") +
-    scale_size_area(limits = c(0,1), breaks = seq(0,1,0.1)) +
-    guides(color = guide_legend("none"), 
-           size = guide_legend(title = expression(R^2))) +
-    theme(panel.grid = element_line(color = "darkgrey"),
-          axis.title = element_text(size = 8))
+  geom_point(aes_string(color = colorVar), alpha = 0.8) +
+  scale_T_continuous(limits=c(0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_L_continuous(limits=c(0.0,1),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_R_continuous(limits=c(0.0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  labs(title = plotMain,
+       x = "E",
+       xarrow = "Environment",
+       y = "C",
+       yarrow = "Co-Distribution",
+       z = "S", 
+       zarrow = "Spatial Autocorrelation") +
+  theme_light() +
+  theme_showarrows() +
+  #scale_colour_brewer(palette = "Set1") +
+  #scale_colour_brewer(palette = "Spectral") +
+  #scale_color_viridis_d() +
+  scale_size_area(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  guides(color = guide_legend(colorLegend, order = 2), 
+         size = guide_legend(title = expression(R^2), order = 1)) +
+  theme(panel.grid = element_line(color = "darkgrey"),
+        axis.title = element_text(size = 8))
+}
+
+# Plot sites by dots
+sites_plot <- function(data, scenario, colorVar = NULL, colorLegend = "none"){
+  data %>% 
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+  geom_point(aes_string(color = colorVar), alpha = 0.6) +
+  scale_T_continuous(limits=c(0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_L_continuous(limits=c(0.0,1),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_R_continuous(limits=c(0.0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  labs(title = paste(scenario, "- Sites"),
+       x = "E",
+       xarrow = "Environment",
+       y = "C",
+       yarrow = "Co-Distribution",
+       z = "S", 
+       zarrow = "Spatial Autocorrelation") +
+  theme_light() +
+  theme_showarrows() +
+  #scale_colour_brewer(palette = "Set1") +
+  #scale_colour_brewer(palette = "Spectral") +
+  #scale_color_viridis_d() +
+  scale_size_area(limits = c(0, 0.003), breaks = seq(0, 0.003, 0.0005)) +
+  guides(color = guide_legend(colorLegend), 
+         size = guide_legend(title = expression(R^2))) +
+  theme(panel.grid = element_line(color = "darkgrey"),
+        axis.title = element_text(size = 8))
+}
+
+sites_dens_plot <- function(data, scenario){
+  data %>% 
+    ggtern(aes(x = env, z = spa, y = codist)) +
+  stat_density_tern(geom = "polygon", aes(alpha = ..level.., fill = ..level..))+
+  theme_minimal() +
+  scale_T_continuous(limits=c(0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_L_continuous(limits=c(0.0,1),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_R_continuous(limits=c(0.0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  labs(title = paste(scenario, "- Sites"),
+       x = "E",
+       xarrow = "Environment",
+       y = "C",
+       yarrow = "Co-Distribution",
+       z = "S",
+       zarrow = "Spatial Autocorrelation") +
+  theme_light() +
+  theme_showarrows() +
+  #scale_fill_gradient(low = "yellow", high = "red") +
+  #scale_fill_gradient(los = "blue", high = "orange") +
+  guides(fill = guide_legend(title = "Density"),
+         alpha = guide_legend("none")) +
+  theme(panel.grid = element_line(color = "darkgrey"),
+        axis.title = element_text(size = 8))
 }
 ```
+
+```{r folderpaths}
+fp_with <- "outputs/20190318-fig2c_quad/"
+fp_wout <- "outputs/20190325-breadth_w_o_interactions/"
+```
+
 
 # Figures 2a and 2c
 Testing niche breadth without species interactions:
 ```{r}
-path_without_interactions <- "outputs/20190325-breadth_w_o_interactions/"
-values <- seq(from = 0.2, to = 2, by = 0.1)
+values <- seq(from = 0.5, to = 2, by = 0.1)
 ```
 
 ```{r fig.width=14, fig.height=4}
 for(i in 1:length(values)){
-  scenario <- paste0("scenario", i)
+  scn_with <- paste0("scenario", i)
+  scn_wout <- paste0("scenario", i + 3)
+  
   breadth <- values[i]
-  figData <- get_species_data(path_with_interactions, scenario)
-  plot <- species_plot(figData, scenario = paste0("Breadth = ", breadth), colorVar = "iteration")
+  
+  dat_with <- get_species_data(fp_with, scn_with)
+  dat_wout <- get_species_data(fp_wout, scn_wout)
+  
+  p_with <- species_plot(dat_with, plotMain = "With interactions", colorVar = "iteration") +
+    scale_colour_brewer(palette = "Spectral")
+  
+  p_wout <- species_plot(dat_wout, plotMain = "No interactions", colorVar = "iteration") +
+    scale_colour_brewer(palette = "Spectral")
+  
+  grid.arrange(arrangeGrob(p_wout),
+               arrangeGrob(p_with), ncol = 2,
+               left = paste("Breadth = ", breadth))
+  
+  
 }
 ```
 
-
-# Figures 2b and 2d
-Testing niche breadth without species interactions:
-```{r, eval = FALSE}
-path_with_interactions <- "outputs/20190325-breadth_with_interactions/"
-```
-
-```{r, eval = FALSE, fig.width=14, fig.height=4}
-for(i in 1:length(values)){
-  scenario <- paste0("scenario", i)
-  breadth <- values[i]
-  figData <- get_species_data(path_with_interactions, scenario)
-  plot <- species_plot(figData, scenario = paste0("Breadth = ", breadth), colorVar = "iteration")
-}
-```
 
