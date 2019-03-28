@@ -56,7 +56,7 @@ When we look at the structure of the HMSC object created for this scenario, it h
 modelfile <- readRDS(paste0(folderpath, "scenario4-model.RDS"))
 ```
 
-```{r, fig.height=14, fig.width=14}
+```{r, fig.height=14, fig.width=14, eval=FALSE}
 par(mfrow=c(3,2))
 
 for(i in 1:5){
