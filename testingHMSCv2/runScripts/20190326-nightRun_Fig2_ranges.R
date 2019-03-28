@@ -38,7 +38,7 @@ ncores <- 10 # in JMP lab desktop
 
 # Run cycles --------------------------------------------------------------
 
-for(j in 1:length(nch_breadth)){
+for(j in 5:length(nch_breadth)){
   namesrds <- paste0("scenario", j)
   
   pars <- prep_pars(N = 1000, D = 1, R = 15,
