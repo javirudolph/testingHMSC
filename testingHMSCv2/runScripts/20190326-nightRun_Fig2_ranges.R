@@ -24,7 +24,7 @@ MEMsel <- readRDS("outputs/fixedLandscapes/orig-no-seed-MEMsel.RDS")
 # Create folder to save outputs -------------------------------------------
 
 savedate <- format(Sys.Date(), "%Y%m%d")
-folderpath <- paste0("outputs/", savedate, "-Fig2withInter")
+folderpath <- paste0("outputs/", savedate, "-Fig2withInter/")
 
 if(dir.exists(folderpath) == FALSE){
   dir.create(folderpath)
@@ -64,7 +64,7 @@ for(j in 1:length(nch_breadth)){
 # Create folder to save outputs -------------------------------------------
 
 savedate <- format(Sys.Date(), "%Y%m%d")
-folderpath <- paste0("outputs/", savedate, "-Fig2woutInter")
+folderpath <- paste0("outputs/", savedate, "-Fig2woutInter/")
 
 if(dir.exists(folderpath) == FALSE){
   dir.create(folderpath)
