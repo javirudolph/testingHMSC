@@ -12,6 +12,8 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE)
 
 library(tidyverse)
 library(ggtern)
+library(HMSC)
+library(corrplot)
 ```
 
 
@@ -314,6 +316,67 @@ for(i in 1:length(values)){
                left = paste("Breadth = ", breadth))
   
   
+}
+```
+
+
+## Species interaction matrices  
+This is the matrix **A* used for the simulations.
+```{r matrixA}
+# Interaction matrix
+R <- 15
+A = matrix(0,nr=R,nc=R)
+d = as.matrix(dist(c(1:R),upper=TRUE,diag=T))
+A[d<=1] = -1
+diag(A) = 0
+
+Colour <- colorRampPalette(c("blue", "white", "red"))(200)
+
+corrplot(A, method = "color", col = Colour, type = "lower",
+diag = FALSE, tl.srt = 45)
+``` 
+
+
+
+```{r corrFunc}
+
+interactionPlot <- function(folderpath, scenario, iteration = NULL){
+  
+  if(is.null(iteration) == TRUE){
+    iteration <- 1
+  }
+  
+  
+  modelfile <- readRDS(paste0(folderpath, scenario, "-model.RDS"))
+  assoMat <- corRandomEff(modelfile[[1]])
+  siteMean <- apply(assoMat[ , , , 1], 1:2, mean)
+  #plotMean <- apply(assoMat[ , , , 2], 1:2, mean)
+
+  siteDrawCol <- matrix(NA, nrow = nrow(siteMean), ncol = ncol(siteMean))
+  siteDrawCol[which(siteMean > 0.4, arr.ind=TRUE)]<-"red"
+  siteDrawCol[which(siteMean < -0.4, arr.ind=TRUE)]<-"blue"
+  # Build matrix of "significance" for corrplot
+  siteDraw <- siteDrawCol
+  siteDraw[which(!is.na(siteDraw), arr.ind = TRUE)] <- 0
+  siteDraw[which(is.na(siteDraw), arr.ind = TRUE)] <- 1
+  siteDraw <- matrix(as.numeric(siteDraw), nrow = nrow(siteMean), ncol = ncol(siteMean))
+  
+  Colour <- colorRampPalette(c("blue", "white", "red"))(200)
+  corrplot(siteMean, method = "color", col = Colour, type = "lower",
+    diag = FALSE, p.mat = siteDraw, tl.srt = 45)
+  
+}
+
+
+```
+
+
+```{r}
+for(i in 1:16){
+  scn <- paste0("scenario", i)
+  par(mfrow = c(1,2))
+  interactionPlot(folderpath = fp_with, scenario = scn)
+  interactionPlot(folderpath = fp_wout, scenario = scn)
 }
 ```
 
