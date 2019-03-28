@@ -283,8 +283,8 @@ sites_dens_plot <- function(data, scenario){
 ```
 
 ```{r folderpaths}
-fp_with <- "outputs/20190318-fig2c_quad/"
-fp_wout <- "outputs/20190325-breadth_w_o_interactions/"
+fp_with <- "outputs/20190326-Fig2withInter/"
+fp_wout <- "outputs/20190327-Fig2woutInter/"
 ```
 
 
@@ -296,7 +296,7 @@ values <- seq(from = 0.5, to = 2, by = 0.1)
 ```{r fig.width=14, fig.height=4}
 for(i in 1:length(values)){
   scn_with <- paste0("scenario", i)
-  scn_wout <- paste0("scenario", i + 3)
+  scn_wout <- paste0("scenario", i)
   
   breadth <- values[i]
   
