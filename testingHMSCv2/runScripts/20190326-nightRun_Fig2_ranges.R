@@ -34,7 +34,7 @@ if(dir.exists(folderpath) == FALSE){
 # Niche breadth -----------------------------------------------------------
 
 nch_breadth <- seq(from = 0.5, to = 2, by = 0.1)
-
+ncores <- 10 # in JMP lab desktop
 
 # Run cycles --------------------------------------------------------------
 
@@ -49,13 +49,13 @@ for(j in 1:length(nch_breadth)){
                            nsteps = 200, occupancy = 0.8, niter = 5,
                            makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
-  model <- metacom_as_HMSCdata(sims, numClusters = 4, E = E, MEMsel = MEMsel,
+  model <- metacom_as_HMSCdata(sims, numClusters = ncores, E = E, MEMsel = MEMsel,
                                makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
-  vpSpp <- get_VPresults(model, MEMsel = MEMsel, numClusters = 4,
+  vpSpp <- get_VPresults(model, MEMsel = MEMsel, numClusters = ncores,
                          makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
-  vpSites <- get_VPresults_SITE(model, MEMsel = MEMsel, numClusters = 4,
+  vpSites <- get_VPresults_SITE(model, MEMsel = MEMsel, numClusters = ncores,
                                 makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
 }
@@ -89,13 +89,13 @@ for(j in 1:length(nch_breadth)){
                            nsteps = 200, occupancy = 0.8, niter = 5,
                            makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
-  model <- metacom_as_HMSCdata(sims, numClusters = 4, E = E, MEMsel = MEMsel,
+  model <- metacom_as_HMSCdata(sims, numClusters = ncores, E = E, MEMsel = MEMsel,
                                makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
-  vpSpp <- get_VPresults(model, MEMsel = MEMsel, numClusters = 4,
+  vpSpp <- get_VPresults(model, MEMsel = MEMsel, numClusters = ncores,
                          makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
-  vpSites <- get_VPresults_SITE(model, MEMsel = MEMsel, numClusters = 4,
+  vpSites <- get_VPresults_SITE(model, MEMsel = MEMsel, numClusters = ncores,
                                 makeRDS = TRUE, whereToSave = folderpath, objName = namesrds)
   
 }
