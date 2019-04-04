@@ -53,37 +53,51 @@ formData <- as.HMSCdata(Y = commSim[[1]], # This is the occupancy data
 # With formatted data, now fit the model
 model <- hmsc(formData, family = "probit",
               niter = 100000, nburn = 1000, thin = 10)
+model <- readRDS("outputs/testOutputs/conv_modl.RDS")
 #saveRDS(model, file = "outputs/testOutputs/conv_modl.RDS")
 
 # Chage the structure of the fitted model to be able to use functions from 'coda'
 chain <- as.mcmc(model, parameters = "meansParamX")
 # Get the summary and trace/density plots for the estimated parameters
 summary(chain)
+pdf("outputs/testOutputs/plotsChain1.pdf")
 plot(chain)
+dev.off()
 
 raftery.diag(chain) # I find it strange that the burn in suggested is 1-3... 
 # Also the lower bound min is suggested to be 3746 indep samples
 
 # Look at the autocorrelation between these variables
+pdf("outputs/testOutputs/autocorrPlots.pdf")
 autocorr.plot(chain) # It shows no autocorrelation... which I find weird... 
+dev.off()
+
+
+pdf("outputs/testOutputs/quantileschain.pdf")
+cumuplot(chain) # Look at the quantiles of the chain over time
+dev.off()
 
 # Repeat the process for a second chain so we can compare them
 mod2 <- hmsc(formData, family = "probit",
               niter = 100000, nburn = 1000, thin = 10)
+#mod2 <- readRDS("outputs/testOutputs/conv_mod2.RDS")
 #saveRDS(mod2, file = "outputs/testOutputs/conv_mod2.RDS")
 chain2 <- as.mcmc(mod2, parameters = "meansParamX")
 
 combinedChains <- mcmc.list(chain, chain2)
+
+pdf("outputs/testOutputs/combinedChains.pdf")
 plot(combinedChains)
+dev.off()
 
 # Gelman diagnostic would tell us how different these two chains are... We want them to be similar since they are from the same data
 # Values close to 1 mean that between and within chain variance are equal. Larger values indicate notabe differences between the chains
 
 gelman.diag(combinedChains)
 
-cumuplot(chain) # Look at the quantiles of the chain over time
+pdf("outputs/testOutputs/gelmanplot.pdf")
 gelman.plot(combinedChains) # This would show the development of the -scale-reduction over chain steps.
-
+dev.off()
 
 
 
