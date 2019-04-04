@@ -83,19 +83,6 @@ prep_pars <- function(N = NULL,
 }
 
 
-# Organize for plotting ---------------------------------------------------
-
-organize_params_plot <- function(prepParsOutput){
-  with(prepParsOutput, {enframe(u_c[1,], name = "species", value = "nicheOptima") %>% 
-      left_join(., enframe(s_c[1,], name = "species", value = "nicheBreadth")) %>% 
-      left_join(., enframe(c_0, name = "species", value = "colonizationProb")) %>% 
-      mutate(., dispersal = alpha,
-             species = as.character(species),
-             speciesChr = as.character(paste0("spp_", species)),
-             interCol = d_c ,
-             interExt = d_e)})
-}
-
 
 
 

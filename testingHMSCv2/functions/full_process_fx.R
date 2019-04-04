@@ -103,7 +103,7 @@ metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
                             scaleX = TRUE, interceptX = TRUE)
 
     hmsc(formData, family = "probit",
-         niter = 100000, nburn = 15000, thin = 50)
+         niter = 100000, nburn = 15000, thin = 10)
   }
 
   ### Stop clusters
