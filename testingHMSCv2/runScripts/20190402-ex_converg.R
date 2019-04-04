@@ -1,0 +1,1 @@
+# I want to create a sample script for one community scenario in which we go all through the process of generating the community, fitting the model, checking for convergence and 
