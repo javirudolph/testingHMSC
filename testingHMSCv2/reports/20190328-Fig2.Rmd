@@ -1,0 +1,326 @@
+---
+title: "Testing range of niche breadth with and without species interactions"
+author: "Javiera Rudolph"
+date: "March 28, 2019"
+output: github_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+
+library(tidyverse)
+library(ggtern)
+```
+
+
+```{r Functions}
+# FUNCTIONS ---------------------------------------------------------------
+
+
+# ** get_sites_data() to organize site level data and get ready for plot
+
+    # This function takes the simulated metacommunity to get the species richness for each site
+    # It then binds that information to the Variation Partinioning output from the HMSC::variPart()
+    # This function also takes the output of HMSC::variPart() and organizes each fraction:
+    #   into the env, spa and codist components
+    # The output of the get_sites_data() function is a dataframe that is ready to plot
+
+get_sites_data <- function(folderpath, scenario){
+  richness <- readRDS(paste0(folderpath, scenario, "-metacomSim.RDS")) %>% 
+    set_names(imap(., ~ paste0("iter", .y))) %>% 
+    map(., rowSums) %>%
+    bind_rows() %>% 
+    rownames_to_column(var = "sites") %>% 
+    gather(., key = "iteration", value = "richness", -sites) %>% 
+    mutate(identifier = paste0("site", sites, "_", iteration)) %>% 
+    dplyr::select(., -c(sites, iteration))
+  
+
+  vp <- readRDS(paste0(folderpath, scenario, "-vpsites.RDS"))
+  
+  overlap1 <- map(vp, "overlap1")
+  overlap2 <- map(vp, "overlap2")
+  overlap3 <- map(vp, "overlap3")
+  
+  vpALL <- vector("list", length = 5)
+  for(i in 1:5){
+    workingVP1 <- overlap1[[i]]
+    workingVP2 <- overlap2[[i]]
+    workingVP3 <- overlap3[[i]]
+    
+    c <- rowSums(workingVP1[,,1])/15
+    b <- rowSums(workingVP1[,,2])/15
+    a <- rowSums(workingVP1[,,3])/15
+    
+    e <- rowSums(workingVP2[,,1])/15
+    f <- rowSums(workingVP2[,,2])/15
+    d <- rowSums(workingVP2[,,3])/15
+    
+    g <- rowSums(workingVP3)/15
+    
+    env <- a + f + 1/2 * d + 1/2 * g
+    env <- ifelse(env < 0, 0, env)
+    spa <- b + e + 1/2 * d + 1/2 * g
+    spa <- ifelse(spa < 0, 0, spa)
+    random <- c
+    codist <- ifelse(random < 0, 0, random)
+    r2 <- env + spa + codist
+    iteration <- factor(paste0("iter", i), levels = paste0("iter", 1:5))
+    
+    cleanData <- cbind.data.frame(env, spa, codist, r2, iteration)
+    cleanData$site <- paste0(row.names(cleanData))
+    
+    vpALL[[i]] <- cleanData
+  }
+  
+  vpALL %>% 
+    bind_rows() %>% 
+    mutate(identifier = paste(site, iteration, sep = "_"),
+           scenario = scenario) %>% 
+    left_join(., richness)
+}
+
+
+# ** get_species_data() this function organizes species level data and gets it ready to plot.
+  # It takes the RDS file that is the output of the HMSC::variPart() function and reorganizes it into the 
+  # env, codist and spa components.
+  # It also calculates the prevalence information for each species. 
+
+get_species_data <- function(folderpath, scenario){
+  
+  prevalence <- readRDS(paste0(folderpath, scenario, "-metacomSim.RDS")) %>% 
+    set_names(imap(., ~ paste0("iter_", .y))) %>% 
+    map(., colSums) %>%
+    bind_cols() %>% 
+    rownames_to_column(var = "species") %>% 
+    gather(., key = "iteration", value = "prevalence", -species) %>% 
+    mutate(identifier = paste0("spp", species, "_", iteration),
+           prevalence = prevalence/1000) %>% 
+    dplyr::select(., -c(species, iteration))
+  
+  
+  
+  
+  readRDS(paste0(folderpath, scenario, "-vpspp.RDS")) %>% 
+    set_names(imap(., ~ paste0("iter_", .y))) -> VPdata
+  
+  fullData <- list()
+  for(i in 1:length(VPdata)){
+    fullData[[i]] <- VPdata[[i]] %>% 
+      map(as_tibble) %>%
+      bind_cols() %>% 
+      rownames_to_column() %>% 
+      set_names(c("species", "c", "b", "a", "e", "f", "d", "g")) %>% 
+      transmute(species = species,
+                env = a + f + 0.5 * d + 0.5 * g,
+                env = ifelse(env < 0, 0, env),
+                spa = b + e + 0.5 * d + 0.5 * g,
+                spa = ifelse(spa < 0, 0, spa),
+                codist = c,
+                codist = ifelse(codist < 0, 0, codist),
+                r2 = env + spa + codist,
+                iteration = names(VPdata[i]))
+    
+  }
+  
+  fullData %>% 
+    bind_rows() %>% 
+    mutate(identifier = paste0("spp", species, "_", iteration), 
+           scenario = scenario) %>% 
+    left_join(., prevalence)
+  
+}
+
+
+# ** get_fig2_params() This function is for Figure 2 only. 
+# It takes the RDS params file and organizes it from a list to a dataframe, so that it can be joined to the
+# Variation Partition results at the species level. That way we can know what niche values each species has.
+# The output of this function can be joined to the VP results at the species level and then plot
+
+get_fig2_params <- function(folderpath, scenario){
+  pars <- readRDS(paste0(folderpath, scenario, "-params.RDS"))
+  
+  with(pars, {enframe(u_c[1,], name = "species", value = "nicheOptima") %>% 
+      left_join(., enframe(s_c[1,], name = "species", value = "nicheBreadth")) %>% 
+      left_join(., enframe(c_0, name = "species", value = "colonizationProb")) %>% 
+      mutate(., dispersal = alpha,
+             species = as.character(species),
+             speciesChr = as.character(paste0("spp_", species)),
+             interCol = d_c ,
+             interExt = d_e)})
+}
+
+# ** get_fig3_params() this is for Figure 3 only. 
+# Figure 3 has three sets of parameters because we divided simulations into groups.
+# Half of the species in each simulation has interactions, and the other half doesn't.
+# Or, a third of the species is assigned a different dispersal level, etc...
+
+get_fig3_params <- function(folderpath, scenario){
+  parsList <- readRDS(paste0(folderpath, scenario, "-params.RDS"))
+  fullPars <-  data.frame()
+  for(i in 1:length(parsList)){
+    
+    nspp <- nrow(fullPars)
+    
+    i_pars <- with(parsList[[i]], {
+      enframe(u_c[1,], name = "species",value =  "nicheOpt") %>% 
+        left_join(., enframe(s_c[1,], name = "species", value =  "nicheBreadth")) %>% 
+        left_join(., enframe(c_0, name = "species", value =  "colProb")) %>% 
+        mutate(dispersal = as.factor(alpha), 
+               species = as.character(species + nspp), 
+               intercol = as.factor(d_c), 
+               interext = d_e)})
+    
+    
+    fullPars <- rbind(fullPars, i_pars)
+    
+  }
+  
+  return(fullPars)
+}
+```
+
+```{r PlotFunctions}
+
+# ** species_plot() it generates the species level plot, coloring by iteration
+species_plot <- function(data, plotMain, colorVar = NULL, colorLegend = "none"){
+  data %>% 
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+  geom_point(aes_string(color = colorVar), alpha = 0.8) +
+  scale_T_continuous(limits=c(0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_L_continuous(limits=c(0.0,1),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_R_continuous(limits=c(0.0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  labs(title = plotMain,
+       x = "E",
+       xarrow = "Environment",
+       y = "C",
+       yarrow = "Co-Distribution",
+       z = "S", 
+       zarrow = "Spatial Autocorrelation") +
+  theme_light() +
+  theme_showarrows() +
+  #scale_colour_brewer(palette = "Set1") +
+  #scale_colour_brewer(palette = "Spectral") +
+  #scale_color_viridis_d() +
+  scale_size_area(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  guides(color = guide_legend(colorLegend, order = 2), 
+         size = guide_legend(title = expression(R^2), order = 1)) +
+  theme(panel.grid = element_line(color = "darkgrey"),
+        axis.title = element_text(size = 8))
+}
+
+# Plot sites by dots
+sites_plot <- function(data, scenario, colorVar = NULL, colorLegend = "none"){
+  data %>% 
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+  geom_point(aes_string(color = colorVar), alpha = 0.6) +
+  scale_T_continuous(limits=c(0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_L_continuous(limits=c(0.0,1),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_R_continuous(limits=c(0.0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  labs(title = paste(scenario, "- Sites"),
+       x = "E",
+       xarrow = "Environment",
+       y = "C",
+       yarrow = "Co-Distribution",
+       z = "S", 
+       zarrow = "Spatial Autocorrelation") +
+  theme_light() +
+  theme_showarrows() +
+  #scale_colour_brewer(palette = "Set1") +
+  #scale_colour_brewer(palette = "Spectral") +
+  #scale_color_viridis_d() +
+  scale_size_area(limits = c(0, 0.003), breaks = seq(0, 0.003, 0.0005)) +
+  guides(color = guide_legend(colorLegend), 
+         size = guide_legend(title = expression(R^2))) +
+  theme(panel.grid = element_line(color = "darkgrey"),
+        axis.title = element_text(size = 8))
+}
+
+sites_dens_plot <- function(data, scenario){
+  data %>% 
+    ggtern(aes(x = env, z = spa, y = codist)) +
+  stat_density_tern(geom = "polygon", aes(alpha = ..level.., fill = ..level..))+
+  theme_minimal() +
+  scale_T_continuous(limits=c(0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_L_continuous(limits=c(0.0,1),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_R_continuous(limits=c(0.0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  labs(title = paste(scenario, "- Sites"),
+       x = "E",
+       xarrow = "Environment",
+       y = "C",
+       yarrow = "Co-Distribution",
+       z = "S",
+       zarrow = "Spatial Autocorrelation") +
+  theme_light() +
+  theme_showarrows() +
+  #scale_fill_gradient(low = "yellow", high = "red") +
+  #scale_fill_gradient(los = "blue", high = "orange") +
+  guides(fill = guide_legend(title = "Density"),
+         alpha = guide_legend("none")) +
+  theme(panel.grid = element_line(color = "darkgrey"),
+        axis.title = element_text(size = 8))
+}
+```
+
+```{r folderpaths}
+#fp_with <- "outputs/20190318-fig2c_quad/"
+#fp_wout <- "outputs/20190325-breadth_w_o_interactions/"
+
+# Render with a different file:
+fp_with <- "outputs/20190328-Fig2withInter/"
+fp_wout <- "outputs/20190328-Fig2woutInter/"
+
+```
+
+
+Testing niche breadth with and without species interactions:
+```{r}
+values <- seq(from = 0.5, to = 2, by = 0.1)
+```
+
+```{r fig.width=14, fig.height=4}
+for(i in 1:length(values)){
+  scn_with <- paste0("scenario", i)
+  scn_wout <- paste0("scenario", i)
+  
+  breadth <- values[i]
+
+  
+  dat_with <- get_species_data(fp_with, scn_with)
+  dat_wout <- get_species_data(fp_wout, scn_wout)
+  
+  p_with <- species_plot(dat_with, plotMain = "With interactions", colorVar = "iteration") +
+    scale_colour_brewer(palette = "Spectral")
+  
+  p_wout <- species_plot(dat_wout, plotMain = "No interactions", colorVar = "iteration") +
+    scale_colour_brewer(palette = "Spectral")
+  
+  grid.arrange(arrangeGrob(p_wout),
+               arrangeGrob(p_with), ncol = 2,
+               left = paste("Breadth = ", breadth))
+  
+  
+}
+```
+
+

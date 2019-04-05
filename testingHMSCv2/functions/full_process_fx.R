@@ -83,48 +83,37 @@ metacom_sim4HMSC_multParams <- function(XY, E, pars, nsteps,
 # Fit HMSC ----------------------------------------------------------------
 
 metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
-                                HMSCprms = NULL,
                                 makeRDS = FALSE,
                                 whereToSave = NULL,
                                 objName = NULL){
-
+  
   N <- nrow(E)
-
+  
   run <- metacomData
   nrun <- length(run)
-
+  
   clusters <- makeCluster(numClusters)
   registerDoParallel(clusters)
   
-  if(is.null(HMSCprms)){
-    niterHMSC <- 10000
-    nburnHMSC <- 5000
-    thinHMSC <- 5
-  }
-  
-  niterHMSC <- HMSCprms$niter
-  nburnHMSC <- HMSCprms$nburn
-  thinHMSC <- HMSCprms$thin
-
   ### Estimate models
   model <- foreach(j = 1:nrun) %dopar% {
     library(HMSC)
     formData <- as.HMSCdata(Y = run[[j]], X = cbind(scale(E),scale(E)^2, MEMsel),
                             Random = as.factor(1:N),
                             scaleX = TRUE, interceptX = TRUE)
-
+    
     hmsc(formData, family = "probit",
-         niter = niterHMSC, nburn = nburnHMSC, thin = thinHMSC)
+         niter = 100000, nburn = 5000, thin = 10)
   }
-
+  
   ### Stop clusters
   stopCluster(clusters)
-
+  
   if(makeRDS == TRUE){
     nameFile <- paste0(whereToSave, objName, "-model.RDS")
     saveRDS(model, file = nameFile)
   }
-
+  
   return(model)
 }
 
