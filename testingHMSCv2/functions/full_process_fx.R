@@ -83,6 +83,7 @@ metacom_sim4HMSC_multParams <- function(XY, E, pars, nsteps,
 # Fit HMSC ----------------------------------------------------------------
 
 metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
+                                HMSCprms = NULL,
                                 makeRDS = FALSE,
                                 whereToSave = NULL,
                                 objName = NULL){
@@ -94,6 +95,16 @@ metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
 
   clusters <- makeCluster(numClusters)
   registerDoParallel(clusters)
+  
+  if(is.null(HMSCprms)){
+    niterHMSC <- 10000
+    nburnHMSC <- 5000
+    thinHMSC <- 5
+  }
+  
+  niterHMSC <- HMSCprms$niter
+  nburnHMSC <- HMSCprms$nburn
+  thinHMSC <- HMSCprms$thin
 
   ### Estimate models
   model <- foreach(j = 1:nrun) %dopar% {
@@ -103,7 +114,7 @@ metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
                             scaleX = TRUE, interceptX = TRUE)
 
     hmsc(formData, family = "probit",
-         niter = 100000, nburn = 15000, thin = 10)
+         niter = niterHMSC, nburn = nburnHMSC, thin = thinHMSC)
   }
 
   ### Stop clusters
