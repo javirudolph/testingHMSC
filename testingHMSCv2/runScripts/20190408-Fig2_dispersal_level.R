@@ -23,6 +23,11 @@ MEMsel <- readRDS("outputs/fixedLandscapes/orig-no-seed-MEMsel.RDS")
 
 
 # Niche breadth -----------------------------------------------------------
+savedate <- format(Sys.Date(), "%Y%m%d")
+mainfolderpath <- paste0("outputs/", savedate, "-Fig2_disp/")
+if(dir.exists(mainfolderpath) == FALSE){
+  dir.create(mainfolderpath)
+}
 
 nch_breadth <- seq(from = 0.6, to = 2, by = 0.2) # changed to 0.2 so we have less scenarios
 ncores <- 10 # in JMP lab desktop
@@ -34,8 +39,7 @@ namingWith <- paste0("disp", 1:5, "with")
 # Run cycles without interactions --------------------------------------------------------------
 
 for(i in 1:5){
-  savedate <- format(Sys.Date(), "%Y%m%d")
-  folderpath <- paste0("outputs/", savedate, "-Fig2_disp/", namingWout[i], "/")
+  folderpath <- paste0(mainfolderpath, namingWout[i], "/")
   
   if(dir.exists(folderpath) == FALSE){
     dir.create(folderpath)
@@ -70,8 +74,7 @@ for(i in 1:5){
 # Run cycles with interactions --------------------------------------------------------------
 
 for(i in 1:5){
-  savedate <- format(Sys.Date(), "%Y%m%d")
-  folderpath <- paste0("outputs/", savedate, "-Fig2_disp/", namingWith[i], "/")
+  folderpath <- paste0(mainfolderpath, namingWith[i])
   
   if(dir.exists(folderpath) == FALSE){
     dir.create(folderpath)
