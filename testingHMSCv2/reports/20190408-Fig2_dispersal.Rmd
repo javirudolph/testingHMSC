@@ -280,32 +280,18 @@ sites_dens_plot <- function(data, scenario){
 }
 ```
 
-```{r folderpaths}
-#fp_with <- "outputs/20190318-fig2c_quad/"
-#fp_wout <- "outputs/20190325-breadth_w_o_interactions/"
 
-# Render with a different file:
-fp_with <- "outputs/20190328-Fig2withInter/"
-fp_wout <- "outputs/20190328-Fig2woutInter/"
+```{r plotFunc}
 
-```
-
-
-Testing niche breadth with and without species interactions:
-```{r}
-values <- seq(from = 0.5, to = 2, by = 0.1)
-```
-
-```{r fig.width=14, fig.height=4}
-for(i in 1:length(values)){
-  scn_with <- paste0("scenario", i)
-  scn_wout <- paste0("scenario", i)
+manyplots <- function(values, fp_with, fp_wout){
+  for(i in 1:length(values)){
+  scenario <- paste0("scenario", i)
   
   breadth <- values[i]
 
   
-  dat_with <- get_species_data(fp_with, scn_with)
-  dat_wout <- get_species_data(fp_wout, scn_wout)
+  dat_with <- get_species_data(fp_with, scenario)
+  dat_wout <- get_species_data(fp_wout, scenario)
   
   p_with <- species_plot(dat_with, plotMain = "With interactions", colorVar = "iteration") +
     scale_colour_brewer(palette = "Spectral")
@@ -319,6 +305,78 @@ for(i in 1:length(values)){
   
   
 }
+}
+
 ```
 
 
+```{r folderpaths}
+#fp_with <- "outputs/20190318-fig2c_quad/"
+#fp_wout <- "outputs/20190325-breadth_w_o_interactions/"
+
+# Render with a different file:
+fp_with <- "outputs/20190326-Fig2withInter/"
+fp_wout <- "outputs/20190327-Fig2woutInter/"
+
+```
+
+
+Testing niche breadth with and without species interactions:
+```{r}
+values <- seq(from = 0.6, to = 2, by = 0.2)
+
+#mainfolderpath <- paste0("outputs/", savedate, "-Fig2_disp/")
+
+namingWout <- paste0("disp", 1:5, "wout")
+namingWith <- paste0("disp", 1:5, "with")
+
+alpha <- c(0.001, 0.005, 0.015, 0.05, 0.1)
+
+```
+
+# Dispersal at 0.001
+
+```{r fig.width=14, fig.height=4}
+fp_with <- paste0(mainfolderpath, namingWith[1], "/")
+fp_wout <- paste0(mainfolderpath, namingWout[1], "/")
+
+manyplots(values, fp_with, fp_wout)
+```
+
+
+# Dispersal at 0.005
+This is the average dispersal we used for most simulations in the past
+
+```{r fig.width=14, fig.height=4}
+fp_with <- paste0(mainfolderpath, namingWith[2], "/")
+fp_wout <- paste0(mainfolderpath, namingWout[2], "/")
+
+manyplots(values, fp_with, fp_wout)
+```
+
+# Dispersal at 0.015
+
+```{r fig.width=14, fig.height=4}
+fp_with <- paste0(mainfolderpath, namingWith[3], "/")
+fp_wout <- paste0(mainfolderpath, namingWout[3], "/")
+
+manyplots(values, fp_with, fp_wout)
+```
+
+# Dispersal at 0.05
+
+```{r fig.width=14, fig.height=4}
+fp_with <- paste0(mainfolderpath, namingWith[4], "/")
+fp_wout <- paste0(mainfolderpath, namingWout[4], "/")
+
+manyplots(values, fp_with, fp_wout)
+```
+
+# Dispersal at 0.1
+
+```{r fig.width=14, fig.height=4}
+fp_with <- paste0(mainfolderpath, namingWith[5], "/")
+fp_wout <- paste0(mainfolderpath, namingWout[5], "/")
+
+manyplots(values, fp_with, fp_wout)
+```
