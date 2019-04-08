@@ -57,7 +57,7 @@ model <- readRDS("outputs/testOutputs/conv_modl.RDS")
 #saveRDS(model, file = "outputs/testOutputs/conv_modl.RDS")
 
 # Chage the structure of the fitted model to be able to use functions from 'coda'
-chain <- as.mcmc(model, parameters = "meansParamX")
+chain <- as.mcmc(model, parameters = "meansParamX", burning = TRUE)
 # Get the summary and trace/density plots for the estimated parameters
 summary(chain)
 pdf("outputs/testOutputs/plotsChain1.pdf")
