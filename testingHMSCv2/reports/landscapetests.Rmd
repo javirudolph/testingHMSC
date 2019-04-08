@@ -1,0 +1,91 @@
+---
+title: "Creating Landscapes and testing MEM significance"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+
+library(tidyverse)
+library(adespatial)
+library(doParallel)
+```
+
+```{r LandscapeFX}
+
+# Landscape ---------------------------------------------------------------
+
+get_xy <- function(N = "Number of patches"){
+  cbind(runif(N, min = 0, max = 1), runif(N, min = 0, max = 1))
+}
+
+get_xy_agg <- function(N = "Number of patches", Nclusters = "patch clusters", sd_xy = "separation between patches inside clusters"){
+  xclust = runif(Nclusters)
+  yclust = runif(Nclusters)
+  
+  X = rnorm(N, rep(xclust,N/Nclusters), sd_xy)
+  Y = rnorm(N, rep(yclust,N/Nclusters), sd_xy)
+  
+  cbind(X, Y)
+  
+}
+
+
+# Environmental variables -------------------------------------------------
+
+get_E <- function(D = "Number of Environmental variables", N = "Number of patches"){
+  matrix(runif((D*N)), nrow = N, ncol = D)
+}
+
+
+```
+
+
+```{r getLandscape}
+set.seed(901)
+
+XY <- get_xy(N = 1000)
+E <- get_E(D = 1, N = 1000)
+
+plotData <- cbind.data.frame(XY, E)
+names(plotData) <- c("X", "Y", "E")
+
+
+ggplot(plotData, aes(x = X, y = Y, color = E)) +
+  geom_point() +
+  theme_classic()
+
+```
+
+```{r MEM}
+
+MEM <- dbmem(XY, MEM.autocor = "positive", thresh = 0.5)
+
+ncluster <- 10
+
+clusters <- makeCluster(ncluster)
+registerDoParallel(clusters)
+  
+### test MEM autocorrelation
+testMEM <- foreach(i=1:ncol(MEM)) %dopar% {
+  adespatial:::moran.randtest(MEM[,i], attributes(MEM)$listw, nrepet = 9999)
+  }
+  
+### Stop clusters
+stopCluster(clusters)
+
+```
+
+
+
+```{r}
+pvals <- lapply(testMEM, function(x) x$pvalue)
+# min(which(pvals>0.05))
+
+lastSignificant <- min(which(pvals>0.05))
+  
+# Select the MEMs based on their significance and then save that result
+MEMsel <- MEM[, 1:lastSignificant]
+```
+
