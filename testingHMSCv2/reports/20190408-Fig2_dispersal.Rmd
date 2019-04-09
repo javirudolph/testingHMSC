@@ -310,22 +310,12 @@ manyplots <- function(values, fp_with, fp_wout){
 ```
 
 
-```{r folderpaths}
-#fp_with <- "outputs/20190318-fig2c_quad/"
-#fp_wout <- "outputs/20190325-breadth_w_o_interactions/"
-
-# Render with a different file:
-fp_with <- "outputs/20190326-Fig2withInter/"
-fp_wout <- "outputs/20190327-Fig2woutInter/"
-
-```
-
 
 Testing niche breadth with and without species interactions:
 ```{r}
 values <- seq(from = 0.6, to = 2, by = 0.2)
 
-#mainfolderpath <- paste0("outputs/", savedate, "-Fig2_disp/")
+mainfolderpath <- "outputs/20190408-Fig2_disp/"
 
 namingWout <- paste0("disp", 1:5, "wout")
 namingWith <- paste0("disp", 1:5, "with")
@@ -374,7 +364,7 @@ manyplots(values, fp_with, fp_wout)
 
 # Dispersal at 0.1
 
-```{r fig.width=14, fig.height=4}
+```{r fig.width=14, fig.height=4, eval = FALSE}
 fp_with <- paste0(mainfolderpath, namingWith[5], "/")
 fp_wout <- paste0(mainfolderpath, namingWout[5], "/")
 
