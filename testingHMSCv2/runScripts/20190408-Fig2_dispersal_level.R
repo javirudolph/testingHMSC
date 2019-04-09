@@ -74,7 +74,7 @@ for(i in 1:5){
 # Run cycles with interactions --------------------------------------------------------------
 
 for(i in 1:5){
-  folderpath <- paste0(mainfolderpath, namingWith[i])
+  folderpath <- paste0(mainfolderpath, namingWith[i], "/")
   
   if(dir.exists(folderpath) == FALSE){
     dir.create(folderpath)
