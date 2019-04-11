@@ -21,7 +21,7 @@ MEM <- dbmem(XY, MEM.autocor = "positive", thresh = 0.5)
 ### Test MEMs
 #------------
 
-if(FALSE){
+if(TRUE){
   ### Set clusters
   clusters <- makeCluster(ncluster)
   registerDoParallel(clusters)
@@ -34,6 +34,8 @@ if(FALSE){
   ### Stop clusters
   stopCluster(clusters)
 }
+
+lapply(testMEM, function(x) x$pvalue)
 
 MEMsel <- MEM[,1:78] # The first 78 MEMs were selected because it is at this point that the Moran's I started to get slowly less significant
 
