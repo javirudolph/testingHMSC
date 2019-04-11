@@ -5,6 +5,41 @@ library(adespatial)
 
 library(doParallel)
 
+# Original ----------------------------------------------------------------
+ncluster <- 8
+
+
+XY <- readRDS("outputs/fixedLandscapes/orig-no-seed-XY.RDS")
+E <- readRDS("outputs/fixedLandscapes/orig-no-seed-E.RDS")
+
+#============
+### Build MEM
+#============
+MEM <- dbmem(XY, MEM.autocor = "positive", thresh = 0.5)
+
+#------------
+### Test MEMs
+#------------
+
+if(FALSE){
+  ### Set clusters
+  clusters <- makeCluster(ncluster)
+  registerDoParallel(clusters)
+
+  ### test MEM autocorrelation
+  testMEM <- foreach(i=1:ncol(MEM)) %dopar% {
+    adespatial:::moran.randtest(MEM[,i], attributes(MEM)$listw,nrepet = 9999)
+  }
+
+  ### Stop clusters
+  stopCluster(clusters)
+}
+
+MEMsel <- MEM[,1:78] # The first 78 MEMs were selected because it is at this point that the Moran's I started to get slowly less significant
+
+
+
+
 # Source Functions --------------------------------------------------------
 
 # source the functions to generate a landscape
