@@ -17,7 +17,7 @@ ncores <- 10
 
 # You can set the folderpath to the directory where the RDS files will be saved:
 fileDate <- Sys.Date()
-fileDescription <- "give_a_good_description"
+fileDescription <- "original_dispersal_0_005"
 
 folderpath <- paste0("outputs/", fileDate, "_", fileDescription, "/")
 
@@ -31,14 +31,14 @@ if(dir.exists(folderpath) == FALSE){
 
 # To make things faster when testing different parameters, these are the ones we are playing with
 
-disp_low <- 0.015
-disp_med <- 0.05
-disp_hi <- 0.1
+disp_low <- 0.001
+disp_med <- 0.005
+disp_hi <- 0.015
 
 niche_broad <- 2
 niche_narrow <- 0.8
 
-hmscPars <- list(niter = 10000, nburn = 1000, thin = 5)
+hmscPars <- list(niter = 100000, nburn = 5000, thin = 15)
 
 save.image(file = paste0(folderpath, "runInfo", ".RData"))
 
