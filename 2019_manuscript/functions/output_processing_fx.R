@@ -8,8 +8,8 @@
 
 # Modify the data from vpsites
 
-library(tidyverse)
-library(ggtern)
+#library(tidyverse)
+#library(ggtern)
 
 get_sites_data <- function(folderpath, scenario){
   richness <- readRDS(paste0(folderpath, scenario, "-metacomSim.RDS")) %>% 
