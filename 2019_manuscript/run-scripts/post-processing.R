@@ -1,6 +1,7 @@
 
 source("functions/output_processing_fx.R")
 library(tidyverse)
+library(ggtern)
 
 outsfolderpath <- "outputs/MANUSCRIPT/"
 scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
