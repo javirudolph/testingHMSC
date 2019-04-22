@@ -239,7 +239,7 @@ sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "no
 # This will mostly follow the code provided from the HMSC vignette, therefore it is not in a tidyverse framework and requires additional packages
 library(corrplot)
 
-interactionPlot <- function(folderpath, scenario, iteration = NULL){
+interaction_plot <- function(folderpath, scenario, iteration = NULL){
   
   if(is.null(iteration) == TRUE){
     iteration <- 1
