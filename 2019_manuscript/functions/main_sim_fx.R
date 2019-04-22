@@ -1,7 +1,7 @@
 
 # This function will use all the process functions to generate a metacommunity with the given parameters. 
 
-mainfx <- function(XY, E, pars, Y0, nsteps){
+mainfx <- function(XY, E, pars, Y0, nsteps, envResp = "quadratic"){
   with(pars, {
     
     # Initial conditions:
@@ -11,9 +11,16 @@ mainfx <- function(XY, E, pars, Y0, nsteps){
     K <- get_K(XY, alpha)
     
     # Local performance
-    S <- S_f(E, u_c, s_c)
+    if(envResp == "quadratic"){
+      S <- S_f_gaussian(E, u_c, s_c)
+    }
+    
+    if(envResp == "gaussian"){
+      S <- S_f_quadratic(E, u_c, s_c)
+    }
+    
     M <- M_f(E, u_e, s_e)
-    E0_E <- (1 - matrix(e_0,nr=N,nc=R,byrow=TRUE))*(1-M) + matrix(e_0,nr=N,nc=R,byrow=TRUE) # what is this?
+
     
     ## Store the results
     RES <- list()

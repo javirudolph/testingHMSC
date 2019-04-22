@@ -6,11 +6,15 @@
 
 # This is the master script to generate the results for figures 2 and 3 that would be included in the manuscript
 # Depending on where you are running this script, you can change the number of cores to use:
-ncores <- 4
+ncores <- as.numeric(Sys.getenv("SLURM_CPUS_PER_TASK"))
 # Javi's computer has 4, if you are using a super computer, this is probably more.
 # This script is written to be run within the 'testingHMSCv2' project and its associated directory
 # You can set the folderpath to the directory where the RDS files will be saved:
-folderpath <- "outputs/MANUSCRIPT/"
+folderpath <- "outputs/20190416out/"
+
+if(dir.exists(folderpath) == FALSE){
+  dir.create(folderpath)
+}
 
 # Both the functions used and the original landscape used for this can be found on the github repository: 
 # for the functions: https://github.com/javirudolph/testingHMSC/tree/master/testingHMSCv2/functions
@@ -42,25 +46,25 @@ MEMsel <- readRDS("outputs/fixedLandscapes/orig-no-seed-MEMsel.RDS")
 # FIGURE2 -----------------------------------------------------------------
 
 #FIG2A: no interactions, narrow niche
-scen1pars <- prep_pars(N = 1000, D = 1, R = 12, breadth = 0.8, nicheOpt = NULL, alpha = 0.005,
+scen1pars <- prep_pars(N = 1000, D = 1, R = 12, breadth = 0.8, nicheOpt = NULL, alpha = 0.05,
                        interx_col = 0, interx_ext = 0, makeRDS = TRUE,
                      whereToSave = folderpath, objName = "FIG2A")
 
 
 #FIG2B: no interactions, broad niche
-scen2pars <- prep_pars(N = 1000, D = 1, R = 12, breadth = 2, nicheOpt = NULL, alpha = 0.005,
+scen2pars <- prep_pars(N = 1000, D = 1, R = 12, breadth = 2, nicheOpt = NULL, alpha = 0.05,
                        interx_col = 0, interx_ext = 0, makeRDS = TRUE,
                        whereToSave = folderpath, objName = "FIG2B")
 
 #FIG2C: with interactions, narrow niche
 
-scen3pars <- prep_pars(N = 1000, D = 1, R = 12, breadth = 0.8, nicheOpt = NULL, alpha = 0.005,
+scen3pars <- prep_pars(N = 1000, D = 1, R = 12, breadth = 0.8, nicheOpt = NULL, alpha = 0.05,
                        interx_col = 1.5, interx_ext = 1.5, makeRDS = TRUE,
                        whereToSave = folderpath, objName = "FIG2C")
 
 #FIG2D: with interactions, broad niche
 
-scen4pars <- prep_pars(N = 1000, D = 1, R = 12, breadth = 2, nicheOpt = NULL, alpha = 0.005,
+scen4pars <- prep_pars(N = 1000, D = 1, R = 12, breadth = 2, nicheOpt = NULL, alpha = 0.05,
                        interx_col = 1.5, interx_ext = 1.5, makeRDS = TRUE,
                        whereToSave = folderpath, objName = "FIG2D")
 
@@ -99,31 +103,31 @@ for(j in 1:4){
 
 # FIG3A: half of the species with interactions, the other half without
 
-scen1pars <- list(scen1_a = prep_pars(N = 1000, D = 1, R = 6, breadth = 0.8, nicheOpt = NULL, alpha = 0.005,
+scen1pars <- list(scen1_a = prep_pars(N = 1000, D = 1, R = 6, breadth = 0.8, nicheOpt = NULL, alpha = 0.05,
                                       interx_col = 0, interx_ext = 0, makeRDS = FALSE),
-                  scen1_b = prep_pars(N = 1000, D = 1, R = 6, breadth = 0.8, nicheOpt = NULL, alpha = 0.005,
+                  scen1_b = prep_pars(N = 1000, D = 1, R = 6, breadth = 0.8, nicheOpt = NULL, alpha = 0.05,
                                       interx_col = 1.5, interx_ext = 1.5, makeRDS = FALSE))
 saveRDS(scen1pars, file = paste0(folderpath, "FIG3A-params.RDS"))
 
 
 # FIG3B: a third of the species with low, med and high dispersal levels, without interactions.
 
-scen2pars <- list(scen2_a = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.001,
+scen2pars <- list(scen2_a = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.015,
                                       interx_col = 0, interx_ext = 0, makeRDS = FALSE),
-                  scen2_b = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.005,
+                  scen2_b = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.05,
                                       interx_col = 0, interx_ext = 0, makeRDS = FALSE),
-                  scen2_c = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.015,
+                  scen2_c = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.1,
                                       interx_col = 0, interx_ext = 0, makeRDS = FALSE))
 saveRDS(scen2pars, file = paste0(folderpath, "FIG3B-params.RDS"))
 
 
 # FIG3B: a third of the species with low, med and high dispersal levels, with interactions.
 
-scen3pars <- list(scen3_a = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.001,
+scen3pars <- list(scen3_a = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.015,
                                       interx_col = 1.5, interx_ext = 1.5, makeRDS = FALSE),
-                  scen3_b = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.005,
+                  scen3_b = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.05,
                                       interx_col = 1.5, interx_ext = 1.5, makeRDS = FALSE),
-                  scen3_c = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.015,
+                  scen3_c = prep_pars(N = 1000, D = 1, R = 4, breadth = 0.8, nicheOpt = NULL, alpha = 0.1,
                                       interx_col = 1.5, interx_ext = 1.5, makeRDS = FALSE))
 saveRDS(scen3pars, file = paste0(folderpath, "FIG3B-params.RDS"))
 

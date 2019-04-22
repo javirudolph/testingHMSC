@@ -42,9 +42,6 @@ metacom_sim4HMSC <- function(XY, E, pars, nsteps,
 }
 
 
-# This function isn't fully tested, but it is for the case of having multiple parameters in one run
-# Example is in Figure 3b, where 1/3 of the species have different dispersal parameters.
-
 metacom_sim4HMSC_multParams <- function(XY, E, pars, nsteps,
                                         occupancy, niter,
                                         makeRDS = FALSE,
@@ -83,6 +80,7 @@ metacom_sim4HMSC_multParams <- function(XY, E, pars, nsteps,
 # Fit HMSC ----------------------------------------------------------------
 
 metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
+                                hmscPars = NULL,
                                 makeRDS = FALSE,
                                 whereToSave = NULL,
                                 objName = NULL){
@@ -95,6 +93,16 @@ metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
   clusters <- makeCluster(numClusters)
   registerDoParallel(clusters)
   
+  if(is.null(hmscPars) == TRUE){
+    hmscniter <- 100000
+    hmscnburn <- 10000
+    hmscthin <- 20
+  } else{
+    hmscniter <- hmscPars$niter
+    hmscnburn <- hmscPars$nburn
+    hmscthin <- hmscPars$thin
+  }
+  
   ### Estimate models
   model <- foreach(j = 1:nrun) %dopar% {
     library(HMSC)
@@ -103,7 +111,7 @@ metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
                             scaleX = TRUE, interceptX = TRUE)
     
     hmsc(formData, family = "probit",
-         niter = 100000, nburn = 10000, thin = 20)
+         niter = hmscniter, nburn = hmscnburn, thin = hmscthin)
   }
   
   ### Stop clusters

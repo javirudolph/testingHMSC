@@ -37,22 +37,22 @@ get_K <- function(XY, alpha){
 # Environment -------------------------------------------------------------
 # The effect of the environment on the local performance and colonization
 
-# S_f <- function(E, u_c, s_c) {
-#   R <- ncol(u_c)
-#   N <- nrow(E)
-#   D <- ncol(E)
-#   S <- matrix(1, nr = N, nc = R)
-#   for(i in 1:D){
-#     optima <- matrix(u_c[i,],nrow = N,ncol = R,byrow = TRUE)
-#     breadth <- matrix(s_c[i,],nrow = N,ncol = R,byrow = TRUE)^2
-#     S <- S*exp(-(E[,i]-optima)^2 / breadth)
-#   }
-#   return(S)
-# }
+S_f_gaussian <- function(E, u_c, s_c) {
+  R <- ncol(u_c)
+  N <- nrow(E)
+  D <- ncol(E)
+  S <- matrix(1, nr = N, nc = R)
+  for(i in 1:D){
+    optima <- matrix(u_c[i,],nrow = N,ncol = R,byrow = TRUE)
+    breadth <- matrix(s_c[i,],nrow = N,ncol = R,byrow = TRUE)^2
+    S <- S*exp(-(E[,i]-optima)^2 / breadth)
+  }
+  return(S)
+}
 
 # This function is used for a quadratic response to the environment
 
-S_f <- function(E, u_c, s_c) {
+S_f_quadratic <- function(E, u_c, s_c) {
   R <- ncol(u_c)
   N <- nrow(E)
   D <- ncol(E)
