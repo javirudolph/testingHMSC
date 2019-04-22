@@ -14,6 +14,7 @@
 
 # Simulate the metacommunity results to input in the HMSC function
 
+# This function works for figure two in which all the species basically share their parameters
 metacom_sim4HMSC <- function(XY, E, pars, nsteps,
                              occupancy, niter,
                              makeRDS = FALSE,
@@ -42,6 +43,7 @@ metacom_sim4HMSC <- function(XY, E, pars, nsteps,
 }
 
 
+# This function is for figure 3, in which we have separate groups of species with different dispersal or interaction parameters. 
 metacom_sim4HMSC_multParams <- function(XY, E, pars, nsteps,
                                         occupancy, niter,
                                         makeRDS = FALSE,
@@ -159,7 +161,7 @@ get_VPresults <- function(HMSCmodel, MEMsel, numClusters,
 
 }
 
-# This function shouldn't be necessary anymore
+# This function is necessary when running infor on sites.
 get_VPresults_SITE <- function(HMSCmodel, MEMsel, numClusters,
                                makeRDS = FALSE,
                                whereToSave = NULL,
@@ -190,6 +192,4 @@ get_VPresults_SITE <- function(HMSCmodel, MEMsel, numClusters,
   return(vpRes)
 }
 
-
-# Organize VP data --------------------------------------------------------
 
