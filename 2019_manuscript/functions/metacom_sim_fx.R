@@ -6,6 +6,8 @@
 # https://github.com/javirudolph/testingHMSC/tree/master/aboutScripts-FAQ
 
 
+# Each of these functions describes the processes going on for the metacommunity. We use these functions later on in the main_sim_fx.R script to generate an occupancy matrix for species in patches
+
 ###################################################################################################
 # Colonization
 ###################################################################################################
