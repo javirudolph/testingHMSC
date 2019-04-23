@@ -17,3 +17,16 @@ Some information on the folders:
    * To visualize the response to the environment we compared a gaussian and quadratic term used in the `S_f` function of the  metacommunity model we made [figures](https://github.com/javirudolph/testingHMSC/blob/master/aboutScripts-FAQ/environmentOnSpeciesOccupancy.md)  
    
 * [**testingHMSCv2**](https://github.com/javirudolph/testingHMSC/tree/master/testingHMSCv2) - new simulations/scenarios and work associated to the 2019 cycle will be found here. We have changed the response to the environment in the simulations, from a gaussian response to a quadratic response (details can be found [here](https://github.com/javirudolph/testingHMSC/blob/master/aboutScripts-FAQ/environmentOnSpeciesOccupancy.md). A comparisson between these two response types is described in the [reports](https://github.com/javirudolph/testingHMSC/tree/master/testingHMSCv2/reports), specifically the ones for fifteen species ([Fig2](https://github.com/javirudolph/testingHMSC/blob/master/testingHMSCv2/reports/fifteen_spp_figure2.md) and [Fig3](https://github.com/javirudolph/testingHMSC/blob/master/testingHMSCv2/reports/fifteen_spp_figure3.md) )
+
+
+## Subdirectories
+- [functions:](https://github.com/javirudolph/testingHMSC/tree/master/functions)
+  - **metacom_sim_fx.R** includes all the functions necessary to simulate a metacommunity. This model was developed by Dominique
+  - **main_sim_fx.R** it uses all the functions for simulating a metacommunity and takes a snapshot of occupancy. The output is a matrix od species occupancy per site. It allows for specification of a quadratic or gaussian response to the environment. 
+  - **prep_pars_fx.R** is a function to organize the parameters in appropriate format for input into the full process. This function is set up for one environmental variable for now, but it can be changed. Some defaults are set for certain parameters, which can be checked within the script. 
+  - **lanscape_fx.R** these functions are to simulate a landscape. However, we are using the set landscape provided by Guillaume. It is possible to change this, run a new landscape simulation and select significant MEMs from that new simulation. 
+  - **output_processing_fx.R** these functions are all designed to organize the output from HMSC to visualize and analyze data. 
+    - `get_sites_data` and `get_species_data` will organize the variation partitioning 'overlaps' output from `variPart`
+    - `species_plot` and `sites_plot` will create the default ternary plots for the variation partitioning output.
+    - `interaction_plot` will take the hmsc fit model and calculate the species interaction matrix. This is using the `corRandomEff` function from the `HMSC` package.
+  - **full_process_fx.R** these will generate the metacommunity simulation based on the given set of parameters, it will fit the hmsc and get an output model, also run the variation partitioning component. This script provides the full process for simulations and fitting. Any plotting, analysis and data wrangling is found in the output processing scripts.
