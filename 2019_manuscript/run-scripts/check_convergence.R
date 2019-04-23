@@ -1,16 +1,19 @@
 
-source("functions/convergence_fx.R")
-library(HMSC)
-library(coda)
+# source("functions/convergence_fx.R")
+# library(HMSC)
+# library(coda)
 
-folderpath <- "write your folderpath to outputs here, don't forget the / at the end"
+#outsfolderpath <- "where are your outputs"
 scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
+dir.create(paste0(outsfolderpath, "convergence/"))
+
+folderpath <- paste0(outsfolderpath, "convergence/")
 
 
 # Probable get a pdf for each model, but a gelman plot for each scenario
 
 for(i in 1:7){
-  listChains <- get_mcmc_lists(folderpath = folderpath,
+  listChains <- get_mcmc_lists(folderpath = outsfolderpath,
                                 scenario = scenarios[i])
   
   assign(x = paste0(scenarios[i], "_chains"),

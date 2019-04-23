@@ -1,12 +1,12 @@
 # This will create pdfs kind of fast for the species and sites, also the species interaction matrices
 
-source("functions/output_processing_fx.R")
+# source("functions/output_processing_fx.R")
+# 
+# library(tidyverse)
+# library(ggtern)
+# library(corrplot)
 
-library(tidyverse)
-library(ggtern)
-library(corrplot)
-
-outsfolderpath <- "give your path here"
+#outsfolderpath <- "give your path here"
 scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
 
 
