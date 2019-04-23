@@ -1,0 +1,102 @@
+---
+title: "DGravel 2016 code"
+author: "Javiera Rudolph"
+date: "February 1, 2019"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+#### Available scripts and files
+The scripts 'functions.R', 'lanscape.R', and 'main.R' were provided in the dropbox folder along with two text files for the environment variable and location of patches ('E.txt' and 'XY.txt').  
+
+R scripts named after the scenario and corresponding figure were also provided and I was able to run them to simulate the communities. Each one of these R scripts gives an RDS file as an output, which is later used in the Variation partitioning scripts. 
+
+```{r scenario1Fig2a}
+scn1Fig2a <- readRDS(file = "Fig2a_run.RDS")
+str(scn1Fig2a)
+
+```
+
+Each one of these simulations will give a list as an output, with each element within the list being a matrix with occurrence data for 15 species in 1000 patches. The number of iterations is set to 5, therefore the list is length 5. 
+
+```{r scenario1Fig2a head}
+head(scn1Fig2a[[1]])
+```
+
+
+The parameters set for these scripts are as follows:
+```{r parametersFig2, echo=FALSE}
+source("simParamsTable.R")
+
+knitr::kable(fig2Params, caption = "Original parameters used in provided scripts for simulation of communities for Figure2")
+
+
+```
+
+Figures were created after running the 'VP .R' scripts for figures 2 and 3, and using the 'Draw figures.R' as a baseline.
+
+
+To load these figures, make sure that the script 'Draw_for_md.R' has run and produced the png files.
+you can check if the figures are in the directory.
+```{r figuresTRUE, echo=TRUE}
+fig2png <- list.files(pattern = ".png")
+fig2png
+
+# If the files are available, you can display them
+
+```
+
+
+```{r figure2, echo = FALSE}
+library(png)
+library(grid)
+library(gridExtra)
+a <-  rasterGrob(as.raster(readPNG("fig2a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("fig2b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("fig2c.png")), interpolate = FALSE)
+d <-  rasterGrob(as.raster(readPNG("fig2d.png")), interpolate = FALSE)
+grid.arrange(a,b,c,d, ncol = 2, nrow = 2)
+```
+
+To create the figures that include only the "pure" fractions of variation, I used only the first overlap form the vp objects that result from the variPart function. The code to make these figures is also in the 'Draw_for_md.R' script and it shows the code sections that were commented out. 
+
+```{r pureFracsFig2, echo = FALSE}
+a <-  rasterGrob(as.raster(readPNG("purefig2a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("purefig2b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("purefig2c.png")), interpolate = FALSE)
+d <-  rasterGrob(as.raster(readPNG("purefig2d.png")), interpolate = FALSE)
+grid.arrange(a,b,c,d, ncol = 2, nrow = 2)
+```
+
+
+Parameters for figure3
+```{r parametersFig3, echo=FALSE}
+knitr::kable(fig3Params, caption = "Original parameters used for Figure3")
+```
+
+```{r figure3orig, echo = FALSE}
+a <-  rasterGrob(as.raster(readPNG("fig3a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("fig3b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("fig3c.png")), interpolate = FALSE)
+
+grid.arrange(a,b,c, ncol = 2)
+```
+
+Individual fractions only
+
+```{r pureFracsFig3, echo = FALSE}
+a <-  rasterGrob(as.raster(readPNG("purefig3a.png")), interpolate = FALSE)
+b <-  rasterGrob(as.raster(readPNG("purefig3b.png")), interpolate = FALSE)
+c <-  rasterGrob(as.raster(readPNG("purefig3c.png")), interpolate = FALSE)
+
+grid.arrange(a,b,c, ncol = 2)
+```
+
+
+
+
