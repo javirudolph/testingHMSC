@@ -17,6 +17,7 @@
 # This function works for figure two in which all the species basically share their parameters
 metacom_sim4HMSC <- function(XY, E, pars, nsteps,
                              occupancy, niter,
+                             envResp = "quadratic",
                              makeRDS = FALSE,
                              whereToSave = NULL,
                              objName = NULL){
@@ -29,7 +30,7 @@ metacom_sim4HMSC <- function(XY, E, pars, nsteps,
 
   res <- vector("list", length = niter)
   for(i in 1:niter){
-    run <- mainfx(XY, E, pars, Y0, nsteps)
+    run <- mainfx(XY, E, pars, Y0, nsteps, envResp = envResp)
     res[[i]] <- run[[nsteps]]
   }
 
