@@ -12,11 +12,11 @@ mainfx <- function(XY, E, pars, Y0, nsteps, envResp = "quadratic"){
     
     # Local performance
     if(envResp == "quadratic"){
-      S <- S_f_gaussian(E, u_c, s_c)
+      S <- S_f_quadratic(E, u_c, s_c)
     }
     
     if(envResp == "gaussian"){
-      S <- S_f_quadratic(E, u_c, s_c)
+      S <- S_f_gaussian(E, u_c, s_c)
     }
     
     M <- M_f(E, u_e, s_e)
