@@ -262,7 +262,7 @@ interaction_plot <- function(folderpath, scenario, iteration = NULL){
   
   Colour <- colorRampPalette(c("blue", "white", "red"))(200)
   corrplot(siteMean, method = "color", col = Colour, type = "lower",
-           diag = FALSE, p.mat = siteDraw, tl.srt = 45)
+           diag = FALSE, p.mat = siteDraw, tl.srt = 45, title = scenario)
   
 }
 

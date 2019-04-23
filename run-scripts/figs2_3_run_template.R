@@ -1,10 +1,9 @@
 ###############################################################################################
-# FIGURES 2 AND 3 
+# Figures 2 and 3 Template
 # Created by: Javiera Rudolph
-# Date: April 21, 2019
 ##############################################################################################
 
-# This is the master script to generate the results for figures 2 and 3 that would be included in the manuscript
+# This is a template for Figures 2 and 3
 # Depending on where you are running this script, you can change the number of cores to use:
 
 # If using HiperGator, you will provide the number of cores in the submission script, and can uncomment the following line.
@@ -17,7 +16,7 @@ ncores <- 10
 
 # You can set the folderpath to the directory where the RDS files will be saved:
 fileDate <- Sys.Date()
-fileDescription <- "original_dispersal_0_005"
+fileDescription <- "write_a_good_description_here"
 
 folderpath <- paste0("outputs/", fileDate, "_", fileDescription, "/")
 
