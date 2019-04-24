@@ -22,7 +22,7 @@ for(i in 1:7){
 dev.off()
 
 
-E <- readRDS("metaco2-manuscript-figs/fixedLandscapes/orig-no-seed-E.RDS")
+E <- readRDS("functions/fixedLandscapes/orig-no-seed-E.RDS")
 
 pdf(paste0(outsfolderpath, "sitesFigs.pdf"))
 for(i in 1:7){
