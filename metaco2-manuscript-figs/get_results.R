@@ -1,4 +1,4 @@
-outsfolderpath <- "your folderpath heree"
+outsfolderpath <- "metaco2-manuscript-figs/2019-04-23_orig_disp_10kchain/"
 
 source("functions/output_processing_fx.R")
 source("functions/convergence_fx.R")
@@ -22,7 +22,7 @@ for(i in 1:7){
 dev.off()
 
 
-E <- readRDS("outputs/fixedLandscapes/orig-no-seed-E.RDS")
+E <- readRDS("metaco2-manuscript-figs/fixedLandscapes/orig-no-seed-E.RDS")
 
 pdf(paste0(outsfolderpath, "sitesFigs.pdf"))
 for(i in 1:7){
