@@ -62,9 +62,9 @@ source("functions/full_process_fx.R")
 
 # ORIGINAL LANDSCAPE ------------------------------------------------------
 
-XY <- readRDS("outputs/fixedLandscapes/orig-no-seed-XY.RDS")
-E <- readRDS("outputs/fixedLandscapes/orig-no-seed-E.RDS")
-MEMsel <- readRDS("outputs/fixedLandscapes/orig-no-seed-MEMsel.RDS")
+XY <- readRDS("functions/fixedLandscapes/orig-no-seed-XY.RDS")
+E <- readRDS("functions/fixedLandscapes/orig-no-seed-E.RDS")
+MEMsel <- readRDS("functions/fixedLandscapes/orig-no-seed-MEMsel.RDS")
 
 
 
