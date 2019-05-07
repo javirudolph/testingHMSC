@@ -1,4 +1,4 @@
-outsfolderpath <- "metaco2-manuscript-figs/2019-04-24_hi_disp_10kchain/"
+outsfolderpath <- "metaco2-manuscript-figs/2019-05-07_hi_disp_30kchain/"
 
 source("functions/output_processing_fx.R")
 source("functions/convergence_fx.R")
