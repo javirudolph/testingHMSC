@@ -12,9 +12,13 @@
 
 main_fp <- "hmsc-evaluation/Niche_breadth_exploration/"
 fp_quad_wout <- "hmsc-evaluation/Niche_breadth_exploration/quad_wout/"
+dir.create(fp_quad_wout)
 fp_quad_with <- "hmsc-evaluation/Niche_breadth_exploration/quad_with/"
+dir.create(fp_quad_with)
 fp_gaus_wout <- "hmsc-evaluation/Niche_breadth_exploration/gaus_wout/"
+dir.create(fp_gaus_wout)
 fp_gaus_with <- "hmsc-evaluation/Niche_breadth_exploration/gaus_with/"
+dir.create(fp_gaus_with)
 
 
 #     -If using HiperGator, you will provide the number of cores in the submission script
