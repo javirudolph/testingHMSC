@@ -90,4 +90,4 @@ for(i in 1:niter){
   res[[i]] <- run[[nsteps]]
 }
 
-saveRDS(res, file = paste(scenario,"_run.RDS", sep=""))
+saveRDS(res, file = paste("outputs/",scenario,"_run.RDS", sep=""))
