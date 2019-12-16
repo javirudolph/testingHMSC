@@ -41,6 +41,7 @@ rsconnect/
 *.RDS
 *.html
 *.pdf
+*.png
 /output/
 /scratch/
 
