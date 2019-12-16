@@ -40,6 +40,7 @@ rsconnect/
 # Don't track heavy output files, figures, etc.
 *.RDS
 *.html
+*.pdf
 /output/
 /scratch/
 
