@@ -8,6 +8,9 @@
 
 set.seed(29)
 
+dir.create("outputs")
+dir.create("figures")
+
 # Run Simulations------------------------------------------------------------------------
 # The following lines will run the metacommunity simulations with the specified parameters
 scenario_runs <- list.files(pattern = "scenario")
@@ -19,7 +22,11 @@ for(i in 1:length(scenario_runs)){
 
 # Print parameters -----------------------------------------------------------------------
 # This script is to generate tables with the real parameters used in the simulations
+# It will save the parameter tables as figures in the figures/ directory
 source("simParamsTable.R")
-library(gridExtra)
+
+# HMSC and variation partitioning --------------------------------------------------------
+
+
 
       

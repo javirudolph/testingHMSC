@@ -10,7 +10,8 @@ library(adespatial)
 #=========================
 #ncluster <- 24
 # To run in Javi's computer this needs to be set to 4
-ncluster <- 4
+# Leibold lab computer set to 8
+ncluster <- 8
 
 # Assuming N <- 1000 based on the community simulations
 N <- 1000

@@ -5,6 +5,7 @@
 # Gathering the parameters for the different scenarios and figures:
 
 library(stringr)
+library(gridExtra)
 # library(dplyr)
 
 # Source partial sections of the code so that I obtain parameters real-time
@@ -113,3 +114,11 @@ fig3Params$Fig3b <- str_c(prmsB1, prmsB2, prmsB3, sep = " / ")
 sourcePartial(fig3Scripts[3], startTag = "#from here", endTag = "to here")
 fig3Params$Fig3c <- bindPrms()
 
+# SAVE TABLES -----------------
+grid.table(fig2Params)
+dev.copy(png, "figures/fig2Params.png")
+dev.off()
+
+grid.table(fig3Params)
+dev.copy(png, "figures/fig3Params.png")
+dev.off()

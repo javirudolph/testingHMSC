@@ -8,7 +8,7 @@ library(adespatial)
 #=========================
 ### Set parallel computing
 #=========================
-ncluster <- 4 #changed from 24
+ncluster <- 8 #changed from 24
 N <- 1000
 
 #============
