@@ -26,6 +26,18 @@ for(i in 1:length(scenario_runs)){
 source("simParamsTable.R")
 
 # HMSC and variation partitioning --------------------------------------------------------
+# These scripts take a while
+source("VP_Fig2.R")
+source("VP_Fig3.R")
+
+# Ternay plots ---------------------------------------------------------------------------
+# This are the figures from this simulation and with the parameters saved earlier
+source("Draw figures.R")
+
+
+
+
+
 
 
 

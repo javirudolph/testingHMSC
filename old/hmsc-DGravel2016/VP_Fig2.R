@@ -31,6 +31,7 @@ MEM <- dbmem(xy, MEM.autocor = "positive", thresh = 0.5)
 ### Test MEMs
 #------------
 ## JAVI: I have commented this section out, since testing for significance of the MEMs takes a lot of time
+## Guillaume had previously tested this and determined which MEMs to select
 # if(FALSE){
 #   ### Set clusters
 #   clusters <- makeCluster(ncluster)
@@ -51,7 +52,8 @@ for(i in 1:4){
   #============
   ### Load data
   #============
-  run <- readRDS(paste("Fig2",letters[i],"_run.RDS",sep=""))
+  print(paste("Start model for Fig2", letters[i]))
+  run <- readRDS(paste("outputs/Fig2",letters[i],"_run.RDS",sep=""))
   nrun  <- length(run)
 
   #================================
@@ -76,7 +78,8 @@ for(i in 1:4){
   stopCluster(clusters)
 
   ### Save results
-  saveRDS(model, file = paste("HMSC model scenario Fig2", letters[i], ".RDS",sep = ""))
+  saveRDS(model, file = paste("outputs/HMSC model scenario Fig2", letters[i], ".RDS",sep = ""))
+  print(paste("Fig2", letters[i], "done"))
 }
 
 
@@ -85,7 +88,8 @@ for(i in 1:4){
 ### Perform variation partitioning using adjusted R2
 #===================================================
 for(i in 1:4){
-  model <- readRDS(paste("HMSC model scenario Fig2", letters[i], ".RDS",sep = ""))
+  print(paste("Start VP for Fig2", letters[i]))
+  model <- readRDS(paste("outputs/HMSC model scenario Fig2", letters[i], ".RDS",sep = ""))
   nmodel <- length(model)
 
   #================================
@@ -99,7 +103,7 @@ for(i in 1:4){
   vpRes <- foreach(j = 1:nmodel) %dopar% {
     library(HMSC)
     variPart(model[[j]], groupX = c(rep("env",3),rep("spa",78)), 
-             #family = "probit", 
+             #family = "probit", # This line is commented out because an update in the package doesn't require specifying the family, since it gets it from the hmsc model
              type = "III", R2adjust = TRUE)
   }
 
@@ -107,6 +111,6 @@ for(i in 1:4){
   stopCluster(clusters)
 
   ### Save results
-  saveRDS(vpRes, file = paste("VP Fig2", letters[i], ".RDS",sep = ""))
-  print(i)
+  saveRDS(vpRes, file = paste("outputs/VP Fig2", letters[i], ".RDS",sep = ""))
+  print(paste("Fig2", letters[i], "VP done"))
 }

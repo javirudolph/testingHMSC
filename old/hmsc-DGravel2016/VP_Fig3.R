@@ -45,7 +45,8 @@ for(i in 1:3){
   #============
   ### Load data
   #============
-  run <- readRDS(paste("Fig3",letters[i],"_run.RDS",sep=""))
+  print(paste("Start Fig3", letters[i], "model"))
+  run <- readRDS(paste("outputs/Fig3",letters[i],"_run.RDS",sep=""))
   nrun  <- length(run)
 
   #================================
@@ -69,14 +70,16 @@ for(i in 1:3){
   stopCluster(clusters)
 
   ### Save results
-  saveRDS(model, file = paste("HMSC model scenario Fig3", letters[i], ".RDS",sep = ""))
+  saveRDS(model, file = paste("outputs/HMSC model scenario Fig3", letters[i], ".RDS",sep = ""))
+  print(paste("Fig3", letters[i], "done"))
 }
 
 #===================================================
 ### Perform variation partitioning using adjusted R2
 #===================================================
 for(i in 1:3){
-  model <- readRDS(paste("HMSC model scenario Fig3", letters[i], ".RDS",sep = ""))
+  print(paste("Start Fig3", letters[i], "VariPart"))
+  model <- readRDS(paste("outputs/HMSC model scenario Fig3", letters[i], ".RDS",sep = ""))
   nmodel <- length(model)
 
   #================================
@@ -98,6 +101,6 @@ for(i in 1:3){
   stopCluster(clusters)
 
   ### Save results
-  saveRDS(vpRes, file = paste("VP Fig3", letters[i], ".RDS",sep = ""))
-  print(i)
+  saveRDS(vpRes, file = paste("outputs/VP Fig3", letters[i], ".RDS",sep = ""))
+  print(paste("Fig3", letters[i], "VP done"))
 }

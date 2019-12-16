@@ -4,10 +4,10 @@ library(vcd)
 #================
 ### Draw Figure 2
 #================
-pdf("Figure 2.pdf",6,6)
+pdf("figures/Figure 2.pdf",6,6)
 
 for(k in 1:4){
-  vp <- readRDS(paste("VP Fig2", letters[k],".RDS",sep=""))
+  vp <- readRDS(paste("outputs/VP Fig2", letters[k],".RDS",sep=""))
 
   ### Extract and organise each fractions
   vpOverlap1 <- lapply(vp, function(x) x$overlap1)
@@ -88,10 +88,10 @@ dev.off()
 #================
 ### Draw Figure 3
 #================
-pdf("Figure 3.pdf",6,6)
+pdf("figures/Figure 3.pdf",6,6)
 
 for(k in 1:3){
-  vp <- readRDS(paste("VP Fig3", letters[k],".RDS",sep=""))
+  vp <- readRDS(paste("outputs/VP Fig3", letters[k],".RDS",sep=""))
 
   ### Extract and organise each fractions
   vpOverlap1 <- lapply(vp, function(x) x$overlap1)
