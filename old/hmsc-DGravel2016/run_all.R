@@ -1,0 +1,25 @@
+# If you just want to be up to date on the files that are not on Github:
+# This is the .RDS files and the figures
+# You can run this script to source and run all the others. 
+# Warning: it will take a while, so maybe go for a walk and get coffee
+
+# Make sure Guillaume's HMSC is installed
+# https://github.com/guiblanchet/HMSC
+
+set.seed(29)
+
+# Run Simulations------------------------------------------------------------------------
+# The following lines will run the metacommunity simulations with the specified parameters
+scenario_runs <- list.files(pattern = "scenario")
+for(i in 1:length(scenario_runs)){
+  print(paste("Start", scenario_runs[i]))
+  source(scenario_runs[i])
+  print(paste(scenario_runs[i], "completed"))
+}
+
+# Print parameters -----------------------------------------------------------------------
+# This script is to generate tables with the real parameters used in the simulations
+source("simParamsTable.R")
+library(gridExtra)
+
+      

@@ -174,4 +174,4 @@ for(i in 1:niter){
   res[[i]] <- cbind(runScenario1[[nsteps]], runScenario3[[nsteps]])
 }
 
-saveRDS(res, file = paste(scenario,"_run.RDS", sep=""))
+saveRDS(res, file = paste("outputs/", scenario,"_run.RDS", sep=""))

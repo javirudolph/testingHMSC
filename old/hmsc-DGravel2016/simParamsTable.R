@@ -1,4 +1,6 @@
 ## ---- simParamsTable --------------------------------------------
+# Created by Javi Rudolph
+
 
 # Gathering the parameters for the different scenarios and figures:
 
