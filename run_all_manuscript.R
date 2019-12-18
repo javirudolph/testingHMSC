@@ -43,7 +43,8 @@ disp_hi <- 0.1
 niche_broad <- 2
 niche_narrow <- 0.8
 
-hmscPars <- list(niter = 10000, nburn = 5000, thin = 5)
+hmscPars <- list(niter = 30000, nburn = 10000, thin = 10)
+# hmscPars <- list(niter = 10000, nburn = 5000, thin = 5)
 
 save.image(file = paste0(folderpath, "runInfo", ".RData"))
 
