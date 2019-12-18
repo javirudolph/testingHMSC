@@ -1,4 +1,4 @@
-# This script describes the process to get all files and simulated data. 
+# This script runs everything to get all files and simulated data. 
 # It sources several scripts, so make sure you are using the `testingHMSC` project so file directories work correctly.
 # You can check the outline for this script by pressing `Ctrl + Shift + O`
 
@@ -23,6 +23,7 @@ ncores <- 8
 library(tidyverse)
 library(HMSC)
 library(doParallel)
+library(ggtern)
 
 # Directory ------------------------------------------------------
 # setting the folder for the outputs for the manuscript
@@ -256,11 +257,6 @@ for(i in 1:7){
   write.csv(raftery_on_one$resmatrix, file = paste0(conv_folderpath, scenarios[i], "raftery_diag.csv"))
   
 }
-
-
-
-
-
 
 
 
