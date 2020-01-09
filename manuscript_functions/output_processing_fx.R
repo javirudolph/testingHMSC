@@ -237,7 +237,6 @@ sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "no
 
 # To create the species correlation matrices:
 # This will mostly follow the code provided from the HMSC vignette, therefore it is not in a tidyverse framework and requires additional packages
-library(corrplot)
 
 interaction_plot <- function(folderpath, scenario, iteration = NULL, corTitle = NULL){
   

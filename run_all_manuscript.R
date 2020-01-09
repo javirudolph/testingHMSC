@@ -1,6 +1,6 @@
 # This script runs everything to get all files and simulated data. 
 # It sources several scripts, so make sure you are using the `testingHMSC` project so file directories work correctly.
-# You can check the outline for this script by pressing `Ctrl + Shift + O`
+# You can check the outline for this script by pressing `Ctrl + Shift + O` or the outline button if using RStudio
 
 # Make sure Guillaume's HMSC is installed
 # https://github.com/guiblanchet/HMSC
@@ -24,6 +24,7 @@ library(tidyverse)
 library(HMSC)
 library(doParallel)
 library(ggtern)
+library(corrplot)
 
 # Directory ------------------------------------------------------
 # setting the folder for the outputs for the manuscript
@@ -43,23 +44,39 @@ disp_hi <- 0.1
 niche_broad <- 2
 niche_narrow <- 0.8
 
+
+# In the past, we tried several combinations of these parameters and there didn't seem to be much of a difference between them. According to the convergence plots it seems to happen pretty fast. We settled on the parameters in the next line, but you are free to try with others, example shown in the commented line after setting the current parameters. 
+
 hmscPars <- list(niter = 30000, nburn = 10000, thin = 10)
 # hmscPars <- list(niter = 10000, nburn = 5000, thin = 5)
 
+# The parameters used for the run will get saved as RData in the outputs folder, just to keep track of them. The following line of code saves them. 
 save.image(file = paste0(folderpath, "runInfo", ".RData"))
 
 
 # Functions ---------------------------------------------------------------
+# All of these scripts have functions only
 
+# These will prepare a list of parameters in the right format
 source("manuscript_functions/prep_pars_fx.R")
+
+# Original functions for the metacommunity simulation. Note addition of a quadratic response to the environment. Which is what we've used in this manuscript.  
 source("manuscript_functions/metacom_sim_fx.R")
+
+# The actual metacommunity simulation that uses the functions above. It saves the snapshot of the metacommunity after 200 time steps.
 source("manuscript_functions/main_sim_fx.R")
+
+# This full process involves running the metacommunity simulation, getting in the hmsc format, doing variation partitioning for species and sites.
 source("manuscript_functions/full_process_fx.R")
 
+# Output processing involves changing structure of data from lists to dataframes and using those to get the figures
 source("manuscript_functions/output_processing_fx.R")
+
+# Functions to check convergence based on previous conversations with Guillaume. Raftery and Gelman plots
 source("manuscript_functions/convergence_fx.R")
 
 # Original landscape ------------------------------------------------------
+# This is the original landscape provided in the Dropbox. They were previously saved as text files, it's the same data, just different format.
 
 XY <- readRDS("manuscript_functions/fixedLandscapes/orig-no-seed-XY.RDS")
 E <- readRDS("manuscript_functions/fixedLandscapes/orig-no-seed-E.RDS")
@@ -69,6 +86,7 @@ MEMsel <- readRDS("manuscript_functions/fixedLandscapes/orig-no-seed-MEMsel.RDS"
 
 
 # FIGURE2 DATA -----------------------------------------------------------------
+# This first part is only setting the parameters for the different scenarios. After that, the running cycles is actually running the metacommunity simulations, fitting and variation partitioning.
 
 #FIG2A: no interactions, narrow niche
 scen1pars <- prep_pars(N = 1000, D = 1, R = 12, breadth = niche_narrow, nicheOpt = NULL, alpha = disp_med,
@@ -98,10 +116,7 @@ scen4pars <- prep_pars(N = 1000, D = 1, R = 12, breadth = niche_broad, nicheOpt 
 fig2pars <- list(scen1pars = scen1pars, scen2pars = scen2pars, 
                  scen3pars = scen3pars, scen4pars = scen4pars)
 
-
-## run cycles 
-
-
+# RUN THE CYCLES
 
 for(j in 1:4){
   namesrds <- paste0("FIG2", LETTERS[j])
@@ -170,7 +185,7 @@ scenarioPars <- list(scen1pars = scen1pars, scen2pars = scen2pars,
                      scen3pars = scen3pars)
 
 
-## Run cycles
+# RUN THE CYCLES
 
 for(j in 1:3){
   namesrds <- paste0("FIG3", LETTERS[j])
@@ -198,7 +213,7 @@ for(j in 1:3){
 
 scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
 
-
+# This will create a pdf file with all the ternary plots for the different scenarios, where each point in the plot corresponds to one species, and each color is equivalent to one of the iterations we ran.
 pdf(paste0(folderpath, "speciesFigs.pdf"))
 for(i in 1:7){
   data <- get_species_data(folderpath, scenarios[i])
@@ -207,6 +222,7 @@ for(i in 1:7){
 }
 dev.off()
 
+# Ternary plots at the site level, each point is a site, and the colors vary according to their environmental deviation (how close/far to the average environmental conditions are for that site.)
 pdf(paste0(folderpath, "sitesFigs.pdf"))
 for(i in 1:7){
   data <- get_sites_data(folderpath, scenarios[i]) %>% 
@@ -220,6 +236,8 @@ for(i in 1:7){
 dev.off()
 
 
+# Using the corRandomEff() function from Guillaume's package and largely following the examples provided by him in the vignette.
+
 pdf(paste0(folderpath, "interactionMatrices.pdf"))
 for(i in 1:7){
   interaction_plot(folderpath, scenarios[i])
@@ -229,9 +247,11 @@ dev.off()
 
 # Convergence -------------------------------------------------------------
 
-dir.create(paste0(folderpath, "convergence/"))
-
 conv_folderpath <- paste0(folderpath, "convergence/")
+
+if(dir.exists(conv_folderpath) == FALSE){
+  dir.create(conv_folderpath)
+}
 
 
 # Probable get a pdf for each model, but a gelman plot for each scenario
