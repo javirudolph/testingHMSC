@@ -5,7 +5,7 @@ This repository contains some of the code associated to the manuscript "Rethinki
 If cloning this repository, to get our simulated data, open the repository's project in RStudio, and then run the script `run_all_manuscript.R`, which should save all the outputs in a folder created by the script. 
 
 ## manuscript_functions
-- [functions:](https://github.com/javirudolph/testingHMSC/tree/master/functions)
+- [functions:](https://github.com/javirudolph/testingHMSC/tree/master/manuscript_functions)
   - **metacom_sim_fx.R** includes all the functions necessary to simulate a metacommunity. This model was developed by Dominique
   - **main_sim_fx.R** it uses all the functions for simulating a metacommunity and takes a snapshot of occupancy. The output is a matrix od species occupancy per site. It allows for specification of a quadratic or gaussian response to the environment. 
   - **prep_pars_fx.R** is a function to organize the parameters in appropriate format for input into the full process. This function is set up for one environmental variable for now, but it can be changed. Some defaults are set for certain parameters, which can be checked within the script. 
