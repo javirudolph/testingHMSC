@@ -268,14 +268,14 @@ for(i in 1:7){
   pdf(paste0(conv_folderpath, scenarios[i], "gelman_diag.pdf"))
   gelman.plot(listChains)
   dev.off()
-  
-  
-  
+
+
+
   pdf(paste0(conv_folderpath, scenarios[i], "chain_plots.pdf"))
   plot(listChains)
   dev.off()
-  
-  raftery_on_one <- raftery.diag(listChains[[1]])
+
+  raftery_on_one <- raftery.diag(listChains[[1]], s=0.9)
   write.csv(raftery_on_one$resmatrix, file = paste0(conv_folderpath, scenarios[i], "raftery_diag.csv"))
   
 }
