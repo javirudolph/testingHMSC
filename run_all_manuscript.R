@@ -47,8 +47,8 @@ niche_narrow <- 0.8
 
 # In the past, we tried several combinations of these parameters and there didn't seem to be much of a difference between them. According to the convergence plots it seems to happen pretty fast. We settled on the parameters in the next line, but you are free to try with others, example shown in the commented line after setting the current parameters. 
 
-hmscPars <- list(niter = 50000, nburn = 25000, thin = 5)
-# hmscPars <- list(niter = 30000, nburn = 10000, thin = 10)
+# hmscPars <- list(niter = 50000, nburn = 25000, thin = 5) # It won't run with this. DoParallel breaks
+ hmscPars <- list(niter = 30000, nburn = 10000, thin = 10) # This is ok, but not enough for raftery.diag
 # hmscPars <- list(niter = 10000, nburn = 5000, thin = 5)
 
 # The parameters used for the run will get saved as RData in the outputs folder, just to keep track of them. The following line of code saves them. 
