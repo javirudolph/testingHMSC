@@ -17,7 +17,7 @@ set.seed(77)
 # If using a local computer, you can set the number of cores according to you locals ability
 # Leibold lab computer is set to 8
 
-ncores <- 8
+ncores <- 7
 
 # Libraries ---------------------------------------------------------------
 library(tidyverse)
