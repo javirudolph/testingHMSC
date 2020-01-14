@@ -5,6 +5,13 @@
 # Make sure Guillaume's HMSC is installed
 # https://github.com/guiblanchet/HMSC
 
+# Other packages needed. but you might already have these:
+# install.packages('devtools')
+# install.packages('tidyverse')
+# install.packages('doParallel')
+# install.packages('ggtern')
+# install.packages('corrplot')
+
 set.seed(77)
 
 # This is the master script to generate the results for figures 2 and 3 that would be included in the manuscript
