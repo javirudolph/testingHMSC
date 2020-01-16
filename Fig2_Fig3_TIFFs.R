@@ -6,12 +6,19 @@
 library(tidyverse)
 library(ggtern)
 library(ggpubr)
+library(corrplot)
+library(HMSC)
+
 
 E <- readRDS("manuscript_functions/fixedLandscapes/orig-no-seed-E.RDS")
 source("manuscript_functions/output_processing_fx.R")
 
 
 outsfolderpath <- "manuscript_outputs/"
+
+dir.create(paste(outsfolderpath, "tiff_files/"))
+tiff_path <- paste(outsfolderpath, "tiff_files/")
+
 scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
 
 
@@ -112,7 +119,7 @@ for(i in 1:4){
   plot <- base_spp_plot(fig2species[[i]],
                         colorVar = "iteration", plotMain = LETTERS[i]) +
     theme(legend.position = "none")
-  ggsave(filename = paste0("manuscript_outputs/", names(fig2species)[i], "species.tiff"),
+  ggsave(filename = paste0(tiff_path, names(fig2species)[i], "species.tiff"),
          dpi = 600, units = "in", height = 5, width = 5)
   
   fig2_spp_plots[[i]] <- plot
@@ -123,7 +130,7 @@ plot <- base_spp_plot(fig2species$FIG2A, colorVar = "iteration") +
   theme(legend.position = "bottom")
 leg <- get_legend(plot)
 as_ggplot(leg)
-ggsave(filename = "manuscript_outputs/legendFig2spp.tiff", 
+ggsave(filename = paste(tiff_path, "legendFig2spp.tiff"), 
        dpi = 600, units = "in", width = 5)
 
 
@@ -132,7 +139,7 @@ for(i in 1:4){
   plot_sites <- base_sites_plot(data = fig2sites[[i]],colorVar = "Edev", colorLegend = "Environmental deviation") +
     scale_color_viridis_c() + theme(legend.position = "none")
   
-  ggsave(filename = paste0("manuscript_outputs/", names(fig2sites)[i], "sites.tiff"),
+  ggsave(filename = paste0(tiff_path, names(fig2sites)[i], "sites.tiff"),
          dpi = 600, units = "in", height = 5, width = 5)
   
   fig2_sites_plots[[i]] <- plot_sites
@@ -144,7 +151,7 @@ plot <- base_sites_plot(data = fig2sites[[1]],colorVar = "Edev", colorLegend = "
                                   legend.box = "vertical")
 leg <- get_legend(plot)
 as_ggplot(leg)
-ggsave(filename = "manuscript_outputs/legendFig2sites.tiff", 
+ggsave(filename = paste(tiff_path, "legendFig2sites.tiff"), 
        dpi = 600, units = "in", width = 5)
 
 
@@ -201,7 +208,7 @@ fig3spp %>%
         plot.title = element_text(size = 12, margin = margin(t = 10, b = -20)),
         tern.axis.arrow = element_line(size = 1),
         legend.box = "horizontal")
-ggsave("manuscript_outputs/FIG3speciesOPTION2.tiff", width = 10, height = 5, units = "in", dpi = 100)
+ggsave(paste(tiff_path, "FIG3speciesOPTION2.tiff"), width = 10, height = 5, units = "in", dpi = 100)
 
 ### Option2 - color for niche optima, shape for dispersal level
 pal1 <- viridisLite::plasma(20)
@@ -246,11 +253,11 @@ fig3plot_spp <- fig3spp %>%
         legend.text = element_text(size = 8))
 
 fig3plot_spp + theme(legend.position = "none")
-ggsave(filename = "manuscript_outputs/FIG3species.tiff", height = 5, width = 5, units = "in", dpi = 600)
+ggsave(filename = paste(tiff_path, "FIG3species.tiff"), height = 5, width = 5, units = "in", dpi = 600)
 
 leg <- get_legend(fig3plot_spp)
 as_ggplot(leg)
-ggsave(filename = "manuscript_outputs/legendFig3species.tiff", 
+ggsave(filename = paste(tiff_path, "legendFig3species.tiff"), 
        dpi = 600, units = "in", width = 5)
 
 # SITES PLOT FIG3
@@ -260,24 +267,22 @@ fig3plot_sites <- base_sites_plot(data = fig3sites,colorVar = "Edev", colorLegen
                                   legend.box = "vertical")
 
 fig3plot_sites + theme(legend.position = "none")
-ggsave(filename = "manuscript_outputs/FIG3sites.tiff", height = 5, width = 5, units = "in", dpi = 600)
+ggsave(filename = paste(tiff_path, "FIG3sites.tiff"), height = 5, width = 5, units = "in", dpi = 600)
 
 leg <- get_legend(fig3plot_sites)
 as_ggplot(leg)
-ggsave(filename = "manuscript_outputs/legendFig3sites.tiff", 
+ggsave(filename = paste(tiff_path, "legendFig3sites.tiff"), 
        dpi = 600, units = "in", width = 5)
 
 #Write csv files for Mathew
-
-write.csv(fig3spp, file = "manuscript_outputs/Fig3c_species.csv")
-write.csv(fig3sites, file = "manuscript_outputs/Fig3c_sites.csv")
+dir.create(paste(outsfolderpath, "csv_files/"))
+write.csv(fig3spp, file = paste(outsfolderpath, "csv_files/Fig3c_species.csv"))
+write.csv(fig3sites, file = paste(outsfolderpath, "csv_files/Fig3c_sites.csv"))
 
 
 
 # INTERACTION MATRICES FIGURE 3 -------------------------------------------
 
-library(corrplot)
-library(HMSC)
 
 modelfile <- readRDS(paste0(outsfolderpath, "FIG3C", "-model.RDS"))
 
@@ -300,7 +305,7 @@ intplot <- function(modelfile, iteration){
            diag = FALSE, p.mat = siteDraw, tl.srt = 45)
 }
 
-tiff("manuscript_outputs/Fig3Interactions.tiff", res = 600, width = 5, height = 15, units = "in")
+tiff(paste(tiff_path, "Fig3Interactions.tiff"), res = 600, width = 5, height = 15, units = "in")
 par(mfrow = c(5,1))
 intplot(modelfile, 1)
 intplot(modelfile, 2)
@@ -373,11 +378,11 @@ fig3a_spp %>%
         legend.text = element_text(size = 8)) -> fig3aplot_spp
 
 fig3aplot_spp + theme(legend.position = "none")
-ggsave(filename = "manuscript_outputs/SUP1species.tiff", height = 5, width = 5, units = "in", dpi = 600)
+ggsave(filename = paste(tiff_path, "SUP1species.tiff"), height = 5, width = 5, units = "in", dpi = 600)
 
 leg <- get_legend(fig3aplot_spp)
 as_ggplot(leg)
-ggsave(filename = "manuscript_outputs/legendSUP1_species.tiff", 
+ggsave(filename = paste(tiff_path, "legendSUP1_species.tiff"), 
        dpi = 600, units = "in", width = 5)
 
 # SITES PLOT FIG3
@@ -387,11 +392,11 @@ fig3aplot_sites <- base_sites_plot(data = fig3a_sites,colorVar = "Edev", colorLe
                                   legend.box = "vertical")
 
 fig3aplot_sites + theme(legend.position = "none")
-ggsave(filename = "manuscript_outputs/SUP1sites.tiff", height = 5, width = 5, units = "in", dpi = 600)
+ggsave(filename = paste(tiff_path, "SUP1sites.tiff"), height = 5, width = 5, units = "in", dpi = 600)
 
 leg <- get_legend(fig3aplot_sites)
 as_ggplot(leg)
-ggsave(filename = "manuscript_outputs/legendSUP1sites.tiff", 
+ggsave(filename = paste(tiff_path, "legendSUP1sites.tiff"), 
        dpi = 600, units = "in", width = 5)
 
 
@@ -459,11 +464,11 @@ fig3b_spp %>%
         legend.text = element_text(size = 8)) -> fig3bplot_spp
 
 fig3bplot_spp + theme(legend.position = "none")
-ggsave(filename = "manuscript_outputs/SUP2species.tiff", height = 5, width = 5, units = "in", dpi = 600)
+ggsave(filename = paste(tiff_path, "SUP2species.tiff"), height = 5, width = 5, units = "in", dpi = 600)
 
 leg <- get_legend(fig3bplot_spp)
 as_ggplot(leg)
-ggsave(filename = "manuscript_outputs/legendSUP2_species.tiff", 
+ggsave(filename = paste(tiff_path, "legendSUP2_species.tiff"), 
        dpi = 600, units = "in", width = 5)
 
 # SITES PLOT FIG3
@@ -473,11 +478,11 @@ fig3bplot_sites <- base_sites_plot(data = fig3b_sites,colorVar = "Edev", colorLe
                                   legend.box = "vertical")
 
 fig3bplot_sites + theme(legend.position = "none")
-ggsave(filename = "manuscript_outputs/SUP2sites.tiff", height = 5, width = 5, units = "in", dpi = 600)
+ggsave(filename = paste(tiff_path, "SUP2sites.tiff"), height = 5, width = 5, units = "in", dpi = 600)
 
 leg <- get_legend(fig3bplot_sites)
 as_ggplot(leg)
-ggsave(filename = "manuscript_outputs/legendSUP2sites.tiff", 
+ggsave(filename = paste(tiff_path, "legendSUP2sites.tiff"), 
        dpi = 600, units = "in", width = 5)
 
 
