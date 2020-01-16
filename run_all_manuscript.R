@@ -288,5 +288,5 @@ for(i in 1:7){
 }
 
 # Get Tiff files for the manuscript ------------------------------------------------------
-source("Fig2_Fig3_TIFFs.R")
+source("manuscript_functions/Fig2_Fig3_TIFFs.R")
 
