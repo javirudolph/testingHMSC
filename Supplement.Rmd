@@ -444,7 +444,7 @@ All scenarios have been implemented in R and the project’s repository can be f
 Supplementary Figure 1.  In which we have half of the species with interactions and the other without. 
 
 
-```{r echo=FALSE, message=FALSE}
+```{r eval=FALSE, echo=FALSE, message=FALSE}
 E <- readRDS("manuscript_functions/fixedLandscapes/orig-no-seed-E.RDS")
 source("manuscript_functions/output_processing_fx.R")
 
@@ -493,7 +493,7 @@ base_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend 
 ```
 
 
-```{r  echo=FALSE, message=FALSE}
+```{r eval = FALSE, echo=FALSE, message=FALSE}
 # SUP FIG1 ---------------------------------------------------------------
 
 # This is what used to be Figure 3a, in which we have half of the species with interactions
@@ -578,5 +578,5 @@ grid.arrange(legendSup1A, legendSup1B, ncol = 2)
 ```
 
 
-
+Supplementary Figure 2.  In which we change dispersal only, α was 0.01 for 1/3 of species, 0.05 for 1/3 of species, and 0.1 for the other 1/3 of species.
 
