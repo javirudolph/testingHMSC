@@ -1,6 +1,16 @@
 
 # This function will use all the process functions to generate a metacommunity with the given parameters. 
 
+#' @title Metacommunity Simulation
+#' @description This function will use all the process functions to generate a metacommunity with the given parameters. It will only store the occurrence matrix at the end of the simulation
+#' @param XY coordinates for each of the patches
+#' @param E environmental covariates measured for each patch. Our simulation only included one so far
+#' @param pars output from the prep_pars function. It is a list of necessary parameters to run all the process functions
+#' @param Y0 matrix of initial conditions, occurrence matrix
+#' @param nsteps time steps to simulate metacomminuty dynamics
+#' @param envResp choose between a "quadratic" or "gaussian" response to the environment. Default is "quadratic".
+#'
+
 mainfx <- function(XY, E, pars, Y0, nsteps, envResp = "quadratic"){
   with(pars, {
     
