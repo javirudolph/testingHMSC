@@ -32,6 +32,12 @@ I_f <- function(Y = "Species occurrence matrix",
 
 # Patch Connectivity ------------------------------------------------------
 
+#' @title Metacommunity process: patch connectivity
+#' @description This function will calculate the connectivity matrix for a given set of patches and a dispersal parameter
+#' @param XY corresponds to the patch coordinates
+#' @param alpha dispersal parameter associated to an exponential distribution used for dispersal
+#' @keywords patch
+
 get_K <- function(XY, alpha){
   N <- nrow(XY)
   distMat <- as.matrix(dist(XY, method = "euclidean", upper = T, diag = T))
@@ -43,6 +49,13 @@ get_K <- function(XY, alpha){
 
 # Environment -------------------------------------------------------------
 # The effect of the environment on the local performance and colonization
+
+#' @title Metacommunity process: Environmental filtering with gaussian response
+#' @description The effect of the environment on the local performance and colonization. Probability of establishing a viable local population given environmental conditions in the patch.
+#' @param E matrix of environmental covariates for each patch
+#' @param u_c considered as the niche optima for each species, for each environmental variable.
+#' @param s_c understood as niche breadth for each species for each environmental variable.
+#' @keywords environmental filtering gaussian response
 
 S_f_gaussian <- function(E, u_c, s_c) {
   R <- ncol(u_c)
@@ -58,6 +71,15 @@ S_f_gaussian <- function(E, u_c, s_c) {
 }
 
 # This function is used for a quadratic response to the environment
+
+
+#' @title Metacommunity process: Environmental filtering with quadratic response
+#' @description The effect of the environment on the local performance and colonization. Probability of establishing a viable local population given environmental conditions in the patch.
+#' @param E matrix of environmental covariates for each patch
+#' @param u_c considered as the niche optima for each species, for each environmental variable.
+#' @param s_c understood as niche breadth for each species for each environmental variable.
+#' @keywords environmental filtering quadratic response
+#'
 
 S_f_quadratic <- function(E, u_c, s_c) {
   R <- ncol(u_c)
