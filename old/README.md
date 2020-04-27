@@ -2,6 +2,11 @@
 
 This repository contains some of the code associated to the manuscript "Rethinking Metacommunity Ecology". It has all the scripts associated to the simulations and analysis, but not RDS or data files. All data files should be able to be recreated by the user with the provided scripts.
 
+Some information on the folders:  
+* [**old**](https://github.com/javirudolph/testingHMSC/tree/master/old) we are not using these anymore, but they show the history of our work. These include: 
+     * [**HMSC-DGravel2016**](https://github.com/javirudolph/testingHMSC/tree/master/old/hmsc-DGravel2016) - this project contains the original scripts provided in the dropbox folder in January 2019.  
+     * [**update1_Jan18**](https://github.com/javirudolph/testingHMSC/tree/master/old/update1_jan18) - this project uses the original functions, but edits were made to the parameters in the simulations. These data files are the ones used for the manuscript, and data for plotting and further analysis can be found in the [dataWrangling](https://github.com/javirudolph/testingHMSC/tree/master/update1_jan18/dataWrangling) folder. Updated figures can be found in this [repository](https://github.com/javirudolph/testingHMSC/tree/master/update1_jan18/newFigures/allFigs) as well. 
+     * [**testingHMSCv2**](https://github.com/javirudolph/testingHMSC/tree/master/old/testingHMSCv2) - new simulations/scenarios and work associated to the 2019 cycle will be found here. We have changed the response to the environment in the simulations, from a gaussian response to a quadratic response (details can be found [here](https://github.com/javirudolph/testingHMSC/blob/master/aboutScripts-FAQ/environmentOnSpeciesOccupancy.md). A comparisson between these two response types is described in the [reports](https://github.com/javirudolph/testingHMSC/tree/master/old/testingHMSCv2/reports), specifically the ones for fifteen species ([Fig2](https://github.com/javirudolph/testingHMSC/blob/master/old/testingHMSCv2/reports/fifteen_spp_figure2.md) and [Fig3](https://github.com/javirudolph/testingHMSC/blob/master/old/testingHMSCv2/reports/fifteen_spp_figure3.md) )
 
 
 Some information on the folders:  
