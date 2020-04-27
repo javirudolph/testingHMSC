@@ -1,5 +1,11 @@
 # Using as.mcmc function from HMSC isn't working to include the burn section of the results
 
+#' @title Get MCMC object
+#' @description Using as.mcmc function from HMSC isn't working to include the burn section of the results
+#' @param folderpath location of the file
+#' @param scenario file name
+#' @param modelNum select from the HMSC model object
+#'
 
 get_mcmc_obj <- function(folderpath = NULL,
                          scenario = NULL,
@@ -41,6 +47,11 @@ get_mcmc_obj <- function(folderpath = NULL,
 
 
 # Get them all in a list for gelman.diag
+#' @title Gelman Diagnostics for all chains
+#' @description Get all the mcmc objects in a list for gelman.diag
+#' @param folderpath location of files
+#' @param scenario specific file name
+
 
 get_mcmc_lists <- function(folderpath = NULL,
                            scenario = NULL){

@@ -1,5 +1,5 @@
 
-# This function is used to prepare the parameters in a useful format and avoid lengthy code for every simulation
+# This function is used to prepare the parameters in a useful format and avoid lengthy code for every simulation, when we only want to change one or two values.
 
 # Parameters --------------------------------------------------------------
 # Input and organize parameters
@@ -11,6 +11,20 @@
 # alpha = "Dispersal",
 # interx = "Sensitivity to interactions"
 # initocup = "initial occupancy"
+
+#' @title Prepare metacommunity parameters
+#' @description This function is used to prepare the parameters in a useful format and avoid lengthy code for every simulation. It will output all parameters in a list ready for the main_sim_fx()
+#' @param N number of patches for the simulation
+#' @param D number of environmental variables simulated
+#' @param R number of species for the simulation
+#' @param nicheOpt vector with niche optima for each species. Default is range equally divided among species.
+#' @param breadth niche breadth. As reference 0.8 as narrow and 2 as broad with a quadratic response.
+#' @param alpha dispersal parameter associated to an exponential distribution
+#' @param interex_col Species sensitivity to interactions. For our simulations, sensitivity is set the same for all species, and both for colonization and extinction
+#' @param interex_ext Species sensitivity to interactions. For our simulations, sensitivity is set the same for all species, and both for colonization and extinction
+#' @param makeRDS whether to save the output as an RDS file
+#' @param whereToSave file path to save output
+#' @param objName name for the output
 
 prep_pars <- function(N = NULL,
                       D = NULL,

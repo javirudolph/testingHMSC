@@ -11,6 +11,13 @@
 #library(tidyverse)
 #library(ggtern)
 
+#' @title Organize and format site level data
+#' @description Manuscript specific function. This function takes the simulated metacommunity to get the species richness for each site. It then binds that information to the Variation Partinioning output from the HMSC::variPart(). This function also takes the output of HMSC::variPart() and organizes each fraction: into the env, spa and codist components
+#' @param folderpath path to stored RDS files from the get_VP_results(), variation partitioning
+#' @param scenario the specific name of the file to use. Should be able to access both the metaco simulation, the model and the VP results with this name.
+#'
+#'
+
 get_sites_data <- function(folderpath, scenario){
   richness <- readRDS(paste0(folderpath, scenario, "-metacomSim.RDS")) %>% 
     set_names(imap(., ~ paste0("iter", .y))) %>% 
@@ -71,7 +78,14 @@ get_sites_data <- function(folderpath, scenario){
 # ** get_species_data() this function organizes species level data and gets it ready to plot.
 # It takes the RDS file that is the output of the HMSC::variPart() function and reorganizes it into the 
 # env, codist and spa components.
-# It also calculates the prevalence information for each species. 
+# It also calculates the prevalence information for each species.
+#' @title Organize and Format VP results at the species level
+#' @description this function organizes species level data and gets it ready to plot. It takes the RDS file that is the output of the HMSC::variPart() function and reorganizes it into the env, codist and spa components.It also calculates the prevalence information for each species.
+#' organizes each fraction: into the env, spa and codist components
+#' @param folderpath path to stored RDS files from the get_VP_results()
+#' @param scenario the specific name of the file to use. Should be able to access the both the metacomSim, the model and the VP results with this name.
+#'
+
 
 get_species_data <- function(folderpath, scenario){
   
@@ -123,6 +137,12 @@ get_species_data <- function(folderpath, scenario){
 # Variation Partition results at the species level. That way we can know what niche values each species has.
 # The output of this function can be joined to the VP results at the species level and then plot
 
+#' @title Get parameters for Figure 2
+#' @description  Manuscript specific. This function is for Figure 2 only.It takes the RDS params file and organizes it from a list to a dataframe, so that it can be joined to the Variation Partition results at the species level. That way we can know what niche values each species has. The output of this function can be joined to the VP results at the species level and then plot.
+#' @param folderpath path to stored RDS files from the get_VP_results()
+#' @param scenario the specific name of the file to use. Should be able to access the both the metacomSim, the model and the VP results with this name.
+#'
+
 get_fig2_params <- function(folderpath, scenario){
   pars <- readRDS(paste0(folderpath, scenario, "-params.RDS"))
   
@@ -140,6 +160,11 @@ get_fig2_params <- function(folderpath, scenario){
 # Figure 3 has three sets of parameters because we divided simulations into groups.
 # Half of the species in each simulation has interactions, and the other half doesn't.
 # Or, a third of the species is assigned a different dispersal level, etc...
+#' @title Get parameters for Figure 3
+#' @description Manuscript specific, figure 3 only.Figure 3 has three sets of parameters because we divided simulations into groups.Half of the species in each simulation has interactions, and the other half doesn't.Or, a third of the species is assigned a different dispersal level.
+#' @param folderpath path to stored RDS files from the get_VP_results()
+#' @param scenario the specific name of the file to use. Should be able to access the both the metacomSim, the model and the VP results with this name.
+#'
 
 get_fig3_params <- function(folderpath, scenario){
   parsList <- readRDS(paste0(folderpath, scenario, "-params.RDS"))
@@ -168,6 +193,13 @@ get_fig3_params <- function(folderpath, scenario){
 
 
 # Make the Figures
+#' @title Base Plots: Species
+#' @description Base species plot
+#' @param data formatted data from get_spp_data()
+#' @param plotMain main title for the figure
+#' @param colorVar variable for the color variation. Color by species or by niche optima
+#' @param colorLegend should the color legend be included, what is the title?
+#'
 
 species_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
   data %>% 
@@ -202,6 +234,14 @@ species_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "
 }
 
 # Plot sites by dots
+
+#' @title Base Plots: Sites
+#' @description Base species plot
+#' @param data formatted data from get_sites_data()
+#' @param plotMain main title for the figure
+#' @param colorVar variable for the color variation. Color by species or by niche optima
+#' @param colorLegend should the color legend be included, what is the title?
+#'
 sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
@@ -238,6 +278,14 @@ sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "no
 # To create the species correlation matrices:
 # This will mostly follow the code provided from the HMSC vignette, therefore it is not in a tidyverse framework and requires additional packages
 
+#' @title Create the species correlation matrices
+#' @description This mostly follows the code provided from the HMSC vignette, therefore it is not in a tidyverse framework and requires the corrplot package
+#' @param folderpath path to stored RDS files from the get_VP_results()
+#' @param scenario the specific name of the file to use. Should be able to access the HMSC model.
+#' @param iteration Which iteration of the model should it use? Default is 1
+#' @param corTitle Title for the correlation plot
+
+
 interaction_plot <- function(folderpath, scenario, iteration = NULL, corTitle = NULL){
   
   if(is.null(iteration) == TRUE){
@@ -268,6 +316,13 @@ interaction_plot <- function(folderpath, scenario, iteration = NULL, corTitle = 
 
 
 # Figures functions from Fig2and3
+#' @title Base Plots: Species
+#' @description Base species plot
+#' @param data formatted data from get_spp_data()
+#' @param plotMain main title for the figure
+#' @param colorVar variable for the color variation. Color by species or by niche optima
+#' @param colorLegend should the color legend be included, what is the title?
+#'
 base_spp_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
@@ -303,6 +358,14 @@ base_spp_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = 
           tern.axis.arrow = element_line(size = 1))
 }
 
+#' @title Base Plots: Sites
+#' @description Base species plot
+#' @param data formatted data from get_sites_data()
+#' @param plotMain main title for the figure
+#' @param colorVar variable for the color variation. Color by species or by niche optima
+#' @param colorLegend should the color legend be included, what is the title?
+#'
+#'
 base_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
