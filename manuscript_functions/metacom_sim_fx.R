@@ -97,7 +97,13 @@ S_f_quadratic <- function(E, u_c, s_c) {
 }
 
 # Interactions ------------------------------------------------------------
-# First get the sum of ecological interactions
+
+#' @title Metacommunity process: ecological interactions
+#' @description Sum of ecological interactions. Computes the sum of ecological interactions for every location and every species
+#' @param A species interaction matrix
+#' @param Y species occurrence matrix
+#' @keywords ecological interactions
+#'
 
 sum_interactions <- function(A = "Species interactions matrix",
                              Y = "Species occurrence matrix"){
@@ -105,6 +111,14 @@ sum_interactions <- function(A = "Species interactions matrix",
 }
 
 # Then the effect of interactions on colonization
+#' @title Metacommunity process: colonization
+#' @description The total effect of ecological interactions on the colonization probabilty
+#' @param v sum of interactions
+#' @param d_c sensitivity to interactions
+#' @param c_0 colonization at zero interactions
+#' @param c_max colonization at max interactions
+#'
+
 
 C_f <- function(v = "Sum interactions",
                 d_c = "Sensitivity to interactions",
@@ -125,6 +139,12 @@ C_f <- function(v = "Sum interactions",
 
 
 # Environment Extinction --------------------------------------------------
+#' @title Metacomminbut process: extinction
+#' @description Responses of the extinction probability to the local environment. Extinction rate should be minimal at environmental optimum
+#' @param E Matrix of environmental covariates at each patch
+#' @param u_e extinction rate at environmental optimum
+#' @param s_e extintion rate at minimum
+#'
 
 M_f <- function(E = "Environmental variables",
                 u_e = "extinction rate at optimum?",
@@ -143,6 +163,13 @@ M_f <- function(E = "Environmental variables",
 
 
 # Interaction Extinction --------------------------------------------------
+#' @title Metacommunity process: interactions and extinction
+#' @description Effect of ecological interactions on species extinction at the patch level. In this case, extinction probability must be larger when interactions are negative and smaller when the interactions are positive.
+#' @param v sum of ecological interactions
+#' @param d_e sensitivity to interactions
+#' @param e_0 extinction at zero interactions
+#' @param e_min extinction at max interactions
+#'
 
 E_f <- function(v = "Sum of interactions",
                 d_e = "Sensitivity to interactions",
