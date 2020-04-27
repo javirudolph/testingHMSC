@@ -15,6 +15,20 @@
 # Simulate the metacommunity results to input in the HMSC function
 
 # This function works for figure two in which all the species basically share their parameters
+
+#' @title Metacommunity Simulation one set of parameters
+#' @description This function will use the set of given parameters and run the main metacommunity simulation for a set amount of time steps. The output is a list of matrices, where each one of the matrices is an iteration of the metacommunity with the same parameters. It gives the option to save RDS files to the specified directory so these RDS files can be accessed later by other HMSC functions.
+#' @param XY coordinates for each of the sites or patches
+#' @param E matrix of environmental variables measured at each site
+#' @param pars list of parameters given by the output of the prep_pars() function
+#' @param nsteps numeric, number of time steps before getting the "snapshot" of a metacommunity
+#' @param occupancy numeric value between 0-1, to set as the initial conditions occupancy of sites by the different species.
+#' @param niter number of iterations for simulating the metacommunity with the same parameters.
+#' @param envResp type of response to the environment: "gaussian" or "quadratic"
+#' @param makeRDS should the function make an RDS file from the output and save it? Default is FALSE
+#' @param whereToSave file path for the RDS file to be saved in
+#' @param objName should the RDS file be saved, what should it be called?
+
 metacom_sim4HMSC <- function(XY, E, pars, nsteps,
                              occupancy, niter,
                              envResp = "quadratic",
@@ -44,7 +58,23 @@ metacom_sim4HMSC <- function(XY, E, pars, nsteps,
 }
 
 
-# This function is for figure 3, in which we have separate groups of species with different dispersal or interaction parameters. 
+# This function is for figure 3, in which we have separate groups of species with different dispersal or interaction parameters.
+
+#' @title Metacommunity Simulation for multiple sets of parameters
+#' @description This function will use the set of given parameters and run the main metacommunity simulation for a set amount of time steps. The output is a list of matrices, where each one of the matrices is an iteration of the metacommunity with the same parameters. It gives the option to save RDS files to the specified directory so these RDS files can be accessed later by other HMSC functions. It is different from the simulation with one set of parameters in that you can assign different dispersal and competition parameters to the species within your simulation.
+#' @param XY coordinates for each of the sites or patches
+#' @param E matrix of environmental variables measured at each site
+#' @param pars in this case, the parameters are a list of prep_pars() outputs or the output of prep_multiparam()
+#' @param nsteps numeric, number of time steps before getting the "snapshot" of a metacommunity
+#' @param occupancy numeric value between 0-1, to set as the initial conditions occupancy of sites by the different species.
+#' @param niter number of iterations for simulating the metacommunity with the same parameters.
+#' @param envResp type of response to the environment: "gaussian" or "quadratic"
+#' @param makeRDS should the function make an RDS file from the output and save it? Default is FALSE
+#' @param whereToSave file path for the RDS file to be saved in
+#' @param objName should the RDS file be saved, what should it be called?
+#'
+#'
+
 metacom_sim4HMSC_multParams <- function(XY, E, pars, nsteps,
                                         occupancy, niter,
                                         envResp = "quadratic",
@@ -82,6 +112,20 @@ metacom_sim4HMSC_multParams <- function(XY, E, pars, nsteps,
 
 
 # Fit HMSC ----------------------------------------------------------------
+
+#' @title Format metacommunity data to "HMSC" classes
+#' @description This function will use the simulated metacommunity matrices and format the data into "HMSC" classes
+#' @param metacomData list of simulated metacommunity matrices. Output from metacom_sim4HMSC() or metacom_sim4HMSC_multiparam()
+#' @param numClusters number of clusters based on number of cores available to work with DoParallel
+#' @param E matrix of environmental variables associated to each site
+#' @param MEMsel distance-based Moran' Eigenvector Map's eigenvector maps from a geographic distance matrix (xy matrix). This comes from adespatial::dbmem()
+#' @param hmscPars list of parameters to be included for iterations, burn and thin components of the as.HMSCdata()
+#' @param makeRDS should the function make an RDS file from the output and save it? Default is FALSE
+#' @param whereToSave file path for the RDS file to be saved in
+#' @param objName should the RDS file be saved, what should it be called?
+#'
+#' @importFrom doParallel registerDoParallel
+#'
 
 metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
                                 hmscPars = NULL,
@@ -132,6 +176,15 @@ metacom_as_HMSCdata <- function(metacomData, numClusters, E, MEMsel,
 
 
 # Variation Partitioning --------------------------------------------------
+#' @title Variation partinioning: species
+#' @description use of the VariPart function from HMSC, gets results at the level of species
+#' @param HMSCmodel output from the metacom_as_HMSCdata() or an object from as.HMSCdata()
+#' @param MEMsel distance-based Moran' Eigenvector Map's eigenvector maps from a geographic distance matrix (xy matrix). This comes from adespatial::dbmem()
+#' @param numClusters number of clusters based on number of cores available to work with DoParallel
+#' @param makeRDS should the function make an RDS file from the output and save it? Default is FALSE
+#' @param whereToSave file path for the RDS file to be saved in
+#' @param objName should the RDS file be saved, what should it be called?
+#'
 
 get_VPresults <- function(HMSCmodel, MEMsel, numClusters,
                    makeRDS = FALSE,
@@ -164,6 +217,17 @@ get_VPresults <- function(HMSCmodel, MEMsel, numClusters,
 }
 
 # This function is necessary when running infor on sites.
+
+#' @title Variation partinioning: sites
+#' @description use of the VariPart function from HMSC, gets results at the level of species
+#' @param HMSCmodel output from the metacom_as_HMSCdata() or an object from as.HMSCdata()
+#' @param MEMsel distance-based Moran' Eigenvector Map's eigenvector maps from a geographic distance matrix (xy matrix). This comes from adespatial::dbmem()
+#' @param numClusters number of clusters based on number of cores available to work with DoParallel
+#' @param makeRDS should the function make an RDS file from the output and save it? Default is FALSE
+#' @param whereToSave file path for the RDS file to be saved in
+#' @param objName should the RDS file be saved, what should it be called?
+#' @details I think this function can probably just be incorporated into the VariPart for species if we include and if statement for sites = TRUE
+#'
 get_VPresults_SITE <- function(HMSCmodel, MEMsel, numClusters,
                                makeRDS = FALSE,
                                whereToSave = NULL,
