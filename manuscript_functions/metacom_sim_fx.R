@@ -1,10 +1,7 @@
 
 # These are the functions needed for the processes regarding the metacommunity simulations:
-# Each individual function is explained in the appendix, and a more in depth description is provided in the .Rmd
-# metacom_sims_functions.Rmd, which renders to an html and shows the formulas and associated Rcode
-
-# https://github.com/javirudolph/testingHMSC/tree/master/aboutScripts-FAQ
-
+# Each individual function is explained in the Supplementary information
+# 
 
 # Each of these functions describes the processes going on for the metacommunity. We use these functions later on in the main_sim_fx.R script to generate an occupancy matrix for species in patches
 
@@ -14,6 +11,14 @@
 
 
 # Immigration -------------------------------------------------------------
+
+#' @title Metacommunity process: immigration
+#' @description This function will calculate the propagule pressure. The effects of immigration are given as a weighted average of the occurrence probability of species i in neighborhood of z.
+#' @param Y matrix of species occurrence
+#' @param K connectivity matrix
+#' @param m independent constant to account for immigration from outside the simulated metacommunity
+#' @keywords immigration metacommunity
+#'
 
 I_f <- function(Y = "Species occurrence matrix", 
                 K = "Patch connectivity matrix", 
