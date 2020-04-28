@@ -8,8 +8,8 @@
 # Other packages needed. but you might already have these:
 # install.packages('devtools')
 # install.packages('tidyverse')
-# install.packages('doParallel')
 # install.packages('ggtern')
+# install.packages('doParallel')
 # install.packages('corrplot')
 
 set.seed(77)
@@ -54,7 +54,8 @@ niche_narrow <- 0.8
 
 # In the past, we tried several combinations of these parameters and there didn't seem to be much of a difference between them. According to the convergence plots it seems to happen pretty fast. We settled on the parameters in the next line, but you are free to try with others, example shown in the commented line after setting the current parameters. 
 
- hmscPars <- list(niter = 50000, nburn = 25000, thin = 10) # It won't run with this. DoParallel breaks
+ hmscPars <- list(niter = 50000, nburn = 25000, thin = 10)
+ 
 # hmscPars <- list(niter = 30000, nburn = 10000, thin = 10) # This is ok, but not enough for raftery.diag
 # hmscPars <- list(niter = 10000, nburn = 5000, thin = 5)
 
@@ -68,7 +69,7 @@ save.image(file = paste0(folderpath, "runInfo", ".RData"))
 # These will prepare a list of parameters in the right format
 source("manuscript_functions/prep_pars_fx.R")
 
-# Original functions for the metacommunity simulation. Note addition of a quadratic response to the environment. Which is what we've used in this manuscript.  
+# Original functions for the metacommunity simulation. Note addition of a quadratic response to the environment. Which is what we've used here.
 source("manuscript_functions/metacom_sim_fx.R")
 
 # The actual metacommunity simulation that uses the functions above. It saves the snapshot of the metacommunity after 200 time steps.
@@ -91,10 +92,8 @@ E <- readRDS("manuscript_functions/fixedLandscapes/orig-no-seed-E.RDS")
 MEMsel <- readRDS("manuscript_functions/fixedLandscapes/orig-no-seed-MEMsel.RDS")
 
 
-
-
 # FIGURE2 DATA -----------------------------------------------------------------
-# This first part is only setting the parameters for the different scenarios. After that, the running cycles is actually running the metacommunity simulations, fitting and variation partitioning.
+# This first part is only setting the parameters for the different scenarios. After that, the running cycles is actually running the metacommunity simulations, fitting the model and then variation partitioning.
 
 #FIG2A: no interactions, narrow niche
 scen1pars <- prep_pars(N = 1000, D = 1, R = 12, breadth = niche_narrow, nicheOpt = NULL, alpha = disp_med,
@@ -288,5 +287,6 @@ for(i in 1:7){
 }
 
 # Get Tiff files for the manuscript ------------------------------------------------------
+# I'm still working on these (April 27, 2020)
 source("manuscript_functions/Fig2_Fig3_TIFFs.R")
 
