@@ -4,7 +4,7 @@ This repository contains the code associated to the manuscript "The Internal Str
 
 If cloning this repository, to get our simulated data, open the repository's project in RStudio, and then run the script `run_all_manuscript.R`, which should save all the outputs in a folder created by the script. 
 
-## [manuscript_functions:](https://github.com/javirudolph/testingHMSC/tree/master/manuscript_functions)
+All the functions used in the `run_all` can be found in the [manuscript_functions:](https://github.com/javirudolph/testingHMSC/tree/master/manuscript_functions) folder.
 
 
     
