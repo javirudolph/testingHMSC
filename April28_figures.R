@@ -1,5 +1,6 @@
-# Second go at making figures
+# Manuscript Figures and Supplement figures
 
+# Setup ---------------------------------------------------------------
 
 library(tidyverse)
 library(ggtern)
@@ -19,39 +20,122 @@ tiff_path <- paste(outsfolderpath, "tiff_files/")
 
 scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
 
-# Figure 2 ----------------------------------------------------------------
 
+# Plot functions ----------------------------------------------------------
 
+base_spp_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
+  data %>% 
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+    geom_point(aes_string(color = colorVar), alpha = 0.8) +
+    scale_T_continuous(limits=c(0.0,1.0),
+                       breaks=seq(0.0,1.0,by=0.1),
+                       labels=seq(0.0,1.0,by=0.1)) +
+    scale_L_continuous(limits=c(0.0,1),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    scale_R_continuous(limits=c(0.0,1.0),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    labs(title = plotMain,
+         x = "E",
+         xarrow = "Environment",
+         y = "C",
+         yarrow = "Co-Distribution",
+         z = "S", 
+         zarrow = "Spatial Autocorrelation") +
+    theme_light() +
+    theme_showarrows() +
+    #scale_colour_brewer(palette = "Set1") +
+    #scale_colour_brewer(palette = "Spectral") +
+    #scale_color_viridis_d() +
+    scale_size_area(limits = c(0,1), breaks = seq(0,1,0.2)) +
+    guides(color = guide_legend(colorLegend, order = 2), 
+           size = guide_legend(title = expression(R^2), order = 1)) +
+    theme(panel.grid = element_line(color = "darkgrey"),
+          axis.text = element_text(size =5),
+          axis.title = element_text(size = 8),
+          plot.title = element_text(size = 12, margin = margin(t = 10, b = -20)),
+          tern.axis.arrow = element_line(size = 1))
+}
 
-fig2species <- NULL
-fig2sites <- NULL
+base_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
+  data %>% 
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+    geom_point(aes_string(color = colorVar), alpha = 0.6) +
+    scale_T_continuous(limits=c(0,1.0),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    scale_L_continuous(limits=c(0.0,1),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    scale_R_continuous(limits=c(0.0,1.0),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    labs(title = plotMain,
+         x = "E",
+         xarrow = "Environment",
+         y = "C",
+         yarrow = "Co-Distribution",
+         z = "S", 
+         zarrow = "Spatial Autocorrelation") +
+    theme_light() +
+    theme_showarrows() +
+    #scale_colour_brewer(palette = "Set1") +
+    #scale_colour_brewer(palette = "Spectral") +
+    #scale_color_viridis_d() +
+    scale_size_area(limits = c(0, 0.003), breaks = seq(0, 0.003, 0.0005)) +
+    guides(color = guide_colorbar(colorLegend, order = 2), 
+           size = guide_legend(title = expression(R^2), order = 1)) +
+    theme(panel.grid = element_line(color = "darkgrey"),
+          axis.text = element_text(size =5),
+          axis.title = element_text(size = 8),
+          plot.title = element_text(size = 12, margin = margin(t = 10, b = -20)),
+          tern.axis.arrow = element_line(size = 1))
+}
+# Figure 2 - data ----------------------------------------------------------------
+
+fig2_spp <- NULL
+fig2_sites <- NULL
 for(i in 1:4){
+  i <- 1
   spp <- get_species_data(outsfolderpath, scenarios[i])
   sites <- get_sites_data(outsfolderpath, scenarios[i]) %>% 
     mutate(E = rep(E, 5), 
            Edev = abs(E-0.5))
-  fig2species[[i]] <- spp
-  fig2sites[[i]] <- sites
+  fig2_spp <- bind_rows(fig2_spp, spp)
+  fig2_sites <- bind_rows(fig2_sites, sites)
 }
-names(fig2species) <- scenarios[1:4]
-names(fig2sites) <- scenarios[1:4]
+
+
+# Figure 2 - species Figure ---------------------------------------------------------------
+
+sp2a <- fig2_spp %>% 
+  filter(., scenario == "FIG2A")
+
 
 
 # Figure 3 ----------------------------------------------------------------
 
+fig3_spp <- NULL
+fig3_sites <- NULL
 
-fig3spp <- get_species_data(outsfolderpath, scenario = "FIG3C")
-fig3params <- get_fig3_params(outsfolderpath, "FIG3C") %>% 
-  mutate(dispersal = as.numeric(as.character(dispersal)))
+for(i in 5:7){
+  spp <- get_species_data(outsfolderpath, scenario = scenarios[i])
+  params <- get_fig3_params(outsfolderpath, scenario = scenarios[i]) %>% 
+    mutate(dispersal = as.numeric(as.character(dispersal)))
+  
+  left_join(spp, params) %>% 
+    mutate(nicheCent = abs(nicheOpt - 0.5)) -> spp
+  
+  fig3_spp <- bind_rows(fig3_spp, spp)
+  
+  sites <- get_sites_data(outsfolderpath, scenario = scenarios[i]) %>%
+    mutate(E = rep(E, 5),
+           Edev = abs(E-0.5))
 
-left_join(fig3spp, fig3params) %>% 
-  dplyr::select(species, env, spa, codist, r2, iteration,
-                prevalence, nicheOpt, dispersal) %>% 
-  mutate(nicheCent = abs(nicheOpt - 0.5)) -> fig3spp
 
-fig3sites <- get_sites_data(outsfolderpath, "FIG3C") %>% 
-  mutate(E = rep(E, 5), 
-         Edev = abs(E-0.5))
+  fig3_sites <- bind_rows(fig3_sites, sites)
+}
 
 
 # INTERACTION MATRICES FIGURE 3 -------------------------------------------
@@ -59,48 +143,31 @@ fig3sites <- get_sites_data(outsfolderpath, "FIG3C") %>%
 
 modelfile <- readRDS(paste0(outsfolderpath, "FIG3C", "-model.RDS"))
 
-assoMat <- NULL
-for(i in 1:5){
-  assoMat[[i]] <- corRandomEff(modelfile[[i]])
+intplot <- function(modelfile, iteration){
+  assoMat <- corRandomEff(modelfile[[iteration]])
+  siteMean <- apply(assoMat[ , , , 1], 1:2, mean)
+  
+  siteDrawCol <- matrix(NA, nrow = nrow(siteMean), ncol = ncol(siteMean))
+  siteDrawCol[which(siteMean > 0.4, arr.ind=TRUE)]<-"red"
+  siteDrawCol[which(siteMean < -0.4, arr.ind=TRUE)]<-"blue"
+  
+  # Build matrix of "significance" for corrplot
+  siteDraw <- siteDrawCol
+  siteDraw[which(!is.na(siteDraw), arr.ind = TRUE)] <- 0
+  siteDraw[which(is.na(siteDraw), arr.ind = TRUE)] <- 1
+  siteDraw <- matrix(as.numeric(siteDraw), nrow = nrow(siteMean), ncol = ncol(siteMean))
+  
+  Colour <- colorRampPalette(c("blue", "white", "red"))(200)
+  corrplot(siteMean, method = "color", col = Colour, type = "lower",
+           diag = FALSE, p.mat = siteDraw, tl.srt = 45)
 }
 
-
-
-# SUP FIG1 ---------------------------------------------------------------
-
-# This is what used to be Figure 3a, in which we have half of the species with interactions
-# The other half don't
-
-
-fig3aspp <- get_species_data(outsfolderpath, scenario = "FIG3A")
-fig3aparams <- get_fig3_params(outsfolderpath, "FIG3A") %>% 
-  mutate(dispersal = as.numeric(as.character(dispersal)))
-
-left_join(fig3aspp, fig3aparams) %>% 
-  dplyr::select(species, env, spa, codist, r2, iteration,
-                prevalence, nicheOpt, dispersal, intercol, interext) %>% 
-  mutate(nicheCent = abs(nicheOpt - 0.5)) -> fig3a_spp
-
-fig3a_sites <- get_sites_data(outsfolderpath, "FIG3A") %>% 
-  mutate(E = rep(E, 5), 
-         Edev = abs(E-0.5))
-
-# SUP FIG2 ---------------------------------------------------------------
-
-# This is what used to be Figure 3a, in which we have half of the species with interactions
-# The other half don't
-
-
-fig3bspp <- get_species_data(outsfolderpath, scenario = "FIG3B")
-fig3bparams <- get_fig3_params(outsfolderpath, "FIG3B") %>% 
-  mutate(dispersal = as.numeric(as.character(dispersal)))
-
-left_join(fig3bspp, fig3bparams) %>% 
-  dplyr::select(species, env, spa, codist, r2, iteration,
-                prevalence, nicheOpt, dispersal, intercol, interext) %>% 
-  mutate(nicheCent = abs(nicheOpt - 0.5)) -> fig3b_spp
-
-fig3b_sites <- get_sites_data(outsfolderpath, "FIG3B") %>% 
-  mutate(E = rep(E, 5), 
-         Edev = abs(E-0.5))
+# tiff(paste(tiff_path, "Fig3Interactions.tiff"), res = 600, width = 5, height = 15, units = "in")
+par(mfrow = c(5,1))
+intplot(modelfile, 1)
+intplot(modelfile, 2)
+intplot(modelfile, 3)
+intplot(modelfile, 4)
+intplot(modelfile, 5)
+# dev.off()
 
