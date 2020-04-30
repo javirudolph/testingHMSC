@@ -23,11 +23,11 @@ scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
 
 # Plot functions ----------------------------------------------------------
 
-base_spp_plot <- function(data, colorVar = NULL, colorLegend = "none"){
+fig2_spp_plot <- function(data, colorVar = NULL, colorLegend = "none"){
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2,
                shape = iteration)) +
-    geom_point(aes_string(color = colorVar), alpha = 0.8) +
+    geom_point(aes_string(color = colorVar), alpha = 0.6) +
     scale_T_continuous(limits=c(0.0,1.0),
                        breaks=seq(0.0,1.0,by=0.1),
                        labels=seq(0.0,1.0,by=0.1)) +
@@ -44,8 +44,10 @@ base_spp_plot <- function(data, colorVar = NULL, colorLegend = "none"){
          z = "S", 
          zarrow = "Spatial") +
     scale_shape_manual(values = c(15:19)) +
+    theme_bw() +
     theme_showarrows() +
-    theme(panel.grid = element_line(color = "darkgrey"),
+    theme(
+      #panel.grid = element_line(color = "darkgrey"),
           tern.axis.arrow = element_line(size = 1),
           axis.text = element_text(size =5),
           axis.title = element_text(size = 8)
@@ -106,28 +108,37 @@ for(i in 1:4){
 
 sp2a <- fig2_spp %>% 
   filter(., scenario == "FIG2A") %>% 
-  base_spp_plot() +
+  fig2_spp_plot() +
   theme(legend.position = "none")
 
 sp2b <- fig2_spp %>% 
   filter(., scenario == "FIG2B") %>% 
-  base_spp_plot() +
+  fig2_spp_plot() +
   theme(legend.position = "none")
 
 sp2c <- fig2_spp %>% 
   filter(., scenario == "FIG2C") %>% 
-  base_spp_plot() +
+  fig2_spp_plot() +
   theme(legend.position = "none")
 
 sp2d <- fig2_spp %>% 
   filter(., scenario == "FIG2D") %>% 
-  base_spp_plot() +
+  fig2_spp_plot() +
   theme(legend.position = "none")
 
-test <- grid.arrange(sp2a, sp2b, sp2c, sp2d)
+plot <- fig2_spp %>% 
+  filter(., scenario == "FIG2D") %>% 
+  fig2_spp_plot() +
+  theme(legend.position = "right")
 
-ggsave(test, filename = "test7.tiff", dpi = 600,
-       width = 6, height = 5)
+leg <- get_legend(plot)
+fig2legend <- as_ggplot(leg)
+
+test <- grid.arrange(sp2a, sp2b, sp2c, sp2d)
+#test2 <- grid.arrange(test, fig2legend, ncol = 2)
+
+ggsave(test, filename = "test.tiff", dpi = 600,
+       width = 5, height = 4.5)
 
 
 
