@@ -23,11 +23,12 @@ scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
 
 # Plot functions ----------------------------------------------------------
 
-fig2_spp_plot <- function(data, colorVar = NULL, colorLegend = "none"){
+fig2_spp_plot <- function(data, colorVar = NULL, colorLegend = "none",
+                          shapeVar = NULL, shapeLegend = "none"){
   data %>% 
-    ggtern(aes(x = env, z = spa, y = codist, size = r2,
-               shape = iteration)) +
-    geom_point(aes_string(color = colorVar), alpha = 0.6) +
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+    geom_point(aes_string(color = colorVar, shape = shapeVar),
+               alpha = 0.6) +
     scale_T_continuous(limits=c(0.0,1.0),
                        breaks=seq(0.0,1.0,by=0.1),
                        labels=seq(0.0,1.0,by=0.1)) +
@@ -43,7 +44,7 @@ fig2_spp_plot <- function(data, colorVar = NULL, colorLegend = "none"){
          yarrow = "Co-Distribution",
          z = "S", 
          zarrow = "Spatial") +
-    scale_shape_manual(values = c(15:19), guide = FALSE) +
+    scale_shape_manual(values = c(15:19)) +
     theme_bw() +
     theme_showarrows() +
     scale_size_area(limits = c(0,1), breaks = seq(0,1,0.25)) +
@@ -51,9 +52,11 @@ fig2_spp_plot <- function(data, colorVar = NULL, colorLegend = "none"){
       #panel.grid = element_line(color = "darkgrey"),
           tern.axis.arrow = element_line(size = 1),
           axis.text = element_text(size =5),
-          axis.title = element_text(size = 8)
+          axis.title = element_text(size = 8), 
+          legend.text = element_text(size = 6),
           ) +
   guides(color = guide_legend(colorLegend, order = 2),
+         shape = guide_legend(shapeLegend, order = 3),
          size = guide_legend(title = expression(R^2), order = 1))
 }
 
@@ -109,37 +112,38 @@ for(i in 1:4){
 
 sp2a <- fig2_spp %>% 
   filter(., scenario == "FIG2A") %>% 
-  fig2_spp_plot() +
+  fig2_spp_plot(shapeVar = "iteration") +
   theme(legend.position = "none")
 
 sp2b <- fig2_spp %>% 
   filter(., scenario == "FIG2B") %>% 
-  fig2_spp_plot() +
+  fig2_spp_plot(shapeVar = "iteration") +
   theme(legend.position = "none")
 
 sp2c <- fig2_spp %>% 
   filter(., scenario == "FIG2C") %>% 
-  fig2_spp_plot() +
+  fig2_spp_plot(shapeVar = "iteration") +
   theme(legend.position = "none")
 
 sp2d <- fig2_spp %>% 
   filter(., scenario == "FIG2D") %>% 
-  fig2_spp_plot() +
+  fig2_spp_plot(shapeVar = "iteration") +
   theme(legend.position = "none")
 
 plot <- fig2_spp %>% 
   filter(., scenario == "FIG2D") %>% 
-  fig2_spp_plot() +
+  fig2_spp_plot(shapeVar = "iteration") +
   theme(legend.position = "right")
 
 leg <- get_legend(plot)
 fig2legend <- as_ggplot(leg)
 
+
 test <- grid.arrange(sp2a, sp2b, sp2c, sp2d)
-test2 <- grid.arrange(test, fig2legend, ncol = 2, widths = c(4.5, 0.5))
+test2 <- grid.arrange(test, fig2legend, ncol = 2, heights = c(4, 0.5))
 
 ggsave(test, filename = "test.tiff", dpi = 600,
-       width = 5, height = 4.5)
+       width = 5.5, height = 4.5)
 
 
 
