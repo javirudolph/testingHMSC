@@ -23,9 +23,10 @@ scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
 
 # Plot functions ----------------------------------------------------------
 
-base_spp_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
+base_spp_plot <- function(data, colorVar = NULL, colorLegend = "none"){
   data %>% 
-    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+    ggtern(aes(x = env, z = spa, y = codist, size = r2,
+               shape = iteration)) +
     geom_point(aes_string(color = colorVar), alpha = 0.8) +
     scale_T_continuous(limits=c(0.0,1.0),
                        breaks=seq(0.0,1.0,by=0.1),
@@ -36,26 +37,21 @@ base_spp_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = 
     scale_R_continuous(limits=c(0.0,1.0),
                        breaks=seq(0,1,by=0.1),
                        labels=seq(0,1,by=0.1)) +
-    labs(title = plotMain,
-         x = "E",
+    labs(x = "E",
          xarrow = "Environment",
          y = "C",
          yarrow = "Co-Distribution",
          z = "S", 
-         zarrow = "Spatial Autocorrelation") +
-    theme_light() +
+         zarrow = "Spatial") +
+    scale_shape_manual(values = c(15:19)) +
     theme_showarrows() +
-    #scale_colour_brewer(palette = "Set1") +
-    #scale_colour_brewer(palette = "Spectral") +
-    #scale_color_viridis_d() +
-    scale_size_area(limits = c(0,1), breaks = seq(0,1,0.2)) +
-    guides(color = guide_legend(colorLegend, order = 2), 
-           size = guide_legend(title = expression(R^2), order = 1)) +
     theme(panel.grid = element_line(color = "darkgrey"),
+          tern.axis.arrow = element_line(size = 1),
           axis.text = element_text(size =5),
-          axis.title = element_text(size = 8),
-          plot.title = element_text(size = 12, margin = margin(t = 10, b = -20)),
-          tern.axis.arrow = element_line(size = 1))
+          axis.title = element_text(size = 8)
+          ) +
+  guides(color = guide_legend(colorLegend, order = 2), 
+         size = guide_legend(title = expression(R^2), order = 1))
 }
 
 base_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
@@ -97,7 +93,6 @@ base_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend 
 fig2_spp <- NULL
 fig2_sites <- NULL
 for(i in 1:4){
-  i <- 1
   spp <- get_species_data(outsfolderpath, scenarios[i])
   sites <- get_sites_data(outsfolderpath, scenarios[i]) %>% 
     mutate(E = rep(E, 5), 
@@ -110,7 +105,29 @@ for(i in 1:4){
 # Figure 2 - species Figure ---------------------------------------------------------------
 
 sp2a <- fig2_spp %>% 
-  filter(., scenario == "FIG2A")
+  filter(., scenario == "FIG2A") %>% 
+  base_spp_plot() +
+  theme(legend.position = "none")
+
+sp2b <- fig2_spp %>% 
+  filter(., scenario == "FIG2B") %>% 
+  base_spp_plot() +
+  theme(legend.position = "none")
+
+sp2c <- fig2_spp %>% 
+  filter(., scenario == "FIG2C") %>% 
+  base_spp_plot() +
+  theme(legend.position = "none")
+
+sp2d <- fig2_spp %>% 
+  filter(., scenario == "FIG2D") %>% 
+  base_spp_plot() +
+  theme(legend.position = "none")
+
+test <- grid.arrange(sp2a, sp2b, sp2c, sp2d)
+
+ggsave(test, filename = "test7.tiff", dpi = 600,
+       width = 6, height = 5)
 
 
 
