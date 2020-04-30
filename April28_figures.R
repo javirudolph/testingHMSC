@@ -43,16 +43,17 @@ fig2_spp_plot <- function(data, colorVar = NULL, colorLegend = "none"){
          yarrow = "Co-Distribution",
          z = "S", 
          zarrow = "Spatial") +
-    scale_shape_manual(values = c(15:19)) +
+    scale_shape_manual(values = c(15:19), guide = FALSE) +
     theme_bw() +
     theme_showarrows() +
+    scale_size_area(limits = c(0,1), breaks = seq(0,1,0.25)) +
     theme(
       #panel.grid = element_line(color = "darkgrey"),
           tern.axis.arrow = element_line(size = 1),
           axis.text = element_text(size =5),
           axis.title = element_text(size = 8)
           ) +
-  guides(color = guide_legend(colorLegend, order = 2), 
+  guides(color = guide_legend(colorLegend, order = 2),
          size = guide_legend(title = expression(R^2), order = 1))
 }
 
@@ -135,7 +136,7 @@ leg <- get_legend(plot)
 fig2legend <- as_ggplot(leg)
 
 test <- grid.arrange(sp2a, sp2b, sp2c, sp2d)
-#test2 <- grid.arrange(test, fig2legend, ncol = 2)
+test2 <- grid.arrange(test, fig2legend, ncol = 2, widths = c(4.5, 0.5))
 
 ggsave(test, filename = "test.tiff", dpi = 600,
        width = 5, height = 4.5)
