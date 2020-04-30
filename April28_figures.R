@@ -14,9 +14,13 @@ source("manuscript_functions/output_processing_fx.R")
 
 
 outsfolderpath <- "manuscript_outputs/"
-
-dir.create(paste(outsfolderpath, "tiff_files/"))
 tiff_path <- paste(outsfolderpath, "tiff_files/")
+
+if(dir.exists(tiff_path) == FALSE){
+  dir.create(tiff_ppath)
+}
+dir.create(paste(outsfolderpath, "tiff_files/"))
+
 
 scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
 
