@@ -39,13 +39,13 @@ for(i in 1:4){
 
 
 
-# Plot functions ----------------------------------------------------------
 
+# Figure 2 - sites Figure ------------------------------------------------
 
 fig2_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
-    data %>% 
-    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
-    geom_point(aes_string(color = colorVar), alpha = 0.6) +
+  data %>% 
+    ggtern(aes(x = env, z = spa, y = codist, size = r2, color = Edev)) +
+    geom_point(alpha = 0.6) +
     scale_T_continuous(limits=c(0,1),
                        breaks=seq(0, 0.8,by=0.2),
                        labels=seq(0,0.8, by= 0.2)) +
@@ -65,18 +65,70 @@ fig2_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend 
     theme_bw() +
     theme_showarrows() +
     theme_arrowlong() +
-    scale_size_area(limits = c(0, 0.003), breaks = seq(0, 0.003, 0.0005)) +
+    scale_size_area(limits = c(0,maxSize), breaks = seq(0,maxSize, round(maxSize/7, digits=3))) +
+    theme(
+      #panel.grid = element_line(color = "darkgrey", size = 0.6),
+      plot.tag = element_text(size = 11),
+      plot.title = element_text(size = 11, hjust = 0.1 , margin = margin(t = 10, b = -20)),
+      tern.axis.arrow = element_line(size = 1),
+      tern.axis.arrow.text = element_text(size = 5),
+      axis.text = element_text(size = 4),
+      axis.title = element_text(size = 6),
+      legend.text = element_text(size = 6),
+      legend.title = element_text(size = 8)
+    ) +
     guides(color = guide_colorbar(colorLegend, order = 2), 
-           size = guide_legend(title = expression(R^2), order = 1)) +
-    theme(panel.grid = element_line(color = "darkgrey"),
-          axis.text = element_text(size =5),
-          axis.title = element_text(size = 8),
-          plot.title = element_text(size = 12, margin = margin(t = 10, b = -20)),
-          tern.axis.arrow = element_line(size = 1))
+           size = guide_legend(title = expression(R^2), order = 1))
 }
 
-# Figure 2 - sites Figure ------------------------------------------------
 
+f2aSites <- fig2_sites %>% 
+  filter(., scenario == "FIG2A") %>% 
+  fig2_sites_plot(plotMain = "A'") +
+  theme(legend.position = "none")
+
+f2bSites <- fig2_sites %>% 
+  filter(., scenario == "FIG2B") %>% 
+  fig2_sites_plot(plotMain = "B'") +
+  theme(legend.position = "none")
+
+f2cSites <- fig2_sites %>% 
+  filter(., scenario == "FIG2C") %>% 
+  fig2_sites_plot(plotMain = "C'") +
+  theme(legend.position = "none")
+
+f2dSites <- fig2_sites %>% 
+  filter(., scenario == "FIG2D") %>% 
+  fig2_sites_plot(plotMain = "D'") +
+  theme(legend.position = "none")
+
+baseSites <- fig2_sites %>% 
+  filter(., scenario == "FIG2D") %>% 
+  fig2_sites_plot(colorLegend = "Environmental\n deviation") +
+  theme(legend.position = "right",
+        legend.box = "vertical")
+
+f2SitesLeg <- get_legend(plot)
+fig2sitesLegend <- as_ggplot(f2SitesLeg)
+emptyplot <- ggplot() + theme_void()
+
+
+sites2.grid <- grid.arrange(f2aSites, f2bSites,emptyplot, emptyplot, f2cSites, f2dSites,
+                            ncol = 2, heights = c(1, 0.2, 1))
+# ggsave(tern.grid, filename = "test.tiff", dpi = 600,
+#        width = 5, height = 5)
+
+sites2.grid.nice <- as_ggplot(sites2.grid)
+
+f2sites <- ggpubr::ggarrange(sites2.grid.nice, fig2sitesLegend,
+                             #ggarrange(fig2legend, fig2legend, nrow = 2, heights = c(1,2)),
+                             widths = c(5,1))
+f2sites
+ggsave(f2sites, 
+       #filename = paste0(tiff_path, "figure2_sites.tiff"),
+       filename = "test2_sites.tiff",
+       dpi = 600,
+       width = 6, height = 5)
 
 # Figure 2 - species Figure ---------------------------------------------------------------
 
