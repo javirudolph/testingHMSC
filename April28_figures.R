@@ -5,6 +5,7 @@
 library(tidyverse)
 library(ggtern)
 library(ggpubr)
+library(patchwork)
 library(corrplot)
 library(HMSC)
 
@@ -19,8 +20,6 @@ tiff_path <- paste(outsfolderpath, "tiff_files/")
 if(dir.exists(tiff_path) == FALSE){
   dir.create(tiff_ppath)
 }
-dir.create(paste(outsfolderpath, "tiff_files/"))
-
 
 scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
 
@@ -49,21 +48,21 @@ fig2_spp_plot <- function(data, plotMain = NULL,
     ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
     geom_point(aes_string(color = colorVar, shape = shapeVar),
                alpha = 0.6) +
-    scale_T_continuous(limits=c(0.0,1.0),
-                       breaks=seq(0.0,1.0,by=0.1),
-                       labels=seq(0.0,1.0,by=0.1)) +
-    scale_L_continuous(limits=c(0.0,1),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    scale_R_continuous(limits=c(0.0,1.0),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    labs(title = plotMain,
-         x = "",
+    scale_T_continuous(limits=c(0,1),
+                       breaks=seq(0, 0.8,by=0.2),
+                       labels=seq(0,0.8, by= 0.2)) +
+    scale_L_continuous(limits=c(0,1),
+                       breaks=seq(0, 0.8,by=0.2),
+                       labels=seq(0, 0.8,by=0.2)) +
+    scale_R_continuous(limits=c(0,1),
+                       breaks=seq(0, 0.8,by=0.2),
+                       labels=seq(0, 0.8,by=0.2)) +
+    labs(tag = plotMain,
+         x = "E",
          xarrow = "Environment",
-         y = "",
+         y = "Co",
          yarrow = "Co-Distribution",
-         z = "", 
+         z = "S", 
          zarrow = "Spatial Autocorrelation") +
     scale_shape_manual(values = c(15:19), guide = FALSE) +
     theme_bw() +
@@ -71,13 +70,17 @@ fig2_spp_plot <- function(data, plotMain = NULL,
     theme_arrowlong() +
     scale_size_area(limits = c(0,1), breaks = seq(0,1,0.2)) +
     theme(
-      #panel.grid = element_line(color = "darkgrey"),
-      plot.title = element_text(size = 9, hjust = 0.3, vjust = 1),
+      #panel.grid = element_line(color = "darkgrey", size = 0.6),
+      plot.tag = element_text(size = 11),
       tern.axis.arrow = element_line(size = 1),
+      tern.axis.arrow.text = element_text(size = 5),
       axis.text = element_text(size = 4),
       axis.title = element_text(size = 6),
       legend.text = element_text(size = 6),
-      legend.title = element_text(size = 8)
+      legend.title = element_text(size = 8),
+      legend.position      = c(0, 1),
+      legend.justification = c(1,0),
+      legend.box.just      = 'left'
     ) +
     guides(color = guide_legend(colorLegend, order = 2),
            #shape = guide_legend(shapeLegend, order = 3),
@@ -147,19 +150,21 @@ plot <- fig2_spp %>%
 
 leg <- get_legend(plot)
 fig2legend <- as_ggplot(leg)
+emptyplot <- ggplot() + theme_void()
 
 
-test <- grid.arrange(sp2a, sp2b, sp2c, sp2d)
-ggsave(test, filename = "test.tiff", dpi = 600,
-       width = 5, height = 4.5)
+tern.grid <- grid.arrange(sp2a, sp2b, sp2c, sp2d)
+# ggsave(tern.grid, filename = "test.tiff", dpi = 600,
+#        width = 5, height = 4.5)
 
+tern.grid.nice <- as_ggplot(tern.grid)
 
-test2 <- grid.arrange(test, fig2legend, ncol = 2, heights = c(5.8, 0.2))
-ggsave(test2, filename = "test2.tiff", dpi = 600,
+figure2 <- ggpubr::ggarrange(tern.grid.nice, fig2legend,
+                           #ggarrange(fig2legend, fig2legend, nrow = 2, heights = c(1,2)),
+                           widths = c(5,1))
+figure2
+ggsave(figure2, filename = paste0(tiff_path, "fig2.tiff"), dpi = 600,
        width = 6, height = 4.5)
-
-
-
 
 
 # Figure 3 ----------------------------------------------------------------
