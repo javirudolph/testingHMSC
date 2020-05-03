@@ -57,7 +57,7 @@ fig2_spp_plot <- function(data, plotMain = NULL,
     scale_R_continuous(limits=c(0,1),
                        breaks=seq(0, 0.8,by=0.2),
                        labels=seq(0, 0.8,by=0.2)) +
-    labs(tag = plotMain,
+    labs(title = plotMain,
          x = "E",
          xarrow = "Environment",
          y = "Co",
@@ -72,15 +72,13 @@ fig2_spp_plot <- function(data, plotMain = NULL,
     theme(
       #panel.grid = element_line(color = "darkgrey", size = 0.6),
       plot.tag = element_text(size = 11),
+      plot.title = element_text(size = 11, hjust = 0.1),
       tern.axis.arrow = element_line(size = 1),
       tern.axis.arrow.text = element_text(size = 5),
       axis.text = element_text(size = 4),
       axis.title = element_text(size = 6),
       legend.text = element_text(size = 6),
-      legend.title = element_text(size = 8),
-      legend.position      = c(0, 1),
-      legend.justification = c(1,0),
-      legend.box.just      = 'left'
+      legend.title = element_text(size = 8)
     ) +
     guides(color = guide_legend(colorLegend, order = 2),
            #shape = guide_legend(shapeLegend, order = 3),
@@ -153,9 +151,9 @@ fig2legend <- as_ggplot(leg)
 emptyplot <- ggplot() + theme_void()
 
 
-tern.grid <- grid.arrange(sp2a, sp2b, sp2c, sp2d)
-# ggsave(tern.grid, filename = "test.tiff", dpi = 600,
-#        width = 5, height = 4.5)
+tern.grid <- grid.arrange(sp2a, sp2b,emptyplot, emptyplot, sp2c, sp2d, ncol = 2, heights = c(1, 0.2, 1))
+ggsave(tern.grid, filename = "test.tiff", dpi = 600,
+       width = 5, height = 5)
 
 tern.grid.nice <- as_ggplot(tern.grid)
 
@@ -164,7 +162,7 @@ figure2 <- ggpubr::ggarrange(tern.grid.nice, fig2legend,
                            widths = c(5,1))
 figure2
 ggsave(figure2, filename = paste0(tiff_path, "fig2.tiff"), dpi = 600,
-       width = 6, height = 4.5)
+       width = 6, height = 5)
 
 
 # Figure 3 ----------------------------------------------------------------
