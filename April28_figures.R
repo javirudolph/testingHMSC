@@ -41,6 +41,45 @@ for(i in 1:4){
 
 # Plot functions ----------------------------------------------------------
 
+
+fig2_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
+    data %>% 
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+    geom_point(aes_string(color = colorVar), alpha = 0.6) +
+    scale_T_continuous(limits=c(0,1),
+                       breaks=seq(0, 0.8,by=0.2),
+                       labels=seq(0,0.8, by= 0.2)) +
+    scale_L_continuous(limits=c(0,1),
+                       breaks=seq(0, 0.8,by=0.2),
+                       labels=seq(0, 0.8,by=0.2)) +
+    scale_R_continuous(limits=c(0,1),
+                       breaks=seq(0, 0.8,by=0.2),
+                       labels=seq(0, 0.8,by=0.2)) +
+    labs(title = plotMain,
+         x = "E",
+         xarrow = "Environment",
+         y = "Co",
+         yarrow = "Co-Distribution",
+         z = "S", 
+         zarrow = "Spatial Autocorrelation") +
+    theme_bw() +
+    theme_showarrows() +
+    theme_arrowlong() +
+    scale_size_area(limits = c(0, 0.003), breaks = seq(0, 0.003, 0.0005)) +
+    guides(color = guide_colorbar(colorLegend, order = 2), 
+           size = guide_legend(title = expression(R^2), order = 1)) +
+    theme(panel.grid = element_line(color = "darkgrey"),
+          axis.text = element_text(size =5),
+          axis.title = element_text(size = 8),
+          plot.title = element_text(size = 12, margin = margin(t = 10, b = -20)),
+          tern.axis.arrow = element_line(size = 1))
+}
+
+# Figure 2 - sites Figure ------------------------------------------------
+
+
+# Figure 2 - species Figure ---------------------------------------------------------------
+
 fig2_spp_plot <- function(data, plotMain = NULL,
                           colorVar = NULL, colorLegend = NULL,
                           shapeVar = NULL, shapeLegend = NULL){
@@ -72,7 +111,7 @@ fig2_spp_plot <- function(data, plotMain = NULL,
     theme(
       #panel.grid = element_line(color = "darkgrey", size = 0.6),
       plot.tag = element_text(size = 11),
-      plot.title = element_text(size = 11, hjust = 0.1),
+      plot.title = element_text(size = 11, hjust = 0.1 , margin = margin(t = 10, b = -20)),
       tern.axis.arrow = element_line(size = 1),
       tern.axis.arrow.text = element_text(size = 5),
       axis.text = element_text(size = 4),
@@ -85,60 +124,24 @@ fig2_spp_plot <- function(data, plotMain = NULL,
            size = guide_legend(title = expression(R^2), order = 1))
 }
 
-base_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
-  data %>% 
-    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
-    geom_point(aes_string(color = colorVar), alpha = 0.6) +
-    scale_T_continuous(limits=c(0,1.0),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    scale_L_continuous(limits=c(0.0,1),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    scale_R_continuous(limits=c(0.0,1.0),
-                       breaks=seq(0,1,by=0.1),
-                       labels=seq(0,1,by=0.1)) +
-    labs(title = plotMain,
-         x = "E",
-         xarrow = "Environment",
-         y = "C",
-         yarrow = "Co-Distribution",
-         z = "S", 
-         zarrow = "Spatial Autocorrelation") +
-    theme_light() +
-    theme_showarrows() +
-    #scale_colour_brewer(palette = "Set1") +
-    #scale_colour_brewer(palette = "Spectral") +
-    #scale_color_viridis_d() +
-    scale_size_area(limits = c(0, 0.003), breaks = seq(0, 0.003, 0.0005)) +
-    guides(color = guide_colorbar(colorLegend, order = 2), 
-           size = guide_legend(title = expression(R^2), order = 1)) +
-    theme(panel.grid = element_line(color = "darkgrey"),
-          axis.text = element_text(size =5),
-          axis.title = element_text(size = 8),
-          plot.title = element_text(size = 12, margin = margin(t = 10, b = -20)),
-          tern.axis.arrow = element_line(size = 1))
-}
-# Figure 2 - species Figure ---------------------------------------------------------------
-
 sp2a <- fig2_spp %>% 
   filter(., scenario == "FIG2A") %>% 
-  fig2_spp_plot(shapeVar = "iteration", plotMain = "A") +
+  fig2_spp_plot(shapeVar = "iteration", plotMain = "A.") +
   theme(legend.position = "none")
 
 sp2b <- fig2_spp %>% 
   filter(., scenario == "FIG2B") %>% 
-  fig2_spp_plot(shapeVar = "iteration", plotMain = "B") +
+  fig2_spp_plot(shapeVar = "iteration", plotMain = "B.") +
   theme(legend.position = "none")
 
 sp2c <- fig2_spp %>% 
   filter(., scenario == "FIG2C") %>% 
-  fig2_spp_plot(shapeVar = "iteration", plotMain = "C") +
+  fig2_spp_plot(shapeVar = "iteration", plotMain = "C.") +
   theme(legend.position = "none")
 
 sp2d <- fig2_spp %>% 
   filter(., scenario == "FIG2D") %>% 
-  fig2_spp_plot(shapeVar = "iteration", plotMain = "D") +
+  fig2_spp_plot(shapeVar = "iteration", plotMain = "D.") +
   theme(legend.position = "none")
 
 plot <- fig2_spp %>% 
@@ -152,8 +155,8 @@ emptyplot <- ggplot() + theme_void()
 
 
 tern.grid <- grid.arrange(sp2a, sp2b,emptyplot, emptyplot, sp2c, sp2d, ncol = 2, heights = c(1, 0.2, 1))
-ggsave(tern.grid, filename = "test.tiff", dpi = 600,
-       width = 5, height = 5)
+# ggsave(tern.grid, filename = "test.tiff", dpi = 600,
+#        width = 5, height = 5)
 
 tern.grid.nice <- as_ggplot(tern.grid)
 
@@ -161,8 +164,13 @@ figure2 <- ggpubr::ggarrange(tern.grid.nice, fig2legend,
                            #ggarrange(fig2legend, fig2legend, nrow = 2, heights = c(1,2)),
                            widths = c(5,1))
 figure2
-ggsave(figure2, filename = paste0(tiff_path, "fig2.tiff"), dpi = 600,
+ggsave(figure2, 
+       filename = paste0(tiff_path, "figure2_species.tiff"),
+       #filename = "test2.tiff",
+       dpi = 600,
        width = 6, height = 5)
+
+
 
 
 # Figure 3 ----------------------------------------------------------------
