@@ -6,6 +6,7 @@ library(tidyverse)
 library(ggtern)
 library(ggpubr)
 library(patchwork)
+library(ggalt)
 library(corrplot)
 library(HMSC)
 
@@ -45,7 +46,7 @@ fig2_sites_plot <- function(data, plotMain = NULL, colorLegend = NULL, maxSize =
   maxSize <- 0.005
   
   data %>% 
-    ggtern(aes(x = env, z = spa, y = codist, size = r2, color = Edev)) +
+    ggtern(aes(x = env, z = spa, y = codist, size = r2, color = Edev, shape = iteration)) +
     geom_point(alpha = 0.6) +
     scale_T_continuous(limits=c(0,1),
                        breaks=seq(0, 0.8,by=0.2),
@@ -66,6 +67,7 @@ fig2_sites_plot <- function(data, plotMain = NULL, colorLegend = NULL, maxSize =
     theme_bw() +
     theme_showarrows() +
     theme_arrowlong() +
+    scale_shape_manual(values = c(15:19), guide = FALSE) +
     #scale_color_gradient(low = "#183f73", high = "#cae310") +
     scale_color_viridis_c() +
     scale_size_area(limits = c(0,maxSize), breaks = seq(0,maxSize, round(maxSize/7, digits=3))) +
@@ -359,6 +361,7 @@ fig3 <- grid.arrange(f3spp, f3sites, nrow = 2)
 ggsave (fig3, file = "fig3_scrap.tiff", dpi = 600, width = 3, height = 6)
 
 # Scraps ---------------------------------------------
+
 
 f3spp0 <- f3spp +
   theme(legend.position = "none")
