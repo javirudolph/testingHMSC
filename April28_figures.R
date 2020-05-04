@@ -23,6 +23,7 @@ if(dir.exists(tiff_path) == FALSE){
 
 scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
 
+colorSchemes <- 
 
 # Figure 2 - data ----------------------------------------------------------------
 
@@ -39,10 +40,11 @@ for(i in 1:4){
 
 
 
-
 # Figure 2 - sites Figure ------------------------------------------------
 
 fig2_sites_plot <- function(data, plotMain = NULL, colorLegend = NULL, maxSize = NULL){
+  maxSize <- 0.005
+  
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2, color = Edev)) +
     geom_point(alpha = 0.6) +
@@ -65,8 +67,9 @@ fig2_sites_plot <- function(data, plotMain = NULL, colorLegend = NULL, maxSize =
     theme_bw() +
     theme_showarrows() +
     theme_arrowlong() +
-    scale_color_gradient(low = "black", high = "blue") +
-    #scale_size_area(limits = c(0,maxSize), breaks = seq(0,maxSize, round(maxSize/7, digits=3))) +
+    #scale_color_gradient(low = "#183f73", high = "#cae310") +
+    scale_color_viridis_c() +
+    scale_size_area(limits = c(0,maxSize), breaks = seq(0,maxSize, round(maxSize/7, digits=3))) +
     theme(
       #panel.grid = element_line(color = "darkgrey", size = 0.6),
       plot.tag = element_text(size = 11),
@@ -109,8 +112,8 @@ baseSites <- fig2_sites %>%
   filter(., scenario == "FIG2D") %>% 
   fig2_sites_plot(colorLegend = "Environmental\n deviation") +
   theme(legend.position = "right",
-        legend.box = "vertical") +
-  scale_size_area(limits = c(0,maxSize), breaks = seq(0,maxSize, round(maxSize/7, digits=3)))
+        legend.box = "vertical") 
+  #scale_size_area(limits = c(0,maxSize), breaks = seq(0,maxSize, round(maxSize/7, digits=3)))
 
 f2SitesLeg <- get_legend(baseSites)
 fig2sitesLegend <- as_ggplot(f2SitesLeg)
