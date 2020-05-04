@@ -262,8 +262,9 @@ pal1 <- viridisLite::viridis(20)
 f3spp <- fig3_spp %>% 
   filter(., scenario == "FIG3C") %>% 
   ggtern(aes(x = env, z = spa, y = codist, size = r2, 
-             shape = as.factor(dispersal), 
+             #shape = as.factor(dispersal), 
              color = nicheOpt)) +
+  geom_encircle(aes(group = dispersal, fill = as.factor(dispersal)), alpha = 0.3, size = 0.2) +
   geom_point(alpha = 0.8) +
   scale_T_continuous(limits=c(0,1),
                      breaks=seq(0, 0.8,by=0.2),
@@ -281,10 +282,11 @@ f3spp <- fig3_spp %>%
        yarrow = "Co-Distribution",
        z = "S", 
        zarrow = "Spatial Autocorrelation") +
-  scale_shape_manual(values = c(15:19), guide = FALSE) +
-  scale_color_viridis_c(limits = c(0, 1)) +
-  #scale_color_gradient(low = "#450256", high = "#F9E721") +
-  #scale_color_gradient2(low = pal1[5], mid = pal1[18], high = pal1[9], midpoint = 0.5) +
+  scale_shape_manual(values = c(17:19), guide = FALSE) +
+  #scale_color_viridis_c(limits = c(0, 1)) +
+  scale_color_gradient(low = "#450256", high = "#F9E721") +
+  #scale_color_gradient2(low = pal1[20], mid = pal1[2], high = pal1[15], midpoint = 0.5) +
+  scale_fill_viridis_d() +
   theme_bw() +
   theme_showarrows() +
   theme_arrowlong() +
@@ -297,24 +299,17 @@ f3spp <- fig3_spp %>%
     tern.axis.arrow.text = element_text(size = 5),
     axis.text = element_text(size = 4),
     axis.title = element_text(size = 6),
+    # legend.position = "bottom",
+    # legend.box = "vertical",
     legend.text = element_text(size = 6),
-    legend.title = element_text(size = 8),
-    legend.position = "bottom",
-    legend.box = "vertical"
+    legend.title = element_text(size = 8)
   ) +
   guides(color = guide_colorbar(title = "Niche\n optima", order = 2),
          #color = guide_colorbar(title = "Dispersal", order = 2),
-         #shape = guide_legend(title = "Dispersal", order = 3),
+         shape = guide_legend(title = "Dispersal", order = 3),
          size = guide_legend(title = expression(R^2), order = 1))
 
-
-f3spp0 <- f3spp +
-  theme(legend.position = "none")
-
-leg <- get_legend(f3spp)
-f3spplegend <- as_ggplot(leg)
-emptyplot <- ggplot() + theme_void()
-
+f3spp
 
 #maxSize <- round(max(fig3_sites$r2), digits = 3)
 maxSize <- 0.005
@@ -354,11 +349,23 @@ f3sites <- fig3_sites %>%
     axis.title = element_text(size = 6),
     legend.text = element_text(size = 6),
     legend.title = element_text(size = 8),
-    legend.position = "bottom",
-    legend.box = "vertical"
+    # legend.position = "bottom",
+    # legend.box = "vertical"
   ) +
   guides(color = guide_colorbar(title = "Environmental\ndeviation", order = 2), 
          size = guide_legend(title = expression(R^2), order = 1))
+
+fig3 <- grid.arrange(f3spp, f3sites, nrow = 2)
+ggsave (fig3, file = "fig3_scrap.tiff", dpi = 600, width = 3, height = 6)
+
+# Scraps ---------------------------------------------
+
+f3spp0 <- f3spp +
+  theme(legend.position = "none")
+
+leg <- get_legend(f3spp)
+f3spplegend <- as_ggplot(leg)
+emptyplot <- ggplot() + theme_void()
 
 f3sites0 <- f3sites +
   theme(legend.position = "none")
@@ -372,7 +379,7 @@ fig3 <- grid.arrange(f3spp0,
                      f3siteslegend ,
                      ncol = 2, heights = c(3,1))
 
-#fig3 <- grid.arrange(f3spp, f3sites, ncol = 2, heights = c(3.5, 1))
+
 
 ggsave(fig3,
        #filename = paste0(tiff_path, "figure3.tiff"),
