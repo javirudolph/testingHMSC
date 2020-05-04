@@ -98,29 +98,44 @@ for(i in 1:4){
  
 fig2_spp %>% 
   filter(., scenario %in% c("FIG2A", "FIG2B")) %>%
-  mutate(nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche")) %>% 
+  mutate(nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche"),
+         iteration = str_remove(iteration, "iter_")) %>% 
   mytheme() +
   geom_point(fill = "black", alpha = 0.7) +
   facet_wrap(~nicheBreadth, nrow = 2, strip.position = "left") +
   theme(
     #strip.background = element_blank(),
-    legend.position = "bottom"
+    legend.position = "bottom",
+    legend.box = "vertical"
   ) +
-  guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom"))
-ggsave("test.tiff", dpi = 600, width = 3, height = 6)
+  guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom", order = 1),
+         shape = guide_legend(title = "Iteration", order = 2)) -> A
+#ggsave("test1.tiff", dpi = 600, width = 3, height = 6)
 
 fig2_sites %>% 
   filter(., scenario %in% c("FIG2A", "FIG2B")) %>% 
   mytheme() +
-  geom_point(fill = "black", alpha = 0.7) +
-  facet_wrap(~nicheBreadth, nrow = 2, strip.position = "left") +
+  geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
+  scale_fill_viridis_c(guide = "none") +
+  scale_color_viridis_c() +
+  facet_wrap(~scenario, nrow = 2) +
   theme(
-    #strip.background = element_blank(),
-    legend.position = "bottom"
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    legend.position = "bottom", 
+    legend.box = "vertical"
   ) +
-  guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom"))
-  
-# Other ideas
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental\ndeviation", order = 2,
+                                barheight = 0.3)) -> B
+
+#ggsave("test2.tiff", dpi = 600, width = 3, height = 6)
+
+AB <- grid.arrange(A, B, ncol = 2)
+ggsave(filename = paste0(tiff_path, "niches_no_interaction.tiff"), plot = AB, dpi = 600, width = 6, height = 6)
+
+
+# Other ideas -------------------------------------------------------------------
 fig2_spp %>% 
   mutate(nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche"),
          nicheBreadth = factor(nicheBreadth, levels =  c("Narrow niche", "Broad niche")),
@@ -131,8 +146,8 @@ fig2_spp %>%
   theme(
     #strip.background = element_blank(),
     legend.position = "bottom",
-    strip.text = element_text(size = 9)
+    strip.text = element_text(size = 8)
   ) +
   guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom"))
-ggsave("test.tiff", dpi = 600, width = 6, height = 6)
+ggsave(paste0(tiff_path, "F2_facet.tiff"), dpi = 600, width = 6, height = 6)
 
