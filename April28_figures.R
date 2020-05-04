@@ -42,7 +42,7 @@ for(i in 1:4){
 
 # Figure 2 - sites Figure ------------------------------------------------
 
-fig2_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
+fig2_sites_plot <- function(data, plotMain = NULL, colorLegend = NULL, maxSize = NULL){
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2, color = Edev)) +
     geom_point(alpha = 0.6) +
@@ -65,7 +65,8 @@ fig2_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend 
     theme_bw() +
     theme_showarrows() +
     theme_arrowlong() +
-    scale_size_area(limits = c(0,maxSize), breaks = seq(0,maxSize, round(maxSize/7, digits=3))) +
+    scale_color_gradient(low = "black", high = "blue") +
+    #scale_size_area(limits = c(0,maxSize), breaks = seq(0,maxSize, round(maxSize/7, digits=3))) +
     theme(
       #panel.grid = element_line(color = "darkgrey", size = 0.6),
       plot.tag = element_text(size = 11),
@@ -77,7 +78,7 @@ fig2_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend 
       legend.text = element_text(size = 6),
       legend.title = element_text(size = 8)
     ) +
-    guides(color = guide_colorbar(colorLegend, order = 2), 
+    guides(color = guide_colorbar(title = colorLegend, order = 2), 
            size = guide_legend(title = expression(R^2), order = 1))
 }
 
@@ -102,13 +103,16 @@ f2dSites <- fig2_sites %>%
   fig2_sites_plot(plotMain = "D'") +
   theme(legend.position = "none")
 
+maxR2 <- round(max(fig2_sites$r2), digits = 3)
+
 baseSites <- fig2_sites %>% 
   filter(., scenario == "FIG2D") %>% 
   fig2_sites_plot(colorLegend = "Environmental\n deviation") +
   theme(legend.position = "right",
-        legend.box = "vertical")
+        legend.box = "vertical") +
+  scale_size_area(limits = c(0,maxSize), breaks = seq(0,maxSize, round(maxSize/7, digits=3)))
 
-f2SitesLeg <- get_legend(plot)
+f2SitesLeg <- get_legend(baseSites)
 fig2sitesLegend <- as_ggplot(f2SitesLeg)
 emptyplot <- ggplot() + theme_void()
 
@@ -120,13 +124,14 @@ sites2.grid <- grid.arrange(f2aSites, f2bSites,emptyplot, emptyplot, f2cSites, f
 
 sites2.grid.nice <- as_ggplot(sites2.grid)
 
-f2sites <- ggpubr::ggarrange(sites2.grid.nice, fig2sitesLegend,
+f2sites <- ggpubr::ggarrange(sites2.grid.nice, 
+                             fig2sitesLegend,
                              #ggarrange(fig2legend, fig2legend, nrow = 2, heights = c(1,2)),
                              widths = c(5,1))
 f2sites
 ggsave(f2sites, 
-       #filename = paste0(tiff_path, "figure2_sites.tiff"),
-       filename = "test2_sites.tiff",
+       filename = paste0(tiff_path, "figure2_sites.tiff"),
+       #filename = "test2_sites.tiff",
        dpi = 600,
        width = 6, height = 5)
 
