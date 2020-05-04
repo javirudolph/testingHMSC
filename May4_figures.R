@@ -108,13 +108,29 @@ sp2b <- fig2_spp %>%
   geom_point(fill = "black", alpha = 0.7) +
   theme(legend.position = "none")
 
+plot <- fig2_spp %>% 
+  filter(., scenario == "FIG2A") %>% 
+  mytheme(., plotMain = "A") +
+  geom_point(fill = "black", alpha = 0.7) +
+  theme(legend.position = "right")
+
+leg <- get_legend(plot)
+leg <- as_ggplot(leg)
+emptyplot <- ggplot() + theme_void()
+
+tern.grid <- grid.arrange(sp2a, emptyplot, sp2b, nrow = 2, heights = c(1, 0.2, 1))
+
  
 fig2_spp %>% 
   filter(., scenario %in% c("FIG2A", "FIG2B")) %>%
+  mutate(nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche")) %>% 
   mytheme() +
   geom_point(fill = "black", alpha = 0.7) +
   facet_wrap(~nicheBreadth, nrow = 2, strip.position = "left") +
   theme(
-    strip.background = element_blank()
-  )
-ggsave("test.tiff", dpi = 600, width = 3, height = 5)
+    #strip.background = element_blank(),
+    legend.position = "bottom"
+  ) +
+  guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom"))
+ggsave("test.tiff", dpi = 600, width = 3, height = 6)
+
