@@ -81,15 +81,13 @@ mytheme <- function(data, plotMain = NULL){
   
 }
 
-# Figure 2 - 
-
 # Figure 2 - sites Figure ------------------------------------------------
 
 fig2_sites_plot <- function(data, plotMain = NULL, colorLegend = NULL, maxSize = NULL){
   maxSize <- 0.005
   
   data %>% 
-    ggtern(aes(x = env, z = spa, y = codist, size = r2, color = Edev, shape = iteration)) +
+    ggtern(aes(x = env, z = spa, y = codist, size = r2, color = Edev, fill = Edev, shape = iteration)) +
     geom_point(alpha = 0.6) +
     scale_T_continuous(limits=c(0,1),
                        breaks=seq(0, 0.8,by=0.2),
@@ -110,9 +108,10 @@ fig2_sites_plot <- function(data, plotMain = NULL, colorLegend = NULL, maxSize =
     theme_bw() +
     theme_showarrows() +
     theme_arrowlong() +
-    scale_shape_manual(values = c(15:19), guide = FALSE) +
+    scale_shape_manual(values = c(21:25), guide = FALSE) +
     #scale_color_gradient(low = "#183f73", high = "#cae310") +
     scale_color_viridis_c() +
+    scale_fill_viridis_c(guide = FALSE) +
     scale_size_area(limits = c(0,maxSize), breaks = seq(0,maxSize, round(maxSize/7, digits=3))) +
     theme(
       #panel.grid = element_line(color = "darkgrey", size = 0.6),
@@ -190,7 +189,7 @@ fig2_spp_plot <- function(data, plotMain = NULL,
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
     geom_point(aes_string(color = colorVar, shape = shapeVar),
-               alpha = 0.6) +
+               alpha = 0.6, fill = "black") +
     scale_T_continuous(limits=c(0,1),
                        breaks=seq(0, 0.8,by=0.2),
                        labels=seq(0,0.8, by= 0.2)) +
@@ -207,7 +206,7 @@ fig2_spp_plot <- function(data, plotMain = NULL,
          yarrow = "Co-Distribution",
          z = "S", 
          zarrow = "Spatial Autocorrelation") +
-    scale_shape_manual(values = c(15:19), guide = FALSE) +
+    scale_shape_manual(values = c(21:25), guide = FALSE) +
     theme_bw() +
     theme_showarrows() +
     theme_arrowlong() +
