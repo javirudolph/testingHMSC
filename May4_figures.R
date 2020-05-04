@@ -95,31 +95,6 @@ for(i in 1:4){
 # Figure 2, no competition -----------------------------------------------------
 # Species and sites, side by side
 # Comparisson between broad and narrow niche
-
-sp2a <- fig2_spp %>% 
-  filter(., scenario == "FIG2A") %>% 
-  mytheme(., plotMain = "A") +
-  geom_point(fill = "black", alpha = 0.7) +
-  theme(legend.position = "none")
-
-sp2b <- fig2_spp %>% 
-  filter(., scenario == "FIG2B") %>% 
-  mytheme(., plotMain = "B") +
-  geom_point(fill = "black", alpha = 0.7) +
-  theme(legend.position = "none")
-
-plot <- fig2_spp %>% 
-  filter(., scenario == "FIG2A") %>% 
-  mytheme(., plotMain = "A") +
-  geom_point(fill = "black", alpha = 0.7) +
-  theme(legend.position = "right")
-
-leg <- get_legend(plot)
-leg <- as_ggplot(leg)
-emptyplot <- ggplot() + theme_void()
-
-tern.grid <- grid.arrange(sp2a, emptyplot, sp2b, nrow = 2, heights = c(1, 0.2, 1))
-
  
 fig2_spp %>% 
   filter(., scenario %in% c("FIG2A", "FIG2B")) %>%
@@ -133,4 +108,31 @@ fig2_spp %>%
   ) +
   guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom"))
 ggsave("test.tiff", dpi = 600, width = 3, height = 6)
+
+fig2_sites %>% 
+  filter(., scenario %in% c("FIG2A", "FIG2B")) %>% 
+  mytheme() +
+  geom_point(fill = "black", alpha = 0.7) +
+  facet_wrap(~nicheBreadth, nrow = 2, strip.position = "left") +
+  theme(
+    #strip.background = element_blank(),
+    legend.position = "bottom"
+  ) +
+  guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom"))
+  
+# Other ideas
+fig2_spp %>% 
+  mutate(nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche"),
+         nicheBreadth = factor(nicheBreadth, levels =  c("Narrow niche", "Broad niche")),
+         interCol = ifelse(interCol == 0, "No competition", "With competition")) %>% 
+  mytheme() +
+  geom_point(fill = "black", alpha = 0.7) +
+  facet_grid(interCol~nicheBreadth, switch = "y") +
+  theme(
+    #strip.background = element_blank(),
+    legend.position = "bottom",
+    strip.text = element_text(size = 9)
+  ) +
+  guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom"))
+ggsave("test.tiff", dpi = 600, width = 6, height = 6)
 
