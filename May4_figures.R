@@ -99,6 +99,7 @@ for(i in 1:4){
 fig2_spp %>% 
   filter(., scenario %in% c("FIG2A", "FIG2B")) %>%
   mutate(nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche"),
+         nicheBreadth = factor(nicheBreadth, levels = c("Narrow niche", "Broad niche"))
          iteration = str_remove(iteration, "iter_")) %>% 
   mytheme() +
   geom_point(fill = "black", alpha = 0.7) +
