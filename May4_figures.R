@@ -59,7 +59,8 @@ mytheme <- function(data, plotMain = NULL){
       axis.title = element_text(size = 6),
       legend.text = element_text(size = 6),
       legend.title = element_text(size = 8)
-    )
+    ) +
+    guides(size = guide_legend(title = expression(R^2), order = 1))
   
 }
 
@@ -89,3 +90,31 @@ for(i in 1:4){
 
 # No interactions, change niche breadth
 # Scenario that says 
+
+
+# Figure 2, no competition -----------------------------------------------------
+# Species and sites, side by side
+# Comparisson between broad and narrow niche
+
+sp2a <- fig2_spp %>% 
+  filter(., scenario == "FIG2A") %>% 
+  mytheme(., plotMain = "A") +
+  geom_point(fill = "black", alpha = 0.7) +
+  theme(legend.position = "none")
+
+sp2b <- fig2_spp %>% 
+  filter(., scenario == "FIG2B") %>% 
+  mytheme(., plotMain = "B") +
+  geom_point(fill = "black", alpha = 0.7) +
+  theme(legend.position = "none")
+
+ 
+fig2_spp %>% 
+  filter(., scenario %in% c("FIG2A", "FIG2B")) %>%
+  mytheme() +
+  geom_point(fill = "black", alpha = 0.7) +
+  facet_wrap(~nicheBreadth, nrow = 2, strip.position = "left") +
+  theme(
+    strip.background = element_blank()
+  )
+ggsave("test.tiff", dpi = 600, width = 3, height = 5)
