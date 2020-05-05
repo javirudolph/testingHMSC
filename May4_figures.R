@@ -255,15 +255,17 @@ PQ %>%
   scale_fill_viridis_c(guide = "none", na.value = "#000000") +
   scale_color_viridis_c(na.value = "#000000") +
   facet_grid(type1~type2, switch = "y") +
+  theme_noarrows() +
   theme(
     strip.text = element_text(size = 8),
     strip.background = element_rect(color = NA),
     legend.position = "bottom",
-    legend.box = "vertical"
+    legend.box = "vertical",
+    legend.spacing.y = unit(0, "in")
   ) +
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 0.3))
-ggsave(paste0(tiff_path, "Full_spp_sites.tiff"), dpi = 600, width = 3, height = 7)
+ggsave(paste0(tiff_path, "Full_spp_sites.tiff"), dpi = 600, width = 3, height = 6.5)
 
 ggsave(paste0(tiff_path, "Full_spp_sites.tiff"), dpi = 600, width = 6, height = 9)
 
