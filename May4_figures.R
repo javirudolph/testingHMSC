@@ -256,12 +256,38 @@ PQ %>%
   scale_color_viridis_c(na.value = "#000000") +
   facet_grid(type1~type2, switch = "y") +
   theme(
-    strip.text = element_text(size = 7, face = "bold"),
+    strip.text = element_text(size = 8),
     strip.background = element_rect(color = NA),
     legend.position = "bottom",
     legend.box = "vertical"
   ) +
-  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1),
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 0.3))
+ggsave(paste0(tiff_path, "Full_spp_sites.tiff"), dpi = 600, width = 3, height = 7)
 
-ggsave(paste0(tiff_path, "Full_spp_sites.tiff"), dpi = 600, width = 6, height = 8)
+ggsave(paste0(tiff_path, "Full_spp_sites.tiff"), dpi = 600, width = 6, height = 9)
+
+
+# Figure 3 - data ----------------------------------------------------------------
+
+fig3_spp <- NULL
+fig3_sites <- NULL
+
+for(i in 5:7){
+  spp <- get_species_data(outsfolderpath, scenario = scenarios[i])
+  params <- get_fig3_params(outsfolderpath, scenario = scenarios[i]) %>% 
+    mutate(dispersal = as.numeric(as.character(dispersal)))
+  
+  left_join(spp, params) %>% 
+    mutate(nicheCent = abs(nicheOpt - 0.5)) -> spp
+  
+  fig3_spp <- bind_rows(fig3_spp, spp)
+  
+  sites <- get_sites_data(outsfolderpath, scenario = scenarios[i]) %>%
+    mutate(E = rep(E, 5),
+           Edev = abs(E-0.5))
+  
+  
+  fig3_sites <- bind_rows(fig3_sites, sites)
+}
+
