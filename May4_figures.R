@@ -261,13 +261,13 @@ PQ %>%
     strip.background = element_rect(color = NA),
     legend.position = "bottom",
     legend.box = "vertical",
-    legend.spacing.y = unit(0, "in")
+    legend.spacing.y = unit(0.01, "in")
   ) +
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 0.3))
 ggsave(paste0(tiff_path, "Full_spp_sites.tiff"), dpi = 600, width = 3, height = 6.5)
 
-ggsave(paste0(tiff_path, "Full_spp_sites.tiff"), dpi = 600, width = 6, height = 9)
+ggsave(paste0(tiff_path, "Full_spp_sites.tiff"), dpi = 600, width = 6, height = 7.5)
 
 
 # Figure 3 - data ----------------------------------------------------------------
