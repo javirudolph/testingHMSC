@@ -343,7 +343,7 @@ WR %>%
          color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 3),
          fill = guide_colorbar(title = "Niche\noptima", order=3, barheight = 3))
 
-ggsave(paste0(tiff_path, "All_f3.tiff"), dpi = 600, width = 6)
+ggsave(paste0(tiff_path, "All_f3.tiff"), dpi = 600, width = 6, height = 5)
 
 
 hexcols <- ggplot_build(WRplot)$data[[1]]
