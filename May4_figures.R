@@ -5,6 +5,7 @@
 library(tidyverse)
 library(ggtern)
 library(ggpubr)
+library(scico)
 library(ggalt)
 library(corrplot)
 library(HMSC)
@@ -219,7 +220,7 @@ fig2_sites %>%
 ggsave(paste0(tiff_path, "F2sites_facet.tiff"), dpi = 600, width = 6, height = 6)
 
 
-# The everything figure
+# The everything figure------------------------------------------------
 
 vars_keep <- c("env", "spa", "codist", "r2", "Edev", "iteration", "type1", "type2")
 
@@ -293,3 +294,60 @@ for(i in 5:7){
   fig3_sites <- bind_rows(fig3_sites, sites)
 }
 
+# Figure 3 Ideas ----------------------------------------------------------------------
+
+vars_keep <- c("env", "spa", "codist", "r2", "iteration", "scenario", "Edev", "intercol", "nicheOpt", "dispersal",
+               "type1", "type2")
+
+fig3_spp %>% 
+  mutate(intercol = ifelse(intercol == 0, "No competition", "With competition"),
+         iteration = str_replace(iteration, "iter_", "iter"),
+         type1 = ifelse(scenario == "FIG3A", "Half compete\ndispersal constant",
+                        ifelse(scenario == "FIG3B", "No competition\nThree level dispersal",
+                               "All compete\nThree level dispersal")),
+         type2 = "Species", 
+         Edev = NA) %>% 
+  dplyr::select(., one_of(vars_keep))-> W
+head(W)
+
+fig3_sites %>% 
+  mutate(intercol = NA,
+         nicheOpt = NA,
+         dispersal = NA,
+         type1 = ifelse(scenario == "FIG3A", "Half compete\ndispersal constant",
+                        ifelse(scenario == "FIG3B", "No competition\nThree level dispersal",
+                               "All compete\nThree level dispersal")),
+         type2 = "Sites", 
+         ) %>% 
+  dplyr::select(., one_of(vars_keep)) -> R
+
+WR <- bind_rows(W, R) %>% 
+  mutate(stroke = ifelse(type2 == "Species", 0, 2.5),
+         type2 = factor(type2, levels = c("Species", "Sites")))
+
+WR %>% 
+  mytheme() + 
+  geom_point(aes(color = Edev, fill = nicheOpt, stroke = stroke), alpha = 0.7) +
+  scale_color_viridis_c(na.value = "#6a6e75") +
+  scale_fill_viridis_c(option = "plasma", na.value = "#6a6e75") +
+  scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
+  facet_grid(type2~type1, switch = "y") +
+  theme(
+    strip.text = element_text(size = 8),
+    strip.background = element_rect(color = NA),
+    # legend.position = "bottom",
+    # legend.box = "vertical",
+    legend.spacing = unit(0.01, "in")
+  ) +
+  guides(size = guide_legend(title = expression(R^2), order = 1),
+         color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 3),
+         fill = guide_colorbar(title = "Niche\noptima", order=3, barheight = 3))
+
+ggsave(paste0(tiff_path, "All_f3.tiff"), dpi = 600, width = 6)
+
+
+hexcols <- ggplot_build(WRplot)$data[[1]]
+
+unique(hexcols$colour)
+
+ggplot_build(WRplot)$data[[1]]
