@@ -222,7 +222,7 @@ ggsave(paste0(tiff_path, "F2sites_facet.tiff"), dpi = 600, width = 6, height = 6
 
 # The everything figure------------------------------------------------
 
-vars_keep <- c("env", "spa", "codist", "r2", "Edev", "iteration", "type1", "type2")
+vars_keep <- c("env", "spa", "codist", "r2", "Edev", "iteration", "type1", "type2", "interCol")
 
 fig2_spp %>% 
   mutate(iteration = str_replace(iteration, "iter_", "iter"),
@@ -266,9 +266,55 @@ PQ %>%
   ) +
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 0.3))
-ggsave(paste0(tiff_path, "Full_spp_sites.tiff"), dpi = 600, width = 3, height = 6.5)
+ggsave(paste0(tiff_path, "Full_spp_sites_3in.tiff"), dpi = 600, width = 3, height = 6.5)
 
-ggsave(paste0(tiff_path, "Full_spp_sites.tiff"), dpi = 600, width = 6, height = 7.5)
+ggsave(paste0(tiff_path, "Full_spp_sites_6in.tiff"), dpi = 600, width = 6, height = 7.5)
+
+# Figures 2 and 3 with more labels ------------------------------------------------------
+
+PQ %>%
+  filter(interCol == "No competition") %>% 
+  mytheme() +
+  geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
+  scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
+  scale_fill_viridis_c(guide = "none", na.value = "#000000") +
+  scale_color_viridis_c(na.value = "#000000") +
+  facet_grid(type1~type2, switch = "y") +
+  theme(
+    tern.axis.arrow.text = element_text(size = 7),
+    axis.text = element_text(size = 6),
+    axis.title = element_text(size = 8),
+    strip.text = element_text(size = 8),
+    strip.background = element_rect(color = NA),
+    legend.position = "bottom",
+    #legend.box = "vertical",
+    legend.spacing.y = unit(0.01, "in")
+  ) +
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 0.3))
+ggsave(paste0(tiff_path, "Figure2-fave.tiff"), dpi = 600, width = 6, height = 6)
+
+PQ %>%
+  filter(interCol == "With competition") %>% 
+  mytheme() +
+  geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
+  scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
+  scale_fill_viridis_c(guide = "none", na.value = "#000000") +
+  scale_color_viridis_c(na.value = "#000000") +
+  facet_grid(type1~type2, switch = "y") +
+  theme(
+    tern.axis.arrow.text = element_text(size = 7),
+    axis.text = element_text(size = 6),
+    axis.title = element_text(size = 8),
+    strip.text = element_text(size = 8),
+    strip.background = element_rect(color = NA),
+    legend.position = "bottom",
+    #legend.box = "vertical",
+    legend.spacing.y = unit(0.01, "in")
+  ) +
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 0.3))
+ggsave(paste0(tiff_path, "Figure3-fave.tiff"), dpi = 600, width = 6, height = 6)
 
 
 # Figure 3 - data ----------------------------------------------------------------
