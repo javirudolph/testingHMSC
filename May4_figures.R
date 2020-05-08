@@ -397,3 +397,60 @@ hexcols <- ggplot_build(WRplot)$data[[1]]
 unique(hexcols$colour)
 
 ggplot_build(WRplot)$data[[1]]
+
+# NOW start the codist-matrices figure. Make it horizontal.
+# and edit this ugly code.
+modelfile <- readRDS(paste0(outsfolderpath, "FIG3C", "-model.RDS"))
+
+get_upper_tri <- function(cormat){
+  cormat[lower.tri(cormat, diag = TRUE)]<- NA
+  return(cormat)
+}
+
+intplot <- function(modelfile, iteration){
+  iteration<-1
+  assoMat <- corRandomEff(modelfile[[iteration]])
+  siteMean <- apply(assoMat[ , , , 1], 1:2, mean)
+  
+  siteMean %>% 
+    get_upper_tri() %>% 
+    as.tibble() %>% 
+    rownames_to_column(., var = "Specie1") %>% 
+    pivot_longer(-Specie1, names_to = "Specie2", values_to = "value") %>% 
+    drop_na(value) %>% 
+    mutate(Specie2 = str_replace(Specie2, "y", ""),
+           Specie1 = factor(Specie1, levels = c(1:12)),
+           Specie2 = factor(Specie2, levels = c(12:1)),
+           color = ifelse(value > 0.4, "red",
+                          ifelse(value < -0.4, "blue", NA)), 
+           signi = ifelse(is.na(color)== TRUE, "X", NA)) %>%  
+    ggplot(., aes(x = Specie1, y = Specie2, fill = value)) +
+    geom_tile() +
+    geom_text(aes(label = signi))+
+    scale_fill_gradient2(low = "blue", mid = "white", high = "red") +
+    theme_minimal()
+    
+  
+  siteDrawCol <- matrix(NA, nrow = nrow(siteMean), ncol = ncol(siteMean))
+  siteDrawCol[which(siteMean > 0.4, arr.ind=TRUE)]<-"red"
+  siteDrawCol[which(siteMean < -0.4, arr.ind=TRUE)]<-"blue"
+  
+  # Build matrix of "significance" for corrplot
+  siteDraw <- siteDrawCol
+  siteDraw[which(!is.na(siteDraw), arr.ind = TRUE)] <- 0
+  siteDraw[which(is.na(siteDraw), arr.ind = TRUE)] <- 1
+  siteDraw <- matrix(as.numeric(siteDraw), nrow = nrow(siteMean), ncol = ncol(siteMean))
+  
+  Colour <- colorRampPalette(c("#440154FF", "white", "#FDE725FF"))(200)
+  corrplot(siteMean, method = "color", col = Colour, type = "lower",
+           diag = FALSE, p.mat = siteDraw)
+}
+
+# tiff(paste(tiff_path, "Fig3Interactions.tiff"), res = 600, width = 5, height = 15, units = "in")
+# par(mfrow = c(5,1))
+# intplot(modelfile, 1)
+# intplot(modelfile, 2)
+# intplot(modelfile, 3)
+# intplot(modelfile, 4)
+# intplot(modelfile, 5)
+# dev.off()
