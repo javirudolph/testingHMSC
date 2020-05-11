@@ -459,10 +459,9 @@ intData %>%
   ggplot(., aes(x = Specie1, y = Specie2, fill = value)) +
   facet_wrap(~iteration, ncol = 6) +
     geom_tile() +
-    geom_text(aes(label = signi))+
+    geom_text(aes(label = signi), size = 2)+
     scale_fill_gradient2(
-      #low = "#253582ff", mid = "white", high = "#b8627dff",
-      low = "darkblue", mid = "yellow", high = "darkgreen",
+      high = "#4d4d4d", mid = "white", low = "#b2182b",
                          limits = c(-1, 1)) +
     theme_bw() + 
   theme(legend.position = "right",
