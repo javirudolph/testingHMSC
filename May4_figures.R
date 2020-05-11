@@ -398,6 +398,7 @@ unique(hexcols$colour)
 
 ggplot_build(WRplot)$data[[1]]
 
+# Figure 5 Interactions -------------------------------------------------------------------
 # NOW start the codist-matrices figure. Make it horizontal.
 # and edit this ugly code.
 modelfile <- readRDS(paste0(outsfolderpath, "FIG3C", "-model.RDS"))
@@ -408,49 +409,73 @@ get_upper_tri <- function(cormat){
 }
 
 intplot <- function(modelfile, iteration){
-  iteration<-1
   assoMat <- corRandomEff(modelfile[[iteration]])
   siteMean <- apply(assoMat[ , , , 1], 1:2, mean)
   
   siteMean %>% 
     get_upper_tri() %>% 
-    as.tibble() %>% 
+    as_tibble() %>% 
     rownames_to_column(., var = "Specie1") %>% 
     pivot_longer(-Specie1, names_to = "Specie2", values_to = "value") %>% 
     drop_na(value) %>% 
-    mutate(Specie2 = str_replace(Specie2, "y", ""),
+    mutate(iteration = paste("Iteration", iteration),
+           Specie2 = str_replace(Specie2, "y", ""),
            Specie1 = factor(Specie1, levels = c(1:12)),
            Specie2 = factor(Specie2, levels = c(12:1)),
            color = ifelse(value > 0.4, "red",
                           ifelse(value < -0.4, "blue", NA)), 
-           signi = ifelse(is.na(color)== TRUE, "X", NA)) %>%  
-    ggplot(., aes(x = Specie1, y = Specie2, fill = value)) +
-    geom_tile() +
-    geom_text(aes(label = signi))+
-    scale_fill_gradient2(low = "blue", mid = "white", high = "red") +
-    theme_minimal()
-    
+           signi = ifelse(is.na(color)== TRUE, "x", NA))
+  }
+
+# The interaction matrix we provided:
+A <- matrix(0,nr=12,nc=12)
+d <- as.matrix(dist(c(1:12),upper=TRUE,diag=T))
+A[d<=1] = -1
+diag(A) = 0
+
+A %>% 
+  get_upper_tri( ) %>% 
+  as_tibble() %>% 
+  rownames_to_column(., var = "Specie1") %>% 
+  pivot_longer(-Specie1, names_to = "Specie2", values_to = "value") %>% 
+  drop_na(value) %>% 
+  mutate(iteration = "Simulation",
+         Specie2 = str_replace(Specie2, "V", ""),
+         Specie1 = factor(Specie1, levels = c(1:12)),
+         Specie2 = factor(Specie2, levels = c(12:1)),
+         color = ifelse(value > 0.4, "red",
+                        ifelse(value < -0.4, "blue", NA)), 
+         signi = ifelse(is.na(color)== TRUE, "x", NA)) -> orig_matrix
   
-  siteDrawCol <- matrix(NA, nrow = nrow(siteMean), ncol = ncol(siteMean))
-  siteDrawCol[which(siteMean > 0.4, arr.ind=TRUE)]<-"red"
-  siteDrawCol[which(siteMean < -0.4, arr.ind=TRUE)]<-"blue"
   
-  # Build matrix of "significance" for corrplot
-  siteDraw <- siteDrawCol
-  siteDraw[which(!is.na(siteDraw), arr.ind = TRUE)] <- 0
-  siteDraw[which(is.na(siteDraw), arr.ind = TRUE)] <- 1
-  siteDraw <- matrix(as.numeric(siteDraw), nrow = nrow(siteMean), ncol = ncol(siteMean))
-  
-  Colour <- colorRampPalette(c("#440154FF", "white", "#FDE725FF"))(200)
-  corrplot(siteMean, method = "color", col = Colour, type = "lower",
-           diag = FALSE, p.mat = siteDraw)
+intData <- NULL
+for(i in 1:5){
+  a <- intplot(modelfile, i)
+  intData <- bind_rows(intData, a)
 }
 
-# tiff(paste(tiff_path, "Fig3Interactions.tiff"), res = 600, width = 5, height = 15, units = "in")
-# par(mfrow = c(5,1))
-# intplot(modelfile, 1)
-# intplot(modelfile, 2)
-# intplot(modelfile, 3)
-# intplot(modelfile, 4)
-# intplot(modelfile, 5)
-# dev.off()
+intData %>% 
+  bind_rows(intData, orig_matrix) %>% 
+  ggplot(., aes(x = Specie1, y = Specie2, fill = value)) +
+  facet_wrap(~iteration, ncol = 6) +
+    geom_tile() +
+    geom_text(aes(label = signi))+
+    scale_fill_gradient2(
+      #low = "#253582ff", mid = "white", high = "#b8627dff",
+      low = "darkblue", mid = "yellow", high = "darkgreen",
+                         limits = c(-1, 1)) +
+    theme_bw() + 
+  theme(legend.position = "right",
+        axis.text = element_text(size = 4),
+        axis.text.x = element_text(angle = 90),
+        #axis.text = element_blank(),
+        #axis.title = element_text(size = 6),
+        axis.title = element_blank(),
+        legend.text = element_text(size = 6),
+        legend.title = element_text(size = 8), 
+        strip.text = element_text(size = 6, margin = margin(0.1,0.1,0.1,0.1, "cm"))) +
+  guides(fill = guide_colorbar(title = NULL,barwidth = 0.3, barheight = 5))
+
+
+ggsave(paste0(tiff_path, "Fig5_corr.tiff"), dpi = 600, width = 6, height = 1.5)
+    
