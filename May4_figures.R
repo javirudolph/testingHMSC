@@ -317,7 +317,7 @@ PQ %>%
 ggsave(paste0(tiff_path, "Figure3-fave.tiff"), dpi = 600, width = 6, height = 6)
 
 
-# Figure 3 - data ----------------------------------------------------------------
+# Figure 4 and 5 data ----------------------------------------------------------------
 
 fig3_spp <- NULL
 fig3_sites <- NULL
@@ -340,7 +340,7 @@ for(i in 5:7){
   fig3_sites <- bind_rows(fig3_sites, sites)
 }
 
-# Figure 3 Ideas ----------------------------------------------------------------------
+# Figure 4 Ideas ----------------------------------------------------------------------
 
 vars_keep <- c("env", "spa", "codist", "r2", "iteration", "scenario", "Edev", "intercol", "nicheOpt", "dispersal",
                "type1", "type2")
@@ -456,14 +456,18 @@ for(i in 1:5){
 
 intData %>% 
   bind_rows(intData, orig_matrix) %>% 
+  mutate(iteration = factor(iteration, levels = c("Simulation", "Iteration 1", "Iteration 2", "Iteration 3",
+                                                  "Iteration 4", "Iteration 5"))) %>% 
   ggplot(., aes(x = Specie1, y = Specie2, fill = value)) +
   facet_wrap(~iteration, ncol = 6) +
     geom_tile() +
     geom_text(aes(label = signi), size = 2)+
     scale_fill_gradient2(
-      high = "#4d4d4d", mid = "white", low = "#b2182b",
+      #high = "#4d4d4d", mid = "white", low = "#b2182b",
+      high = "#4d4d4d", mid = "white", low = "#1F968BFF",
                          limits = c(-1, 1)) +
-    theme_bw() + 
+  #theme_bw() + 
+  ggplot2::theme_minimal()+
   theme(legend.position = "right",
         axis.text = element_text(size = 4),
         axis.text.x = element_text(angle = 90),
@@ -472,9 +476,10 @@ intData %>%
         axis.title = element_blank(),
         legend.text = element_text(size = 6),
         legend.title = element_text(size = 8), 
-        strip.text = element_text(size = 6, margin = margin(0.1,0.1,0.1,0.1, "cm"))) +
+        strip.text = element_text(size = 6, margin = margin(0.1,0.1,0.1,0.1, "cm")),
+        strip.background = element_rect(color = "black", fill = "grey")) +
   guides(fill = guide_colorbar(title = NULL,barwidth = 0.3, barheight = 5))
 
-
-ggsave(paste0(tiff_path, "Fig5_corr.tiff"), dpi = 600, width = 6, height = 1.5)
+ggsave(paste0(tiff_path, "Fig5_corr_red.tiff"), dpi = 600, width = 6, height = 1.5)
+ggsave(paste0(tiff_path, "Fig5_corr_turq.tiff"), dpi = 600, width = 6, height = 1.5)
     
