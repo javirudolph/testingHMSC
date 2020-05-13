@@ -425,7 +425,7 @@ WR %>%
   mytheme(type = "species") +
   geom_point(aes(fill = dispersal, color = nicheColor), alpha = 0.7) +
   scale_color_manual(values = c("red", "black")) +
-  scale_fill_gradient()
+  scale_fill_gradient() +
   #scale_fill_gradient(high = "#4d4d4d",low = "#1F968BFF")
   #scale_fill_gradient2(high = "#4d4d4d", mid = "white", low = "#1F968BFF", limits = c(0, 0.1)) +
   scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
@@ -436,7 +436,8 @@ WR %>%
   ) +
   guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom", order = 1),
          #shape = guide_legend(title = "Iteration", order = 2),
-         fill = guide_colorbar(title = "Dispersal", barheight = 0.3)) -> WW
+         fill = guide_colorbar(title = "Dispersal", barheight = 0.3), 
+         color = guide_legend(title = "Niche\ncentrality")) -> WW
 
 WR %>% 
   filter(., scenario == "FIG3C", type2 == "Sites") %>% 
