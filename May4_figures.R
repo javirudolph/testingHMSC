@@ -392,15 +392,78 @@ WR %>%
 ggsave(paste0(tiff_path, "All_f3.tiff"), dpi = 600, width = 6, height = 5)
 
 
-hexcols <- ggplot_build(WRplot)$data[[1]]
 
-unique(hexcols$colour)
+# From the main text it seems like dispersal is the focus of what we have changed, so I will choose color to represent dispersal here.
 
-ggplot_build(WRplot)$data[[1]]
+WR %>% 
+  filter(., scenario == "FIG3C") %>% 
+  mytheme() + 
+  geom_point(aes(color = Edev, fill = nicheOpt, stroke = stroke), alpha = 0.7) +
+  scale_color_viridis_c(na.value = "#6a6e75") +
+  scale_fill_viridis_c(option = "plasma", na.value = "#6a6e75") +
+  scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
+  facet_grid(~type2) +
+  theme(
+    strip.text = element_text(size = 8),
+    strip.background = element_rect(color = NA),
+    legend.position = "bottom",
+    # legend.box = "vertical",
+    legend.spacing = unit(0.01, "in")
+  ) +
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 0.3),
+         fill = guide_colorbar(title = "Niche\noptima", order=3, barheight = 0.3))
+# Figure 4 ----------------------------------------------------
+
+
+WR %>% 
+  filter(., scenario == "FIG3C", type2 == "Species") %>%
+  mutate(factordispersal = ifelse(dispersal == 0.01, "low", 
+                                  ifelse(dispersal == 0.1, "high", "med")),
+         factordispersal = factor(factordispersal, levels = c("low", "med", "high")), 
+         nicheColor = ifelse(abs(nicheOpt - 0.5) == 0.4, "extreme", "central")) %>%  
+  mytheme(type = "species") +
+  geom_point(aes(fill = dispersal, color = nicheColor), alpha = 0.7) +
+  scale_color_manual(values = c("red", "black")) +
+  scale_fill_gradient()
+  #scale_fill_gradient(high = "#4d4d4d",low = "#1F968BFF")
+  #scale_fill_gradient2(high = "#4d4d4d", mid = "white", low = "#1F968BFF", limits = c(0, 0.1)) +
+  scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  theme(
+    #strip.background = element_blank(),
+    legend.position = "bottom",
+    legend.box = "vertical"
+  ) +
+  guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom", order = 1),
+         #shape = guide_legend(title = "Iteration", order = 2),
+         fill = guide_colorbar(title = "Dispersal", barheight = 0.3)) -> WW
+
+WR %>% 
+  filter(., scenario == "FIG3C", type2 == "Sites") %>% 
+  mytheme() +
+  geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
+  scale_size_area(limits = c(0,0.005), breaks = seq(0,0.005, round(0.005/7, digits=3))) +
+  scale_fill_viridis_c(guide = "none") +
+  scale_color_viridis_c() +
+  facet_wrap(~scenario, nrow = 2) +
+  theme(
+    strip.text = element_blank(),
+    strip.background = element_blank(),
+    legend.position = "bottom", 
+    legend.box = "vertical"
+  ) +
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental\ndeviation", order = 2,
+                                barheight = 0.3)) -> RR
+
+WWRR <- grid.arrange(WW, RR, ncol = 2)
+ggsave(filename = paste0(tiff_path, "Figure4.tiff"), plot = WWRR, dpi = 600, width = 6, height = 3.5)
+
+
+
 
 # Figure 5 Interactions -------------------------------------------------------------------
-# NOW start the codist-matrices figure. Make it horizontal.
-# and edit this ugly code.
+
 modelfile <- readRDS(paste0(outsfolderpath, "FIG3C", "-model.RDS"))
 
 get_upper_tri <- function(cormat){
