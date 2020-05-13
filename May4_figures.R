@@ -463,8 +463,8 @@ intData %>%
     geom_tile() +
     geom_text(aes(label = signi), size = 2)+
     scale_fill_gradient2(
-      #high = "#4d4d4d", mid = "white", low = "#b2182b",
-      high = "#4d4d4d", mid = "white", low = "#1F968BFF",
+      high = "#4d4d4d", mid = "white", low = "#b2182b",
+      #high = "#4d4d4d", mid = "white", low = "#1F968BFF",
                          limits = c(-1, 1)) +
   #theme_bw() + 
   ggplot2::theme_minimal()+
@@ -477,7 +477,7 @@ intData %>%
         legend.text = element_text(size = 6),
         legend.title = element_text(size = 8), 
         strip.text = element_text(size = 6, margin = margin(0.1,0.1,0.1,0.1, "cm")),
-        strip.background = element_rect(color = "black", fill = "grey")) +
+        strip.background = element_rect(color = "black", fill = "#c4c4bb")) +
   guides(fill = guide_colorbar(title = NULL,barwidth = 0.3, barheight = 5))
 
 ggsave(paste0(tiff_path, "Fig5_corr_red.tiff"), dpi = 600, width = 6, height = 1.5)
