@@ -421,13 +421,13 @@ WR %>%
   mutate(factordispersal = ifelse(dispersal == 0.01, "low", 
                                   ifelse(dispersal == 0.1, "high", "med")),
          factordispersal = factor(factordispersal, levels = c("low", "med", "high")), 
-         nicheColor = ifelse(abs(nicheOpt - 0.5) == 0.4, "extreme", "central")) %>%  
+         nicheColor = ifelse(abs(nicheOpt - 0.5) == 0.4, "Extreme", "Central")) %>%  
   mytheme(type = "species") +
-  geom_point(aes(fill = dispersal, color = nicheColor), alpha = 0.7) +
-  scale_color_manual(values = c("red", "black")) +
-  scale_fill_gradient() +
+  geom_point(aes(fill = dispersal, color = nicheColor), alpha = 0.7, stroke = 0.5) +
+  scale_color_manual(values = c("#4d4d4d", "#FDE725FF")) +
+  #scale_fill_gradient() +
   #scale_fill_gradient(high = "#4d4d4d",low = "#1F968BFF")
-  #scale_fill_gradient2(high = "#4d4d4d", mid = "white", low = "#1F968BFF", limits = c(0, 0.1)) +
+  scale_fill_gradient2(high = "#4d4d4d", mid = "white", low = "#1F968BFF", limits = c(0, 0.1), midpoint = 0.05) +
   scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   theme(
     #strip.background = element_blank(),
@@ -436,11 +436,12 @@ WR %>%
   ) +
   guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom", order = 1),
          #shape = guide_legend(title = "Iteration", order = 2),
-         fill = guide_colorbar(title = "Dispersal", barheight = 0.3), 
+         fill = guide_colorbar(title = "Dispersal", barheight = 0.3, order = 2), 
          color = guide_legend(title = "Niche\ncentrality")) -> WW
 
 WR %>% 
-  filter(., scenario == "FIG3C", type2 == "Sites") %>% 
+  filter(., scenario == "FIG3C", type2 == "Sites") %>%  
+  mutate(iteration = str_remove(iteration, "iter")) %>% 
   mytheme() +
   geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
   scale_size_area(limits = c(0,0.005), breaks = seq(0,0.005, round(0.005/7, digits=3))) +
@@ -455,10 +456,11 @@ WR %>%
   ) +
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental\ndeviation", order = 2,
-                                barheight = 0.3)) -> RR
+                                barheight = 0.3),
+         shape = guide_legend(title = "Iteration", order = 3)) -> RR
 
 WWRR <- grid.arrange(WW, RR, ncol = 2)
-ggsave(filename = paste0(tiff_path, "Figure4.tiff"), plot = WWRR, dpi = 600, width = 6, height = 3.5)
+ggsave(filename = paste0(tiff_path, "Figure4.tiff"), plot = WWRR, dpi = 600, width = 6, height = 4)
 
 
 
