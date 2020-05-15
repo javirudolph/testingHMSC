@@ -122,7 +122,7 @@ get_sites_data <- function(folderpath, scenario){
   
   out <- NULL
   for(i in 1:5){
-    siteSingle <- as.data.frame(apply(vp[[1]][[1]], c(1,3), max)) %>%
+    siteSingle <- as.data.frame(apply(vp[[1]][[1]], c(1,3), sum)) %>%
       rename(., codist = random) %>% 
       rownames_to_column(var = "site") %>% 
       mutate(iteration = factor(paste0("iter", i), levels = paste0("iter", 1:5)),

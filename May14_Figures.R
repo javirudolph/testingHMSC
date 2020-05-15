@@ -169,7 +169,7 @@ fig2_spp %>%
   mytheme(type = "species") +
   geom_point(fill = "black", alpha = 0.7) +
   
-  scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   facet_wrap(~nicheBreadth, nrow = 2, strip.position = "left") +
   theme(
     #strip.background = element_blank(),
@@ -184,7 +184,7 @@ fig2_sites %>%
   filter(., scenario %in% c("FIG2C", "FIG2D")) %>% 
   mytheme() +
   geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
-  scale_size_area(limits = c(0,0.005), breaks = seq(0,0.005, round(0.005/7, digits=3))) +
+  #scale_size_area(limits = c(0,0.005), breaks = seq(0,0.005, round(0.005/7, digits=3))) +
   scale_fill_viridis_c(guide = "none") +
   scale_color_viridis_c() +
   facet_wrap(~scenario, nrow = 2) +
