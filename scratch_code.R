@@ -1,4 +1,51 @@
 
+folderpath <- outsfolderpath
+scenario <- scenarios[1]
+get_species_data <- function(folderpath, scenario){
+  
+  prevalence <- readRDS(paste0(folderpath, scenario, "-metacomSim.RDS")) %>% 
+    set_names(imap(., ~ paste0("iter_", .y))) %>% 
+    map(., colSums) %>%
+    bind_cols() %>% 
+    rownames_to_column(var = "species") %>% 
+    gather(., key = "iteration", value = "prevalence", -species) %>% 
+    mutate(identifier = paste0("spp", species, "_", iteration)) %>% 
+    dplyr::select(., -c(species, iteration))
+  
+  
+  
+  
+  readRDS(paste0(folderpath, scenario, "-vpspp.RDS")) %>% 
+    set_names(imap(., ~ paste0("iter_", .y))) -> VPdata
+  
+  fullData <- list()
+  for(i in 1:length(VPdata)){
+    i<-1
+    fullData[[i]] <- VPdata[[i]] %>% 
+      map(as_tibble) %>%
+      bind_cols() %>% 
+      mutate_all(., function(x) ifelse(x<0, 0, x)) %>% 
+      rownames_to_column() %>% 
+      set_names(c("species", "c", "b", "a", "e", "f", "d", "g")) %>% 
+      transmute(species = species,
+                env = a + f + 0.5 * d + 0.5 * g,
+                #env = ifelse(env < 0, 0, env),
+                spa = b + e + 0.5 * d + 0.5 * g,
+                #spa = ifelse(spa < 0, 0, spa),
+                codist = c,
+                #codist = ifelse(codist < 0, 0, codist),
+                r2 = env + spa + codist,
+                iteration = names(VPdata[i]))
+    
+  }
+  
+  fullData %>% 
+    bind_rows() %>% 
+    mutate(identifier = paste0("spp", species, "_", iteration), 
+           scenario = scenario) %>% 
+    left_join(., prevalence)
+  
+}
 
 
 get_sites_data <- function(folderpath, scenario){
