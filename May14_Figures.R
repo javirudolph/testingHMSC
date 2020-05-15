@@ -137,11 +137,13 @@ fig2_spp %>%
   filter(., scenario %in% c("FIG2A", "FIG2B")) %>%
   mutate(nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche"),
          nicheBreadth = factor(nicheBreadth, levels = c("Narrow niche", "Broad niche")),
-         iteration = str_remove(iteration, "iter_")) %>% 
+         iteration = str_remove(iteration, "iter_"),
+         type1 = "Species") %>% 
   mytheme() +
   geom_point(fill = "black", alpha = 0.7) +
   scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   facet_wrap(~nicheBreadth, nrow = 2, strip.position = "left") +
+  #facet_grid(nicheBreadth~type1, switch = "y") +
   theme(
     #strip.background = element_blank(),
     legend.position = "bottom",
@@ -154,10 +156,11 @@ fig2_spp %>%
 
 
 fig2_sites %>% 
+  mutate(r2 = r2/0.005) %>% 
   filter(., scenario %in% c("FIG2A", "FIG2B")) %>% 
   mytheme() +
   geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
-  scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   #scale_size_area(limits = c(0,0.005), breaks = seq(0,0.005, round(0.005/7, digits=3))) +
   # scale_fill_gradient(low = "black", high = "#FFE451", guide = "none") +
   # scale_color_gradient(low = "black", high = "#FFE451") +
