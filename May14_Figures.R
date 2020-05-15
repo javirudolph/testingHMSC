@@ -1,11 +1,13 @@
+# Manuscript and Supplement Figures
+
 # Setup ---------------------------------------------------------------
 
 library(tidyverse)
 library(ggtern)
 library(ggpubr)
-library(scico)
-library(ggalt)
-library(corrplot)
+# library(scico)
+# library(ggalt)
+# library(corrplot)
 library(HMSC)
 
 
@@ -58,11 +60,10 @@ mytheme <- function(data, plotMain = NULL, type = NULL){
       legend.text = element_text(size = 6),
       legend.title = element_text(size = 8)
     ) +
-    guides(size = guide_legend(title = expression(R^2), order = 1)) -> plot
-  
+    guides(size = guide_legend(title = expression(R^2), order = 1))
 }
 
-# Figure 2 - data ----------------------------------------------------------------
+# Figures data ----------------------------------------------------------------
 
 fig2_spp <- NULL
 fig2_sites <- NULL
@@ -81,6 +82,28 @@ for(i in 1:4){
            Edev = abs(E-0.5))
   
   fig2_sites <- bind_rows(fig2_sites, sites)
+}
+
+
+fig3_spp <- NULL
+fig3_sites <- NULL
+
+for(i in 5:7){
+  spp <- get_species_data(outsfolderpath, scenario = scenarios[i])
+  params <- get_fig3_params(outsfolderpath, scenario = scenarios[i]) %>% 
+    mutate(dispersal = as.numeric(as.character(dispersal)))
+  
+  left_join(spp, params) %>% 
+    mutate(nicheCent = abs(nicheOpt - 0.5)) -> spp
+  
+  fig3_spp <- bind_rows(fig3_spp, spp)
+  
+  sites <- get_sites_data(outsfolderpath, scenario = scenarios[i]) %>%
+    mutate(E = rep(E, 5),
+           Edev = abs(E-0.5))
+  
+  
+  fig3_sites <- bind_rows(fig3_sites, sites)
 }
 
 
@@ -107,18 +130,22 @@ fig2_spp %>%
     legend.box = "vertical"
   ) +
   guides(size = guide_legend(title = expression(R^2), nrow = 1, label.position = "bottom", order = 1),
-         shape = guide_legend(title = "Iteration", order = 2)) -> A
+         shape = guide_legend(title = "Replicate", order = 2)) -> A
 #ggsave("test1.tiff", dpi = 600, width = 3, height = 6)
 
 
 
 fig2_sites %>% 
   filter(., scenario %in% c("FIG2A", "FIG2B")) %>% 
+  mutate(r2scale = r2 * 12) -> B
   mytheme() +
   geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
-  scale_size_area(limits = c(0,0.005), breaks = seq(0,0.005, round(0.005/7, digits=3))) +
-  scale_fill_viridis_c(guide = "none") +
-  scale_color_viridis_c() +
+  scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  #scale_size_area(limits = c(0,0.005), breaks = seq(0,0.005, round(0.005/7, digits=3))) +
+  # scale_fill_gradient(low = "black", high = "#FFE451", guide = "none") +
+  # scale_color_gradient(low = "black", high = "#FFE451") +
+  # scale_fill_viridis_c(guide = "none") +
+  # scale_color_viridis_c() +
   facet_wrap(~scenario, nrow = 2) +
   theme(
     strip.text = element_blank(),
@@ -128,9 +155,8 @@ fig2_sites %>%
   ) +
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental\ndeviation", order = 2,
-                                barheight = 0.3)) -> B
-
-#ggsave("test2.tiff", dpi = 600, width = 3, height = 6)
+                                barheight = 0.3, limits = c(0, 0.5)))
+#ggsave("test2.tiff", dpi = 600, width = 3, height = 6) 
 
 AB <- grid.arrange(A, B, ncol = 2)
 ggsave(filename = paste0(tiff_path, "niches_no_interaction.tiff"), plot = AB, dpi = 600, width = 6, height = 6)
