@@ -108,10 +108,28 @@ for(i in 5:7){
 
 
 
+# Summary table -----------------------------------------------------------
 
-# No interactions, change niche breadth
-# Scenario that says 
+fig2_spp %>% 
+  group_by(scenario) %>% 
+  dplyr::select(env, spa, codist, r2) %>% 
+  summarize_all(., function(x) paste0(signif(mean(x), digits = 3), "(", signif(sd(x), digits = 2), ")"))
 
+fig2_sites %>% 
+  group_by(scenario) %>% 
+  dplyr::select(env, spa, codist, r2) %>% 
+  summarize_all(., function(x) paste0(signif(mean(x), digits = 3), "(", signif(sd(x), digits = 2), ")"))
+
+fig3_spp %>% 
+  group_by(scenario) %>% 
+  dplyr::select(env, spa, codist, r2) %>% 
+  summarize_all(., function(x) paste0(signif(mean(x), digits = 3), "(", signif(sd(x), digits = 2), ")"))
+
+
+fig3_sites %>% 
+  group_by(scenario) %>% 
+  dplyr::select(env, spa, codist, r2) %>% 
+  summarize_all(., function(x) paste0(signif(mean(x), digits = 3), "(", signif(sd(x), digits = 2), ")"))
 
 # Figure 2, no competition -----------------------------------------------------
 
