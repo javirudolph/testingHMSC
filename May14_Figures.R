@@ -137,15 +137,14 @@ fig2_spp %>%
 
 fig2_sites %>% 
   filter(., scenario %in% c("FIG2A", "FIG2B")) %>% 
-  mutate(r2scale = r2 * 12) -> B
   mytheme() +
   geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
   scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   #scale_size_area(limits = c(0,0.005), breaks = seq(0,0.005, round(0.005/7, digits=3))) +
   # scale_fill_gradient(low = "black", high = "#FFE451", guide = "none") +
   # scale_color_gradient(low = "black", high = "#FFE451") +
-  # scale_fill_viridis_c(guide = "none") +
-  # scale_color_viridis_c() +
+  scale_fill_viridis_c(guide = "none") +
+  scale_color_viridis_c() +
   facet_wrap(~scenario, nrow = 2) +
   theme(
     strip.text = element_blank(),
@@ -155,7 +154,7 @@ fig2_sites %>%
   ) +
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental\ndeviation", order = 2,
-                                barheight = 0.3, limits = c(0, 0.5)))
+                                barheight = 0.3, limits = c(0, 0.5))) -> B
 #ggsave("test2.tiff", dpi = 600, width = 3, height = 6) 
 
 AB <- grid.arrange(A, B, ncol = 2)
