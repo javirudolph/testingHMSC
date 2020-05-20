@@ -151,7 +151,7 @@ get_fig2_params <- function(folderpath, scenario){
       left_join(., enframe(c_0, name = "species", value = "colonizationProb")) %>% 
       mutate(., dispersal = alpha,
              species = as.character(species),
-             speciesChr = as.character(paste0("spp_", species)),
+             #speciesChr = as.character(paste0("spp_", species)),
              interCol = d_c ,
              interExt = d_e)})
 }
@@ -174,13 +174,13 @@ get_fig3_params <- function(folderpath, scenario){
     nspp <- nrow(fullPars)
     
     i_pars <- with(parsList[[i]], {
-      enframe(u_c[1,], name = "species",value =  "nicheOpt") %>% 
+      enframe(u_c[1,], name = "species",value =  "nicheOptima") %>% 
         left_join(., enframe(s_c[1,], name = "species", value =  "nicheBreadth")) %>% 
-        left_join(., enframe(c_0, name = "species", value =  "colProb")) %>% 
+        left_join(., enframe(c_0, name = "species", value =  "colonizationProb")) %>% 
         mutate(dispersal = as.factor(alpha), 
                species = as.character(species + nspp), 
-               intercol = as.factor(d_c), 
-               interext = d_e)})
+               interCol = as.factor(d_c), 
+               interExt = d_e)})
     
     
     fullPars <- rbind(fullPars, i_pars)
