@@ -66,7 +66,6 @@ mytheme <- function(data, plotMain = NULL, type = NULL){
 # Figures data ----------------------------------------------------------------
 
 spp_data <- NULL
-A2D_sites <- NULL
 for(i in 1:4){
   spp <- get_species_data(outsfolderpath, scenarios[i]) %>% 
     mutate(scenario = new_scen[i])
@@ -78,17 +77,7 @@ for(i in 1:4){
     mutate(nicheCent = abs(nicheOptima - 0.5)) -> spp
   
   spp_data <- bind_rows(spp_data, spp)
-  
-  sites <- get_sites_data(outsfolderpath, scenarios[i]) %>% 
-    mutate(E = rep(E, 5), 
-           Edev = abs(E-0.5),
-           scenario = new_scen[i])
-  
-  A2D_sites <- bind_rows(A2D_sites, sites)
 }
-
-
-E2G_sites <- NULL
 
 for(i in 5:7){
   spp <- get_species_data(outsfolderpath, scenario = scenarios[i]) %>% 
@@ -102,11 +91,15 @@ for(i in 5:7){
   
   spp_data <- bind_rows(spp_data, spp)
   
+}
+
+sites_data <- NULL
+for (i in 1:7){
   sites <- get_sites_data(outsfolderpath, scenario = scenarios[i]) %>%
     mutate(E = rep(E, 5),
            Edev = abs(E-0.5),
            scenario = new_scen[i])
   
   
-  E2G_sites <- bind_rows(E2G_sites, sites)
+  sites_data <- bind_rows(sites_data, sites)
 }
