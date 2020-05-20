@@ -25,7 +25,7 @@ if(dir.exists(tiff_path) == FALSE){
 scenarios <- c("FIG2A", "FIG2B", "FIG2C", "FIG2D", "FIG3A", "FIG3B", "FIG3C")
 new_scen <- LETTERS[1:7]
 
-# Figures data ----------------------------------------------------------------
+# Load data ----------------------------------------------------------------
 
 spp_data <- NULL
 for(i in 1:4){
@@ -65,6 +65,16 @@ for (i in 1:7){
   
   sites_data <- bind_rows(sites_data, sites)
 }
+
+# We need to scale the R2 for sites so that the meaning is the same for sites and species.
+
+A <- sites_data %>% 
+  filter(scenario == "A",
+         iteration == "iter1")
+a <- spp_data %>% 
+  filter(scenario == "A",
+         iteration == "iter_1")
+
 # Theme -------------------------------------------------------
 
 mytheme <- function(data, plotMain = NULL, type = NULL){
@@ -103,3 +113,64 @@ mytheme <- function(data, plotMain = NULL, type = NULL){
     ) +
     guides(size = guide_legend(title = expression(R^2), order = 1))
 }
+
+
+
+# Figures 2 and 3 -----------------------------------------------------------------------------
+
+# Join all the data for use with facets
+#**************************************
+
+vars_keep <- c("env", "spa", "codist", "r2", "Edev", "iteration", "type1", "type2", "interCol", "scenario")
+
+spp_data %>% 
+  filter(scenario %in% new_scen[1:4]) %>% 
+  mutate(iteration = str_replace(iteration, "iter_", "iter"),
+         nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche"),
+         interCol = ifelse(interCol == 0, "No competition", "With competition"),
+         type1 = paste(nicheBreadth, "\n", interCol),
+         type2 = "Species",
+         Edev = NA) %>% 
+  dplyr::select(one_of(vars_keep))-> P
+
+head(P)
+
+sites_data %>% 
+  filter(scenario %in% new_scen[1:4]) %>% 
+  mutate(nicheBreadth = ifelse(scenario %in% c("A", "C"), "Narrow niche", "Broad niche"),
+         interCol = ifelse(scenario %in% c("A", "B"), "No competition", "With competition"),
+         type1 = paste(nicheBreadth, "\n", interCol),
+         type2 = "Sites",
+         dispersal = NA) %>% 
+  dplyr::select(., one_of(vars_keep))-> Q
+
+head(Q)
+
+bind_rows(P, Q) %>% 
+  mutate(type1 = factor(type1, levels = c("Narrow niche \n No competition", "Narrow niche \n With competition",
+                                          "Broad niche \n No competition", "Broad niche \n With competition")),
+         type2 = factor(type2, levels = c("Species", "Sites"))) -> PQ
+
+# Figure2: Scenarios A and B
+#********
+PQ %>%
+  filter(interCol == "No competition") %>% 
+  mytheme() +
+  geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
+  scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
+  scale_fill_viridis_c(guide = "none", na.value = "#000000") +
+  scale_color_viridis_c(na.value = "#000000") +
+  facet_grid(type1~type2, switch = "y") +
+  theme(
+    tern.axis.arrow.text = element_text(size = 7),
+    axis.text = element_text(size = 6),
+    axis.title = element_text(size = 8),
+    strip.text = element_text(size = 8),
+    strip.background = element_rect(color = NA),
+    legend.position = "bottom",
+    #legend.box = "vertical",
+    legend.spacing.y = unit(0.01, "in")
+  ) +
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 0.3))
+ggsave(paste0(tiff_path, "Figure2-fave.tiff"), dpi = 600, width = 6, height = 6)
