@@ -179,7 +179,7 @@ get_fig3_params <- function(folderpath, scenario){
         left_join(., enframe(c_0, name = "species", value =  "colonizationProb")) %>% 
         mutate(dispersal = as.factor(alpha), 
                species = as.character(species + nspp), 
-               interCol = as.factor(d_c), 
+               interCol = d_c, 
                interExt = d_e)})
     
     
