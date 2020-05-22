@@ -288,7 +288,7 @@ intData %>%
         legend.text = element_text(size = 6),
         legend.title = element_text(size = 8), 
         strip.text = element_text(size = 6, margin = margin(0.1,0.1,0.1,0.1, "cm")),
-        strip.background = element_rect(color = "black", fill = "#c4c4bb")) +
+        strip.background = element_rect(color = NA, fill = "#dbdbd9")) +
   guides(fill = guide_colorbar(title = NULL,barwidth = 0.3, barheight = 5))
 
 #ggsave(paste0(tiff_path, "Figure5.tiff"), dpi = 600, width = 6, height = 1.5)
@@ -299,13 +299,11 @@ intData %>%
 
 intData %>% 
   filter(., scenario != "FIG3C") %>% 
-  #bind_rows(., orig_matrix) %>% 
   mutate(iteration = str_replace(iteration,"Iteration", "Replicate"),
          iteration = factor(iteration, levels = c("Simulation", "Replicate 1", "Replicate 2", "Replicate 3",
                                                   "Replicate 4", "Replicate 5"))) %>% 
-  
   ggplot(., aes(x = Specie1, y = Specie2, fill = value)) +
-  facet_grid(scenario~iteration, switch = 'y') +
+  facet_grid(scenario~iteration) +
   geom_tile() +
   geom_text(aes(label = signi), size = 2)+
   scale_fill_gradient2(
@@ -322,5 +320,6 @@ intData %>%
         legend.text = element_text(size = 6),
         legend.title = element_text(size = 8), 
         strip.text = element_text(size = 6, margin = margin(0.1,0.1,0.1,0.1, "cm")),
-        strip.background = element_rect(color = "black", fill = "#c4c4bb")) +
+        strip.background = element_rect(color = NA, fill = "#dbdbd9")) +
   guides(fill = guide_colorbar(title = NULL,barwidth = 0.3, barheight = 5))
+  
