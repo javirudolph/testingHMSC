@@ -194,7 +194,7 @@ ggsave(paste0(tiff_path, "Figure3.tiff"), dpi = 600, width = 6, height = 6)
 
 # Figure 4 ----------------------------------------
 
-# Interaction matrices functions ----------------------------------------
+# Interaction matrices functions and data----------------------------------------
 
 get_upper_tri <- function(cormat){
   cormat[lower.tri(cormat, diag = TRUE)]<- NA
@@ -240,16 +240,26 @@ A %>%
                         ifelse(value < -0.4, "blue", NA)), 
          signi = ifelse(is.na(color)== TRUE, "x", NA)) -> orig_matrix
 
-# Figure 5 ----------------------------------------------
-modelfile <- readRDS(paste0(outsfolderpath, "FIG3C", "-model.RDS"))
-
+# Get all the data
 intData <- NULL
-for(i in 1:5){
-  a <- intplot(modelfile, i)
-  intData <- bind_rows(intData, a)
+for(i in 1:7){
+  
+  modelfile <- readRDS(paste0(outsfolderpath, scenarios[i], "-model.RDS"))
+  
+  for(j in 1:5){
+    a <- intplot(modelfile, i)
+    a$scenario <- scenarios[i]
+    intData <- bind_rows(intData, a)
+  } 
 }
 
+
+
+# Figure 5 ----------------------------------------------
+
+
 intData %>% 
+  filter(., scenario == "")
   bind_rows(intData, orig_matrix) %>% 
   mutate(iteration = str_replace(iteration,"Iteration", "Replicate"),
          iteration = factor(iteration, levels = c("Simulation", "Replicate 1", "Replicate 2", "Replicate 3",
