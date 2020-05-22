@@ -81,18 +81,18 @@ mytheme <- function(data, plotMain = NULL, type = NULL){
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2, shape = iteration)) +
     scale_T_continuous(limits=c(0,1),
-                       breaks=seq(0, 0.8,by=0.2),
-                       labels=seq(0,0.8, by= 0.2)) +
+                       breaks=seq(0, 1,by=0.2),
+                       labels=seq(0,1, by= 0.2)) +
     scale_L_continuous(limits=c(0,1),
-                       breaks=seq(0, 0.8,by=0.2),
-                       labels=seq(0, 0.8,by=0.2)) +
+                       breaks=seq(0, 1,by=0.2),
+                       labels=seq(0, 1,by=0.2)) +
     scale_R_continuous(limits=c(0,1),
-                       breaks=seq(0, 0.8,by=0.2),
-                       labels=seq(0, 0.8,by=0.2)) +
+                       breaks=seq(0, 1,by=0.2),
+                       labels=seq(0, 1,by=0.2)) +
     labs(title = plotMain,
          x = "E",
          xarrow = "Environment",
-         y = "Co",
+         y = "C",
          yarrow = "Co-Distribution",
          z = "S", 
          zarrow = "Spatial Autocorrelation") +
@@ -101,15 +101,17 @@ mytheme <- function(data, plotMain = NULL, type = NULL){
     theme_arrowlong() +
     scale_shape_manual(values = c(21:25), guide = FALSE) +
     theme(
-      #panel.grid = element_line(color = "darkgrey", size = 0.6),
+      panel.grid = element_line(color = "darkgrey", size = 0.3),
       plot.tag = element_text(size = 11),
       plot.title = element_text(size = 11, hjust = 0.1 , margin = margin(t = 10, b = -20)),
       tern.axis.arrow = element_line(size = 1),
-      tern.axis.arrow.text = element_text(size = 5),
+      tern.axis.arrow.text = element_text(size = 6),
       axis.text = element_text(size = 4),
       axis.title = element_text(size = 6),
       legend.text = element_text(size = 6),
-      legend.title = element_text(size = 8)
+      legend.title = element_text(size = 8),
+      strip.text = element_text(size = 8),
+      strip.background = element_rect(color = NA),
     ) +
     guides(size = guide_legend(title = expression(R^2), order = 1))
 }
@@ -162,11 +164,6 @@ PQ %>%
   scale_color_viridis_c(na.value = "#000000") +
   facet_grid(type1~type2, switch = "y") +
   theme(
-    tern.axis.arrow.text = element_text(size = 7),
-    axis.text = element_text(size = 6),
-    axis.title = element_text(size = 8),
-    strip.text = element_text(size = 8),
-    strip.background = element_rect(color = NA),
     legend.position = "bottom",
     #legend.box = "vertical",
     legend.spacing.y = unit(0.01, "in")
@@ -187,10 +184,6 @@ PQ %>%
   facet_grid(type1~type2, switch = "y") +
   theme(
     tern.axis.arrow.text = element_text(size = 7),
-    axis.text = element_text(size = 6),
-    axis.title = element_text(size = 8),
-    strip.text = element_text(size = 8),
-    strip.background = element_rect(color = NA),
     legend.position = "bottom",
     #legend.box = "vertical",
     legend.spacing.y = unit(0.01, "in")

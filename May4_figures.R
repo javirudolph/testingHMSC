@@ -30,14 +30,14 @@ mytheme <- function(data, plotMain = NULL, type = NULL){
   data %>% 
     ggtern(aes(x = env, z = spa, y = codist, size = r2, shape = iteration)) +
     scale_T_continuous(limits=c(0,1),
-                       breaks=seq(0, 0.8,by=0.2),
-                       labels=seq(0,0.8, by= 0.2)) +
+                       breaks=seq(0, 1,by=0.25),
+                       labels=seq(0,1, by= 0.25)) +
     scale_L_continuous(limits=c(0,1),
-                       breaks=seq(0, 0.8,by=0.2),
-                       labels=seq(0, 0.8,by=0.2)) +
+                       breaks=seq(0, 1,by=0.25),
+                       labels=seq(0, 1,by=0.25)) +
     scale_R_continuous(limits=c(0,1),
-                       breaks=seq(0, 0.8,by=0.2),
-                       labels=seq(0, 0.8,by=0.2)) +
+                       breaks=seq(0, 1,by=0.25),
+                       labels=seq(0, 1,by=0.25)) +
     labs(title = plotMain,
          x = "E",
          xarrow = "Environment",
