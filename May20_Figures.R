@@ -170,7 +170,7 @@ PQ %>%
   ) +
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 0.3))
-ggsave(paste0(tiff_path, "Figure2.tiff"), dpi = 600, width = 6, height = 6)
+#ggsave(paste0(tiff_path, "Figure2.tiff"), dpi = 600, width = 6, height = 6)
 
 # Figure3: Scenarios C and D
 #********
@@ -190,7 +190,7 @@ PQ %>%
   ) +
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental\ndeviation", order = 2, barheight = 0.3))
-ggsave(paste0(tiff_path, "Figure3.tiff"), dpi = 600, width = 6, height = 6)
+#ggsave(paste0(tiff_path, "Figure3.tiff"), dpi = 600, width = 6, height = 6)
 
 # Figure 4 ----------------------------------------
 
@@ -226,6 +226,7 @@ d <- as.matrix(dist(c(1:12),upper=TRUE,diag=T))
 A[d<=1] = -1
 diag(A) = 0
 
+
 A %>% 
   get_upper_tri( ) %>% 
   as_tibble() %>% 
@@ -238,7 +239,8 @@ A %>%
          Specie2 = factor(Specie2, levels = c(12:1)),
          color = ifelse(value > 0.4, "red",
                         ifelse(value < -0.4, "blue", NA)), 
-         signi = ifelse(is.na(color)== TRUE, "x", NA)) -> orig_matrix
+         signi = ifelse(is.na(color)== TRUE, "x", NA), 
+         scenario = "original") -> orig_matrix
 
 # Get all the data
 intData <- NULL
@@ -246,11 +248,14 @@ for(i in 1:7){
   
   modelfile <- readRDS(paste0(outsfolderpath, scenarios[i], "-model.RDS"))
   
+  b <- NULL
   for(j in 1:5){
-    a <- intplot(modelfile, i)
-    a$scenario <- scenarios[i]
-    intData <- bind_rows(intData, a)
+    a <- intplot(modelfile, j)
+    b <- bind_rows(b, a)
   } 
+  
+  b$scenario <- scenarios[i]
+  intData <- bind_rows(intData, b)
 }
 
 
@@ -259,11 +264,12 @@ for(i in 1:7){
 
 
 intData %>% 
-  filter(., scenario == "")
-  bind_rows(intData, orig_matrix) %>% 
+  filter(., scenario == "FIG3C") %>% 
+  bind_rows(., orig_matrix) %>% 
   mutate(iteration = str_replace(iteration,"Iteration", "Replicate"),
          iteration = factor(iteration, levels = c("Simulation", "Replicate 1", "Replicate 2", "Replicate 3",
                                                   "Replicate 4", "Replicate 5"))) %>% 
+  
   ggplot(., aes(x = Specie1, y = Specie2, fill = value)) +
   facet_wrap(~iteration, ncol = 6) +
   geom_tile() +
@@ -285,8 +291,36 @@ intData %>%
         strip.background = element_rect(color = "black", fill = "#c4c4bb")) +
   guides(fill = guide_colorbar(title = NULL,barwidth = 0.3, barheight = 5))
 
-ggsave(paste0(tiff_path, "Figure5.tiff"), dpi = 600, width = 6, height = 1.5)
+#ggsave(paste0(tiff_path, "Figure5.tiff"), dpi = 600, width = 6, height = 1.5)
 
 
 # SUPPLEMENT------------------------------------------------
 # Interaction matrices for all scenarios
+
+intData %>% 
+  filter(., scenario != "FIG3C") %>% 
+  #bind_rows(., orig_matrix) %>% 
+  mutate(iteration = str_replace(iteration,"Iteration", "Replicate"),
+         iteration = factor(iteration, levels = c("Simulation", "Replicate 1", "Replicate 2", "Replicate 3",
+                                                  "Replicate 4", "Replicate 5"))) %>% 
+  
+  ggplot(., aes(x = Specie1, y = Specie2, fill = value)) +
+  facet_grid(scenario~iteration, switch = 'y') +
+  geom_tile() +
+  geom_text(aes(label = signi), size = 2)+
+  scale_fill_gradient2(
+    high = "#4d4d4d", mid = "white", low = "#cb181d",
+    limits = c(-1, 1)) +
+  #theme_bw() + 
+  ggplot2::theme_minimal()+
+  theme(legend.position = "right",
+        axis.text = element_text(size = 4),
+        axis.text.x = element_text(angle = 90),
+        #axis.text = element_blank(),
+        #axis.title = element_text(size = 6),
+        axis.title = element_blank(),
+        legend.text = element_text(size = 6),
+        legend.title = element_text(size = 8), 
+        strip.text = element_text(size = 6, margin = margin(0.1,0.1,0.1,0.1, "cm")),
+        strip.background = element_rect(color = "black", fill = "#c4c4bb")) +
+  guides(fill = guide_colorbar(title = NULL,barwidth = 0.3, barheight = 5))
