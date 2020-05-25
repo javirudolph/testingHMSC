@@ -227,7 +227,7 @@ WR %>%
                 expand = 0.01) +
   geom_encircle(data = WR %>% filter(dispersal == 0.1), aes(group = dispersal), size = 0.7, color = NA, fill = "black",alpha = 0.3,
                 expand = 0.0) +
-  geom_
+  geom_point(aes(color = Edev, fill = nicheOptima), alpha = 0.8) +
   scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
   #scale_fill_viridis_c(na.value = "#666666") +
   scale_fill_gradient2(high = "#000004FF", low = "#400F73FF", mid = "#F4685CFF", limits = c(0, 1), midpoint = 0.5) +
