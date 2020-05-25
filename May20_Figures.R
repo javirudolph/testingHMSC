@@ -6,7 +6,7 @@ library(tidyverse)
 library(ggtern)
 library(ggpubr)
 # library(scico)
-# library(ggalt)
+library(ggalt)
 # library(corrplot)
 library(HMSC)
 
@@ -201,23 +201,43 @@ spp_data %>%
   mutate(iteration = str_replace(iteration, "iter_", "iter"),
          Edev = NA,
          type = "Species") %>% 
-  dplyr::select(one_of(vars_keep))-> P
+  dplyr::select(one_of(vars_keep))-> W
 
-head(P)
+head(W)
 
 sites_data %>% 
-  filter(scenario %in% new_scen[1:4]) %>% 
+  filter(scenario == "G") %>% 
   mutate(dispersal = NA,
          nicheOptima = NA,
-         type = "Site") %>% 
-  dplyr::select(., one_of(vars_keep))-> Q
+         type = "Sites") %>% 
+  dplyr::select(., one_of(vars_keep))-> R
 
-head(Q)
+head(R)
 
-bind_rows(P, Q) -> PQ
-head(PQ)
+bind_rows(W, R) %>% 
+  mutate(type = factor(type, levels = c("Species", "Sites"))) -> WR
+head(WR)
 
+WR %>%  
+  mytheme() +
+  facet_wrap(~type, ncol=2) +
+  geom_encircle(data = WR %>% 
+                  filter(dispersal == 0.01), aes(group = dispersal), size = 0.2, fill = "yellow", alpha = 0.1, expand = 0.01) +
+  geom_point(aes(color = Edev, fill = nicheOptima), alpha = 0.9) +
+  scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
+  #scale_fill_viridis_c(option = "magma", na.value = "#000000") +
+  scale_fill_gradient2(high = "#71198E", mid = "#8C959F", low = "#BD2466", limits = c(0, 1), midpoint = 0.5) +
+  scale_color_viridis_c(na.value = "#000000", limits = c(0, 0.5)) +
+  theme(
+    legend.position = "bottom",
+    #legend.box = "vertical",
+    legend.spacing.y = unit(0.01, "in")
+  ) +
+  guides(size = guide_legend(title = expression(R^2), order = 2, nrow = 1, label.position = "bottom"),
+         fill = guide_colorbar(title = "Niche \noptima", order = 1, barheight = 0.3),
+         color = guide_colorbar(title = "Environmental\ndeviation", order = 3, barheight = 0.3))
 
+ggsave(paste0(tiff_path, "Figure4.tiff"), dpi = 600, width = 6, height = 4)
 
 
 
