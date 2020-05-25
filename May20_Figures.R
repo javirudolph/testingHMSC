@@ -194,6 +194,33 @@ PQ %>%
 
 # Figure 4 ----------------------------------------
 
+vars_keep <- c("env", "spa", "codist", "r2", "Edev", "iteration", "dispersal", "nicheOptima", "type")
+
+spp_data %>% 
+  filter(scenario == "G") %>% 
+  mutate(iteration = str_replace(iteration, "iter_", "iter"),
+         Edev = NA,
+         type = "Species") %>% 
+  dplyr::select(one_of(vars_keep))-> P
+
+head(P)
+
+sites_data %>% 
+  filter(scenario %in% new_scen[1:4]) %>% 
+  mutate(dispersal = NA,
+         nicheOptima = NA,
+         type = "Site") %>% 
+  dplyr::select(., one_of(vars_keep))-> Q
+
+head(Q)
+
+bind_rows(P, Q) -> PQ
+head(PQ)
+
+
+
+
+
 # Interaction matrices functions and data----------------------------------------
 
 get_upper_tri <- function(cormat){
