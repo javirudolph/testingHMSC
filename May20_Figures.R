@@ -266,7 +266,7 @@ WR %>%
 
 ggsave(paste0(tiff_path, "Figure4_v.tiff"), dpi = 600, width = 4.5, height = 6)
 
-scales::show_col(viridis::viridis_pal(option = "A")(20))
+# scales::show_col(viridis::viridis_pal(option = "A")(20))
 
 # Interaction matrices functions and data----------------------------------------
 
@@ -354,7 +354,7 @@ intData %>%
   ggplot2::theme_minimal()+
   theme(legend.position = "right",
         axis.text = element_text(size = 4),
-        axis.text.x = element_text(angle = 45),
+        axis.text.x = element_text(angle = 90),
         #axis.text = element_blank(),
         #axis.title = element_text(size = 6),
         axis.title = element_blank(),
@@ -389,7 +389,7 @@ intData %>%
   ggplot2::theme_minimal()+
   theme(legend.position = "right",
         axis.text = element_text(size = 4),
-        axis.text.x = element_text(angle = 45),
+        axis.text.x = element_text(angle = 90),
         #axis.text = element_blank(),
         #axis.title = element_text(size = 6),
         axis.title = element_blank(),
@@ -403,4 +403,82 @@ ggplot2::ggsave(filename = paste0(tiff_path, "Sup_F2_interactions.tiff"))
 
 # Ternary plots for scenarios E and F
 #********************************************************************
+
+vars_keep <- c("env", "spa", "codist", "r2", "Edev", "iteration", "dispersal", "nicheOptima", "scenario", "interCol",
+               "type1", "type2")
+
+spp_data %>% 
+  filter(scenario %in% c("E", "F")) %>% 
+  mutate(iteration = str_replace(iteration, "iter_", "iter"),
+         textCol = ifelse(interCol == 0, "No competition", "With Competition"),
+         type1 = ifelse(scenario == "E", "Half compete\n dispersal constant",
+                        "All compete\n three level dispersal"),
+         Edev = NA,
+         type2 = "Species") %>% 
+  dplyr::select(one_of(vars_keep))-> Y
+
+
+sites_data %>% 
+  filter(scenario %in% c("E", "F")) %>% 
+  mutate(dispersal = NA,
+         nicheOptima = NA,
+         interCol = NA,
+         type1 = ifelse(scenario == "E", "Half compete\n Dispersal is constant",
+                        "All compete\n Three levels of dispersal"),
+         type2 = "Sites") %>% 
+  dplyr::select(., one_of(vars_keep))-> Z
+
+
+bind_rows(Y, Z) %>% 
+  mutate(type2 = factor(type2, levels = c("Species", "Sites")),
+         scenario = recode(scenario, E = "Scenario E", F = "Scenario F")) -> YZ
+head(YZ)
+
+#***************************
+YZ %>%
+  filter(scenario == "Scenario E") %>% 
+  mytheme() +
+  facet_grid(type1~type2, switch = "y") +
+  geom_point(aes(color = Edev, fill = interCol), alpha = 0.8) +
+  scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  scale_fill_gradient(high = "#810f7c", low = "#b3cde3") +
+    scale_color_viridis_c(na.value = "grey", limits = c(0, 0.5)) +
+    theme(
+      legend.position = "bottom",
+      #legend.box = "vertical",
+      #legend.spacing.y = unit(0.01, "in"),
+      legend.spacing.x = unit(0.1, "cm"),
+      legend.text = element_text(size = 4),
+      legend.title = element_text(size = 6)
+    ) +
+    guides(size = guide_legend(title = expression(R^2), order = 2, nrow = 1, label.position = "bottom"),
+           fill = guide_colorbar(title = "Dispersal level", title.position = "top", order = 1, barheight = 0.5, barwidth = 5),
+           color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 1,
+                                  order = 3, barheight = 0.5, barwidth = 5))
+
+ggsave(paste0(tiff_path, "Sup_F3_scenE.tiff"), dpi = 600, width = 6, height = 4)
+
+YZ %>%
+  filter(scenario == "Scenario F") %>% 
+  mytheme() +
+  facet_grid(type1~type2, switch = "y") +
+  geom_point(aes(color = Edev, fill = dispersal), alpha = 0.8) +
+  scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  scale_fill_manual(values = c("#d8b365", "white" ,"#5ab4ac"))
+  #scale_fill_gradient2(high = "#5ab4ac", low = "#d8b365", mid = "white", midpoint = 0.05) +
+  scale_color_viridis_c(na.value = "grey", limits = c(0, 0.5)) +
+  theme(
+    legend.position = "bottom",
+    #legend.box = "vertical",
+    #legend.spacing.y = unit(0.01, "in"),
+    legend.spacing.x = unit(0.1, "cm"),
+    legend.text = element_text(size = 4),
+    legend.title = element_text(size = 6)
+  ) +
+  guides(size = guide_legend(title = expression(R^2), order = 2, nrow = 1, label.position = "bottom"),
+         fill = guide_colorbar(title = "Dispersal level", title.position = "top", order = 1, barheight = 0.5, barwidth = 5),
+         color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 1, order = 3, barheight = 0.5, barwidth = 5))
+
+ggsave(paste0(tiff_path, "Sup_F3_scenF.tiff"), dpi = 600, width = 6, height = 4)
+
 
