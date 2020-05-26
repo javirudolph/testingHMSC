@@ -464,8 +464,8 @@ YZ %>%
   facet_grid(type1~type2, switch = "y") +
   geom_point(aes(color = Edev, fill = dispersal), alpha = 0.8) +
   scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
-  scale_fill_manual(values = c("#d8b365", "white" ,"#5ab4ac"))
-  #scale_fill_gradient2(high = "#5ab4ac", low = "#d8b365", mid = "white", midpoint = 0.05) +
+  #scale_fill_manual(values = c("#d8b365", "white" ,"#5ab4ac"))
+  scale_fill_gradient2(high = "#5ab4ac", low = "#d8b365", mid = "white", midpoint = 0.05) +
   scale_color_viridis_c(na.value = "grey", limits = c(0, 0.5)) +
   theme(
     legend.position = "bottom",
