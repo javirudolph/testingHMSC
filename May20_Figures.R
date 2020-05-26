@@ -5,6 +5,7 @@
 library(tidyverse)
 library(ggtern)
 library(ggpubr)
+library(gridExtra)
 # library(scico)
 library(ggalt)
 # library(corrplot)
@@ -65,6 +66,7 @@ for (i in 1:7){
   
   sites_data <- bind_rows(sites_data, sites)
 }
+
 
 # Theme -------------------------------------------------------
 
@@ -482,3 +484,33 @@ YZ %>%
 ggsave(paste0(tiff_path, "Sup_F3_scenF.tiff"), dpi = 600, width = 6, height = 4)
 
 
+
+# Summary Table ---------------------------------------------------------------------------
+spp_data %>% 
+  group_by(scenario) %>% 
+  summarise(E = paste0(signif(mean(env), digits = 2), " (", signif(sd(env), digits=2), ")"),
+            S = paste0(signif(mean(spa), digits = 2), " (", signif(sd(spa), digits=2), ")"),
+            C = paste0(signif(mean(codist), digits = 2), " (", signif(sd(codist), digits=2), ")"),
+            `1-R^2` = paste0(signif(mean(1-r2), digits = 2), " (", signif(sd(1-r2), digits=2), ")"))  -> A
+
+  
+sites_data %>% 
+  mutate(scenario = recode(scenario, A = "A sites", B = "B sites", C = "C sites", D = "D sites", E = "E sites", F="F sites", G = "G sites")) %>% 
+  group_by(scenario) %>% 
+  summarise(E = paste0(signif(mean(env), digits = 2), " (", signif(sd(env), digits=2), ")"),
+            S = paste0(signif(mean(spa), digits = 2), " (", signif(sd(spa), digits=2), ")"),
+            C = paste0(signif(mean(codist), digits = 2), " (", signif(sd(codist), digits=2), ")"),
+            `1-R^2` = paste0(signif(mean(1-r2), digits = 2), " (", signif(sd(1-r2), digits=2), ")")) -> B
+bind_rows(A, B) -> C
+
+write.csv(bind_rows(A,B), paste0(tiff_path, "summary_table.csv"))
+
+# Make table as image
+g <- tableGrob(C, rows = NULL)
+g <- gtable_add_grob(g,
+                     grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+                     t = 2, b = nrow(g), l = 1, r = ncol(g))
+g <- gtable_add_grob(g,
+                     grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+                     t = 1, l = 1, r = ncol(g))
+grid::grid.draw(g)
