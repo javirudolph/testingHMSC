@@ -109,7 +109,41 @@ mytheme <- function(data, plotMain = NULL, type = NULL){
     guides(size = guide_legend(title = expression(R^2), order = 1))
 }
 
+# Figure 2, scenarios A-D Species only --------------------------------------
+spp_data %>% 
+  filter(scenario %in% new_scen[1:4]) %>% 
+  mutate(iteration = str_replace(iteration, "iter_", "Replicate"),
+         nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche"),
+         nicheBreadth = factor(nicheBreadth, levels = c("Narrow niche", "Broad niche")),
+         interCol = ifelse(interCol == 0, "No competition", "With competition")) %>% 
+  mytheme() +
+  facet_grid(interCol~nicheBreadth, switch = "y") +
+  geom_point(aes(color = nicheOptima , fill = nicheOptima), alpha = 0.7) +
+  scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  scale_fill_gradient2(high = "#000004FF", low = "#56147DFF", mid = "#F4685CFF", limits = c(0, 1), midpoint = 0.5) +
+  scale_color_gradient2(high = "#000004FF", low = "#56147DFF", mid = "#F4685CFF", limits = c(0, 1), midpoint = 0.5, guide = "none") +
+  theme(tern.axis.arrow.text = element_text(size = 7),
+        legend.position = "bottom") +
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
+         fill = guide_colorbar(title = "Niche optima", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))
 
+ggsave(filename=paste0(tiff_path, "Figure2_color.tiff"), dpi = 600, width = 6, height = 6)
+
+spp_data %>% 
+  filter(scenario %in% new_scen[1:4]) %>% 
+  mutate(iteration = str_replace(iteration, "iter_", "Replicate"),
+         nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche"),
+         nicheBreadth = factor(nicheBreadth, levels = c("Narrow niche", "Broad niche")),
+         interCol = ifelse(interCol == 0, "No competition", "With competition")) %>% 
+  mytheme() +
+  facet_grid(interCol~nicheBreadth, switch = "y") +
+  geom_point(color = "black", fill = "black", alpha = 0.7) +
+  scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  theme(tern.axis.arrow.text = element_text(size = 7),
+        legend.position = "bottom") +
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"))
+
+ggsave(filename=paste0(tiff_path, "Figure2_bw.tiff"), dpi = 600, width = 6, height = 6)
 
 # Figures 2 and 3 -----------------------------------------------------------------------------
 
