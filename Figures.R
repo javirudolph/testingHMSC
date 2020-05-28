@@ -698,31 +698,30 @@ for(i in 1:5){
   sites.by.spp <- rbind.data.frame(sites.by.spp, a)
 }
 
+sites.b
 
 params <- get_fig3_params(outsfolderpath, scenario = "FIG3C") %>% 
   mutate(dispersal = as.numeric(as.character(dispersal)),
          scenario = "G")
 
-prms1000 <- purrr::map_dfr(seq_len(1000), ~params)
+prms1000 <- purrr::map_dfr(seq_len(5000), ~params)
 
-left_join(sites.by.spp, prms1000) %>% 
-  arrange(., species) -> big.fig.df
-  
-big.fig.df %>% 
+bind_cols(sites.by.spp, prms1000) %>% 
+  arrange(., species) %>% 
   mutate(E = rep(E, 5*12),
-         Edev = abs(E-0.5)) 
+         Edev = abs(E-0.5)) -> big.fig.df
+ 
 
 
 # Need to add Environmental variables
 
 big.fig.df %>% 
-  filter(scenario %in% new_scen[1:4]) %>% 
-  mutate(iteration = str_replace(iteration, "iter_", "Replicate"),
-         nicheBreadth = ifelse(scenario %in% c("A", "C"), "Narrow niche", "Broad niche"),
-         nicheBreadth = factor(nicheBreadth, levels = c("Narrow niche", "Broad niche")),
-         interCol = ifelse(scenario %in% c("A", "B"), "No competition", "With competition")) %>% 
+  mutate(disp.text = ifelse(dispersal == 0.01, "Low dispersal",
+                            ifelse(dispersal == 0.1, "High dispersal", "Med dispersal")),
+         disp.text = factor(disp.text, levels = c("Low dispersal", "Med dispersal", "High dispersal")),
+         niche.text = paste("Niche Optima:", signif(nicheOptima, digits = 2))) %>% 
   mytheme() +
-  facet_grid(interCol~nicheBreadth, switch = "y") +
+  facet_grid(disp.text~niche.text, switch = "y")  +
   geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
   scale_size_continuous(range = c(0.1,4),limits = c(0, 0.005), breaks = seq(0, 0.005, 0.001)) +
   #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
