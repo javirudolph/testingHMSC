@@ -11,7 +11,6 @@ library(ggalt)
 # library(corrplot)
 library(HMSC)
 
-
 E <- readRDS("manuscript_functions/fixedLandscapes/orig-no-seed-E.RDS")
 source("manuscript_functions/output_processing_fx.R")
 
@@ -171,7 +170,7 @@ sites_data %>%
 ggsave(paste0(tiff_path, "Figure3_color.tiff"), dpi = 600, width = 6, height = 6)
 
 
-# OLD FIGURES 2, 3 & 4 -----------------------------------------------------------------------------
+# OLD FIGURES 2 & 3 -----------------------------------------------------------------------------
 # Figures 2 and 3 
 
 # Join all the data for use with facets
@@ -535,8 +534,8 @@ spp_data %>%
   filter(scenario %in% c("E", "F")) %>% 
   mutate(iteration = str_replace(iteration, "iter_", "iter"),
          textCol = ifelse(interCol == 0, "No competition", "With Competition"),
-         type1 = ifelse(scenario == "E", "Half compete\n dispersal constant",
-                        "All compete\n three level dispersal"),
+         type1 = ifelse(scenario == "E", "Half compete\n Dispersal is constant",
+                        "All compete\n Three levels of dispersal"),
          Edev = NA,
          type2 = "Species") %>% 
   dplyr::select(one_of(vars_keep))-> Y
@@ -628,11 +627,45 @@ bind_rows(A, B) -> C
 write.csv(bind_rows(A,B), paste0(tiff_path, "summary_table.csv"))
 
 # Make table as image
-g <- tableGrob(C, rows = NULL)
-g <- gtable_add_grob(g,
-                     grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
-                     t = 2, b = nrow(g), l = 1, r = ncol(g))
-g <- gtable_add_grob(g,
-                     grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
-                     t = 1, l = 1, r = ncol(g))
-grid::grid.draw(g)
+# g <- tableGrob(C, rows = NULL)
+# g <- gtable_add_grob(g,
+#                      grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+#                      t = 2, b = nrow(g), l = 1, r = ncol(g))
+# g <- gtable_add_grob(g,
+#                      grobs = rectGrob(gp = gpar(fill = NA, lwd = 2)),
+#                      t = 1, l = 1, r = ncol(g))
+# grid::grid.draw(g)
+
+# Big Figure ----------------------------------------------------------
+# Species**************************************************************
+my_tag <- paste("Spp:", 1:10)
+  
+spp %>% 
+  filter(., scenario == "G") %>% 
+  mutate(disp.text = ifelse(dispersal == 0.01, "Low dispersal",
+                            ifelse(dispersal == 0.1, "High dispersal", "Med dispersal")),
+         disp.text = factor(disp.text, levels = c("Low dispersal", "Med dispersal", "High dispersal")),
+         niche.text = paste("Niche Optima:", signif(nicheOptima, digits = 2))) %>% 
+  mytheme() +
+  facet_grid(disp.text~niche.text, switch = "y") +
+  geom_point(aes(color = nicheOptima , fill = nicheOptima), alpha = 0.7) +
+  scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  scale_fill_gradient2(high = "#000004FF", low = "#56147DFF", mid = "#F4685CFF", limits = c(0, 1), midpoint = 0.5) +
+  scale_color_gradient2(high = "#000004FF", low = "#56147DFF", mid = "#F4685CFF", limits = c(0, 1), midpoint = 0.5, guide = "none") +
+  theme(tern.axis.arrow.text = element_text(size = 7),
+        legend.position = "bottom") +
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
+         fill = guide_colorbar(title = "Niche optima", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))
+
+
+
+
+
+
+
+
+
+
+
+
+
