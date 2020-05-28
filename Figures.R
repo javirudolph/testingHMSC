@@ -640,7 +640,7 @@ write.csv(bind_rows(A,B), paste0(tiff_path, "summary_table.csv"))
 # Species**************************************************************
 my_tag <- paste("Spp:", 1:10)
   
-spp %>% 
+spp_data %>% 
   filter(., scenario == "G") %>% 
   mutate(disp.text = ifelse(dispersal == 0.01, "Low dispersal",
                             ifelse(dispersal == 0.1, "High dispersal", "Med dispersal")),
@@ -705,10 +705,33 @@ params <- get_fig3_params(outsfolderpath, scenario = "FIG3C") %>%
 
 prms1000 <- purrr::map_dfr(seq_len(1000), ~params)
 
-BIG <- left_join(sites.by.spp, prms1000)
+left_join(sites.by.spp, prms1000) %>% 
+  arrange(., species) -> big.fig.df
+  
+big.fig.df %>% 
+  mutate(E = rep(E, 5*12),
+         Edev = abs(E-0.5)) 
 
 
-# Need to add Environmental variables and the species parameters
+# Need to add Environmental variables
+
+big.fig.df %>% 
+  filter(scenario %in% new_scen[1:4]) %>% 
+  mutate(iteration = str_replace(iteration, "iter_", "Replicate"),
+         nicheBreadth = ifelse(scenario %in% c("A", "C"), "Narrow niche", "Broad niche"),
+         nicheBreadth = factor(nicheBreadth, levels = c("Narrow niche", "Broad niche")),
+         interCol = ifelse(scenario %in% c("A", "B"), "No competition", "With competition")) %>% 
+  mytheme() +
+  facet_grid(interCol~nicheBreadth, switch = "y") +
+  geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
+  scale_size_continuous(range = c(0.1,4),limits = c(0, 0.005), breaks = seq(0, 0.005, 0.001)) +
+  #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
+  scale_fill_viridis_c(guide = "none", na.value = "#000000") +
+  scale_color_viridis_c(na.value = "#000000", limits = c(0,0.5)) +
+  theme(tern.axis.arrow.text = element_text(size = 7),
+        legend.position = "bottom") +
+  guides(size = guide_legend(title = nameColor, order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental deviation", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))
 
 
 
