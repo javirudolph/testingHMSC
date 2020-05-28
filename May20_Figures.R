@@ -242,7 +242,7 @@ PQ %>%
          color = guide_colorbar(title = "Environmental deviation", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))
 ggsave(paste0(tiff_path, "Figure3.tiff"), dpi = 600, width = 6, height = 6)
 
-# Figure 4
+# Figure 4, scenario G --------------------------------------------
 
 vars_keep <- c("env", "spa", "codist", "r2", "Edev", "iteration", "dispersal", "nicheOptima", "type")
 
@@ -271,6 +271,7 @@ head(WR)
 # FIGURE 4
 #***************************
 WR %>%
+  filter(type == "Species") %>% 
   mytheme() +
   facet_wrap(~type, ncol=2) +
   geom_encircle(data = WR %>% filter(dispersal == 0.01), aes(group = dispersal), size = 0.7, color = NA, fill = "#FDE4A6FF",alpha = 0.6,
@@ -295,7 +296,28 @@ WR %>%
   ) +
   guides(size = guide_legend(title = expression(R^2), order = 2, nrow = 1, label.position = "bottom"),
          fill = guide_colorbar(title = "Niche optima", title.position = "top", order = 1, barheight = 0.5, barwidth = 5),
-         color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 1, order = 3, barheight = 0.5, barwidth = 5))
+         color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 1, order = 3, barheight = 0.5, barwidth = 5)) -> W.plot
+
+WR %>%
+  filter(type == "Sites") %>% 
+  mytheme() +
+  facet_wrap(~type, ncol=2) +
+  geom_point(aes(color = Edev, fill = Edev), alpha = 0.8) +
+  scale_size_continuous(range = c(0.1,4),limits = c(0, 0.005), breaks = seq(0, 0.005, 0.001)) +
+  #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)  +
+  scale_fill_viridis_c(na.value = "#666666") +
+  scale_color_viridis_c(na.value = "#666666", limits = c(0, 0.5)) +
+  theme(
+    legend.position = "bottom",
+    #legend.box = "vertical",
+    #legend.spacing.y = unit(0.01, "in"),
+    legend.spacing.x = unit(0.1, "cm"),
+    legend.text = element_text(size = 4),
+    legend.title = element_text(size = 6)
+  ) +
+  guides(size = guide_legend(title = expression(R^2), order = 2, nrow = 1, label.position = "bottom"),
+         fill = guide_colorbar(title = "Niche optima", title.position = "top", order = 1, barheight = 0.5, barwidth = 5),
+         color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 1, order = 3, barheight = 0.5, barwidth = 5)) -> R.plot
 
 ggsave(paste0(tiff_path, "Figure4.tiff"), dpi = 600, width = 6, height = 4)
 
