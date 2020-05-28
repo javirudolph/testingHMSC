@@ -576,7 +576,7 @@ YZ %>%
       legend.title = element_text(size = 6)
     ) +
     guides(size = guide_legend(title = expression(R^2), order = 2, nrow = 1, label.position = "bottom"),
-           fill = guide_colorbar(title = "Dispersal level", title.position = "top", order = 1, barheight = 0.5, barwidth = 5),
+           fill = guide_colorbar(title = "Competition", title.position = "top", order = 1, barheight = 0.5, barwidth = 5),
            color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 1,
                                   order = 3, barheight = 0.5, barwidth = 5))
 
