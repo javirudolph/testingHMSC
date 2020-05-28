@@ -358,7 +358,7 @@ WR %>%
     legend.text = element_text(size = 4),
     legend.title = element_text(size = 6)
   ) +
-  guides(size = guide_legend(title = expression(R^2), order = 1, label.position = "left"),
+  guides(size = guide_legend(title = expression(R^2), order = 1, label.position = "right"),
          fill = guide_colorbar(title = "Niche\noptima", title.hjust = 0 , title.position = "top", order = 2, barheight = 4, barwidth = 0.5)) -> Wv.plot
 
 
@@ -381,7 +381,7 @@ WR %>%
     legend.text = element_text(size = 4),
     legend.title = element_text(size = 6)
   ) +
-  guides(size = guide_legend(title = nameColor, order = 1, label.position = "left"),
+  guides(size = guide_legend(title = nameColor, order = 1, label.position = "right"),
          color = guide_colorbar(title = "Environmental\ndeviation", title.position = "top", title.hjust = 0, order = 2, barheight = 4, barwidth = 0.5)) -> Rv.plot
 
 v.WR.plot <- ggtern::grid.arrange(Wv.plot, Rv.plot, nrow=2)
