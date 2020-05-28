@@ -660,7 +660,55 @@ spp %>%
 
 
 
+# Sites****************************************************************
+vp_sites <- readRDS("manuscript_outputs/FIG3C-vpsites.RDS")
 
+fx_df <- function(one.rep.vp){
+  one.rep.vp %>% 
+    map(as_tibble) %>% 
+    bind_cols() %>% 
+    rownames_to_column(var = "site") %>% 
+    pivot_longer(-site, names_to = "header", values_to = "values") %>% 
+    mutate(specie = str_split(header, pattern = "\\.", n = 2, simplify = TRUE)[,1],
+           specie = as.numeric(str_replace(specie, "y", "")),
+           fraction = str_split(header, pattern = "\\.", n = 2, simplify = TRUE)[,2],
+           fraction = ifelse(fraction == "", "env-spa-random", fraction)) %>% 
+    dplyr::select(-header) %>% 
+    pivot_wider(names_from = fraction, values_from = values) %>% 
+    set_names(c("site", "species", "c", "b", "a", "e", "f", "d", "g")) %>% 
+    transmute(site = as.numeric(site),
+              species = as.character(species),
+              env = a + f + 0.5 * d + 0.5 * g,
+              env = ifelse(env < 0, 0, env),
+              spa = b + e + 0.5 * d + 0.5 * g,
+              spa = ifelse(spa < 0, 0, spa),
+              codist = c,
+              codist = ifelse(codist < 0, 0, codist),
+              r2 = env + spa + codist)
+  
+}
+
+sites.by.spp <- NULL
+
+for(i in 1:5){
+  a <- vp_sites[[i]] %>% 
+    fx_df() %>% 
+    mutate(rep = paste("Replicate", i))
+  
+  sites.by.spp <- rbind.data.frame(sites.by.spp, a)
+}
+
+
+params <- get_fig3_params(outsfolderpath, scenario = "FIG3C") %>% 
+  mutate(dispersal = as.numeric(as.character(dispersal)),
+         scenario = "G")
+
+prms1000 <- purrr::map_dfr(seq_len(1000), ~params)
+
+BIG <- left_join(sites.by.spp, prms1000)
+
+
+# Need to add Environmental variables and the species parameters
 
 
 

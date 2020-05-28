@@ -4,60 +4,42 @@ library(ggtern)
 
 
 # Load data and just consider the first iteration------------
-vp_spp <- readRDS("manuscript_outputs/FIG3C-vpspp.RDS")[[1]]
-vp_sites <- readRDS("manuscript_outputs/FIG3C-vpsites.RDS")[[1]]
+vp_sites <- readRDS("manuscript_outputs/FIG3C-vpsites.RDS")
 
-# Species ------------------
-vp_spp %>%
-  map(as_tibble) %>%
-  bind_cols() %>% 
-  rownames_to_column() %>% 
-  set_names(c("species", "c", "b", "a", "e", "f", "d", "g")) %>% 
-  transmute(species = species,
-            env = a + f + 0.5 * d + 0.5 * g,
-            #env = ifelse(env < 0, 0, env),
-            spa = b + e + 0.5 * d + 0.5 * g,
-            #spa = ifelse(spa < 0, 0, spa),
-            codist = c,
-            #codist = ifelse(codist < 0, 0, codist),
-            r2 = env + spa + codist) %>% 
-  mutate_all(., function(x) ifelse(x<0, 0, x)) -> spp
+fx_df <- function(one.rep.vp){
+  one.rep.vp %>% 
+    map(as_tibble) %>% 
+    bind_cols() %>% 
+    rownames_to_column(var = "site") %>% 
+    pivot_longer(-site, names_to = "header", values_to = "values") %>% 
+    mutate(specie = str_split(header, pattern = "\\.", n = 2, simplify = TRUE)[,1],
+           specie = as.numeric(str_replace(specie, "y", "")),
+           fraction = str_split(header, pattern = "\\.", n = 2, simplify = TRUE)[,2],
+           fraction = ifelse(fraction == "", "env-spa-random", fraction)) %>% 
+    dplyr::select(-header) %>% 
+    pivot_wider(names_from = fraction, values_from = values) %>% 
+    set_names(c("site", "species", "c", "b", "a", "e", "f", "d", "g")) %>% 
+    transmute(site = as.numeric(site),
+              species = species,
+              env = a + f + 0.5 * d + 0.5 * g,
+              env = ifelse(env < 0, 0, env),
+              spa = b + e + 0.5 * d + 0.5 * g,
+              spa = ifelse(spa < 0, 0, spa),
+              codist = c,
+              codist = ifelse(codist < 0, 0, codist),
+              r2 = env + spa + codist)
+  
+}
 
-# So, for species, the mean of R2 is the metacommunity R2
-R2 <- signif(mean(spp$r2), digits = 3)
+sites.by.spp <- NULL
 
-# Plot it:
-spp %>% 
-  ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
-  geom_point() +
-  ggtitle(paste("Metacommunity R2 = ", R2))
-
-
-
-
-
-
-# Sites ---------------------
-vp_sites %>% 
-  map(as_tibble) %>% 
-  bind_cols() %>% 
-  rownames_to_column(var = "site") %>% 
-  pivot_longer(-site, names_to = "header", values_to = "values") %>% 
-  mutate(specie = str_split(header, pattern = "\\.", n = 2, simplify = TRUE)[,1],
-         specie = as.numeric(str_replace(specie, "y", "")),
-         fraction = str_split(header, pattern = "\\.", n = 2, simplify = TRUE)[,2],
-         fraction = ifelse(fraction == "", "env-spa-random", fraction)) %>% 
-  select(-header) %>% 
-  pivot_wider(names_from = fraction, values_from = values) %>% 
-  set_names(c("site", "species", "c", "b", "a", "e", "f", "d", "g")) %>% 
-  mutate(site = as.numeric(site),
-         env = a + f + 0.5 * d + 0.5 * g,
-         #env = ifelse(env < 0, 0, env),
-         spa = b + e + 0.5 * d + 0.5 * g,
-         #spa = ifelse(spa < 0, 0, spa),
-         codist = c,
-         #codist = ifelse(codist < 0, 0, codist),
-         r2 = env + spa + codist) -> sites
+for(i in 1:5){
+  a <- vp_sites[[i]] %>% 
+    fx_df() %>% 
+    mutate(rep = paste("Replicate", i))
+  
+ sites.by.spp <- rbind.data.frame(sites.by.spp, a)
+}
 
 
 
