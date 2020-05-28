@@ -45,7 +45,6 @@ rsconnect/
 /output/
 /scratch/
 *.tiff
-/old/
 
 *.csv
 *.docx
