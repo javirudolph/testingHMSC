@@ -82,29 +82,6 @@ intplot <- function(modelfile, iteration){
            signi = ifelse(is.na(color)== TRUE, "x", NA))
 }
 
-# The interaction matrix we provided:
-A <- matrix(0,nr=12,nc=12)
-d <- as.matrix(dist(c(1:12),upper=TRUE,diag=T))
-A[d<=1] = -1
-diag(A) = 0
-
-
-A %>% 
-  get_upper_tri( ) %>% 
-  as_tibble() %>% 
-  rownames_to_column(., var = "Specie1") %>% 
-  pivot_longer(-Specie1, names_to = "Specie2", values_to = "value") %>% 
-  drop_na(value) %>% 
-  mutate(iteration = "Simulation",
-         Specie2 = str_replace(Specie2, "V", ""),
-         Specie1 = factor(Specie1, levels = c(1:12)),
-         Specie2 = factor(Specie2, levels = c(12:1)),
-         color = ifelse(value > 0.4, "red",
-                        ifelse(value < -0.4, "blue", NA)), 
-         signi = ifelse(is.na(color)== TRUE, "x", NA), 
-         scenario = "original") -> orig_matrix
-
-# Get all the data
 intData <- NULL
 for(i in 1:7){
   
