@@ -425,7 +425,7 @@ intData %>%
         strip.background = element_rect(color = NA, fill = "#dbdbd9")) +
   guides(fill = guide_colorbar(title = NULL,barwidth = 0.3, barheight = 5))
 
-#ggsave(paste0(tiff_path, "Figure5.tiff"), dpi = 600, width = 6, height = 1.5)
+ggsave(paste0(tiff_path, "Figure5.tiff"), dpi = 600, width = 6, height = 1.5)
 
 
 # SUPPLEMENT------------------------------------------------
