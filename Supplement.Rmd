@@ -1,20 +1,12 @@
 ---
-title: "The Internal Structure of Metacommunities: Supplementary material"
-author:
-  - Mathew A. Leibold
-  - Javiera Rudolph
-  - Pedro Peres-Neto 
-  - Dominique Gravel
-  - Luc De Meester
-  - Lauren Showmaker
-  - Florian Hartig
-  - F. Guillaume Blanchet
-  - Jonathan M. Chase
+title: 'The Internal Structure of Metacommunities: Supplementary material'
+author: Mathew A. Leibold, Javiera Rudolph, Pedro Peres-Neto, Dominique Gravel, Luc
+  De Meester, Lauren Showmaker, Florian Hartig, F. Guillaume Blanchet, Jonathan M.
+  Chase
 output:
   html_document:
-    toc: true
+    toc: yes
     toc_depth: 2
-
 ---
 
 ```{r setup, include=FALSE}
@@ -34,7 +26,7 @@ rastPlot <- function(data, title = "title", xlabel = "x", ylabel = "y"){
     geom_tile() +
     theme(axis.text = element_blank(),
           legend.title = element_blank()) +
-    scale_fill_viridis_c(alpha = 0.5) +
+    scale_fill_viridis_c() +
     labs(title = title,
          x = xlabel,
          y = ylabel) +
@@ -44,8 +36,7 @@ rastPlot <- function(data, title = "title", xlabel = "x", ylabel = "y"){
 ```
 
 # Description of Model and Simulation Scenarios
-
-## Model Description
+## Patch locations and environmental variables
 In our model, the metacommunity consists of $N$ patches distributed over a spatially heterogeneous landscape, with multiple environmental variables(although, the current simulations only have one environmental variable $D$ and 1000 patches) that could either be randomly distributed or spatially autocorrelated. Each patch has a set of coordinates in a two-dimensional space, and all possible coordinates are feasible such that this is a continuous space model that is not restricted to a lattice or some other kind of regular spatial arrangement of spatial units.  
 ```{r EnvSpa_variables}
 set.seed(227)
@@ -109,7 +100,9 @@ ggarrange(plot_rXY, plot_agXY, legend = "right", common.legend = TRUE)
 
 
 
-A patch may be empty, or be occupied by a single or by several species. We define $X_{i,z,t}$ as a stochastic variable representing the occurrence of species $i$ at location $z$ and time $t$. Occurrence, $X_{i,z,t}$, takes a value of 1 when species $i$ is present and a value of 0 when it is absent. Similarly, we define $\mathbb{Y}_{z,t}=X_{1,z,t},X_{2,z,t},…,X_{R,z,t}$ as a vector containing the presence-absence of each species from the regional pool  $R$.  
+A patch may be empty, or be occupied by a single or by several species. We define $X_{i,z,t}$ as a stochastic variable representing the occurrence of species $i$ at location $z$ and time $t$. Occurrence, $X_{i,z,t}$, takes a value of 1 when species $i$ is present and a value of 0 when it is absent. Similarly, we define $\mathbb{Y}_{z,t}=X_{1,z,t},X_{2,z,t},…,X_{R,z,t}$ as a vector containing the presence-absence of each species from the regional pool $R$.  
+
+## Initial Occupancy Example
 For example, to create the initial conditions, $t=0$,  of presence absence, species occupancy is drawn from a random uniform distribution, and values smaller than $0.8$ are considered as species presence. Patches or locations $z$ are represented by rows in the matrix, whereas each species is a column. Each cell in the matrix is $X_{i,z,t}$ and each row is $\mathbf{Y}_{z,t}$ for $t=0$. The following figure shows three different iterations of this process, where areas in black represent occupancy = 1, and white denotes an absence.
 
 ```{r initialCondMatrix, fig.height=3, fig.width=8}
@@ -158,7 +151,7 @@ ggarrange(A, B, C, ncol = 3)
 
 The model only tracks the occupancy of the patches (not population densities). Spatial dynamics occurs because of colonization events, in both empty patches and patches that are occupied by other species, and because of extinction events. The emerging species co-distributions are a result of a dynamic balance between these events. Ecological interactions can impact either or both the colonization and the extinction probabilities. For instance, the presence of a competitor pre-empting a patch can reduce the colonization probability by another competitor. Alternatively, the presence of a competitor in a patch could increase the extinction probability of another species. Similarly, the environment could influence both the colonization and the extinction probabilities.
 
-### Patch Colonization
+## Patch Colonization
 We consider a discrete-time Markovian process to represent the dynamics of presence- absence of all species and we incorporate the effect of dispersal, environmental filtering and ecological interactions in such a way that we could cover all possible scenarios wherein species differ in any combination of ways. We include interspecific competition along with other types of spatial dynamics such as predator-prey interactions (Gravel et al. 2011), priority effects (Shurin et al. 2004), or mutualistic interactions (e.g. Gilarranz et al. 2015).
 Following a colonization event from time $t$ to $t + \Delta$ corresponds to:
 \begin{equation}
@@ -166,17 +159,482 @@ Following a colonization event from time $t$ to $t + \Delta$ corresponds to:
 P(X_{i,z,t+\Delta t}=1│X_{i,z,t}=0)=I_{i,z,t} S_{i,z,t} C_{i,z,t}	
 \end{equation}  
 where $I_{i,z,t}$ is the number of immigrants of species $i$ reaching patch $z$ at time $t$, $S_{i,z,t}$ is the effect of environmental filtering on the probability of establishing a viable local population and $C_{i,z,t}$ is the effect of ecological interactions on the establishment probability. We note that because we represent a stochastic process, the product of these three functions has to be bounded between 0 and 1. We consequently define these quantities:  
+
 The effect of immigration is given by:  
 \begin{equation}
 \tag{A2}
 I_{i,z,t} = \frac{\sum k(z,\omega)X_{i,\omega,t}}{\sum k(z,\omega)}	
 \end{equation}
+
 which is a weighted average of the occurrence probability of species $i$ in the neighborhood of $z$. The function $k(z,\omega)$ is a dispersal kernel that depends on the location of patch $z$ and the neighborhood $\omega$. For convenience, we consider an exponential function of the Euclidean distance between localities. We add to the kernel a low distance and neighborhood-independent constant $m$ in order to account from immigration from outside the simulated metacommunity. This assumption is required to prevent total extinction by drift under perfectly neutral dynamics.
-The effect of the environment is given by a product of the establishment performance over all environmental variables $E_n$:
+
+```{r Ifunction}
+# Compute the propagule pressure
+I_f = function(Y, K, m) I = (1-m)*(K%*%Y)/(K%*%matrix(1,nr=N,nc=R)) + m
+
+# The argument `K` is the connectivity matrix. The argument `XY` corresponds to the patch coordinates, whereas `alpha` is the dispersal parameter associated to the exponential distribution used for dispersal. It can be computed with the following function:
+# The arguments for this function are: `Y, K, m`. We calculated $\mathbb{Y}$, species presence or absence, in the previous section with the case for initial conditions. Argument `m` is set in the parameters as a value `m = 0.001` and the connectivity matrix `K` is calculated below.  
+
+# Compute the connectivity matrix
+get_K = function(XY, alpha) {
+	N = nrow(XY)
+	distMat = as.matrix(dist(XY, method = "euclidean", upper = T, diag = T))
+	ConMat = exp(-1/alpha*distMat)
+	diag(ConMat) = 0
+	return(ConMat)
+}
+```
+
+
+
+As an example, using the aggregated XY coordinates calculated in the 'Patch locations and environmental variables' section, for `r N` patches and our initial occupancy matrix with `r R` species ,we can see the connectivity between patches, and calculate the contribution of immigration from each species to each patch.    
+
+```{r plotK, fig.height=3, fig.width=8}
+# We can use the aggregated XY coordinates for this example:
+XY <- agXY
+
+# Connectivity matrix
+alpha <- 0.005
+K <- get_K(XY, alpha)
+plot_K <- cbind(rownames(K), stack(as.data.frame(K)))
+names(plot_K) <- c("X", "Fill", "Y")
+plot_K %>% 
+  as_data_frame() %>% 
+  mutate(X = factor(X, levels = c(1:20)),
+         Y = factor(Y, levels = c(1:20))) -> plot_K
+ggplot(plot_K, aes(x = X, y = Y, fill = Fill)) +
+  geom_raster() +
+  scale_fill_viridis_c() + 
+  labs(title = "Connectivity among patches") +
+  theme(legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90)) -> A
+# Immigration
+m <- 0.001
+Y <- Y0
+I <- I_f(Y, K, m)
+rastPlot(I, title = "I - Immigration to each plot", x = "Patches", y = "Species") +
+  theme(legend.title = element_blank()) -> plot_I
+ggarrange(A, plot_I, ncol = 2)
+```
+
+
+## Environmental filtering  
+In the section above, it is refered to the effect of environmental filtering on the probability of establishing a viable local population. The effect of the environment is given by a product of the establishment performance over all environmental variables $E_n$:
 \begin{equation}
 \tag{A3}
 S_{i,z,t} = \prod f(E_{n,z}\, \mu_{i,n}\, \sigma_{i,n})
 \end{equation}
-In our simulations, for convenience, we consider that the function $f$ has a quadratic form for all species and all environmental variables, though the model is flexible enough to consider other responses that also differ among species. 
-To incorporate all possible ecological interactions, we start by representing the interaction network by a community matrix $\A of R species. The elements α_ij of A quantify the effect of species j on the dynamics of species i. When α_ij is negative, the colonization probability of species i decreases and/or its extinction probability increases when j is found locally. Inversely, when α_ij is positive, the colonization probability increases and/or the extinction probability decreases. To account for the cumulative effects of local interactions on transition probabilities, we make colonization and extinction probabilities community dependent. As explained above, at a time t, the Y_(z,t) vector gives the local assemblages. We calculate the sum of interactions at any time and for each species as ν=A_(z,t) Y_(z,t). Our approach can be interpreted as a spatial analogue to the generalized Lotka–Volterra model because it takes into account the impact of the whole network of interactions on each species dynamics and can deal with any type of interaction. We now define the function C_(i,z,t)=g(ν_i,z,t) representing the total effect of ecological interactions on the colonization probability. For convenience, we will use a sigmoid function, with g ranging between c_min at high negative interactions and c_max at high positive interactions. c_max should be interpreted as the maximal colonization probability when the environmental conditions are optimal and there is no dispersal limitations.
+In our simulations, for convenience, we consider that the function $f$ has a quadratic form for all species and all environmental variables, though the model is flexible enough to consider other responses that also differ among species.  
+```{r Sfunction, fig.height=3, fig.width=4}
+# Compute the local performance of propagules
+S_f_quadratic <- function(E, u_c, s_c) {
+  R <- ncol(u_c)
+  N <- nrow(E)
+  D <- ncol(E)
+  S <- matrix(1, nr = N, nc = R)
+  for(i in 1:D){
+    optima <- matrix(u_c[i,],nrow = N,ncol = R,byrow = TRUE)
+    breadth <- matrix(s_c[i,],nrow = N,ncol = R,byrow = TRUE)
+    S <- S * ((-1 / (breadth/2)^2) * (E[,i] - optima)^2 + 1)
+    S <- ifelse(S < 0, 0 , S)
+    
+  }
+  return(S)
+}
+
+# Understood as niche optima for each species, for each environmental variable
+  u_c = matrix(nr = D, nc = R)
+  u_c[1,] = seq(0.1,0.9, length=R)
+# Understood as niche breadth
+  s_c = matrix(0.2, nr = D, nc = R)
+
+# Local performance, colonization
+S <- S_f_quadratic(E, u_c, s_c)
+plot_S <- rastPlot(S, title = "S - Local performance colonization", x = "Patches", y = "Species")
+plot_S
+```
+
+## Ecological interactions on establishment probability
+
+To incorporate all possible ecological interactions, we start by representing the interaction network by a community matrix $\mathbf{A}$ of $R$ species. The elements $\alpha_{ij}$ of $\mathbf{A}$ quantify the effect of species $j$ on the dynamics of species $i$. When $\alpha_{ij}$ is negative, the colonization probability of species $i$ decreases and/or its extinction probability increases when $j$ is found locally. Inversely, when $\alpha_{ij}$ is positive, the colonization probability increases and/or the extinction probability decreases. 
+Example from to create matrix $\mathbf{A}$:
+```{r matrixA, fig.height=3, fig.width=4}
+  # # Interaction matrix
+  A = matrix(0,nr=R,nc=R)
+  d = as.matrix(dist(c(1:R),upper=TRUE,diag=T))
+  A[d<=1] = -1
+  diag(A) = 0
+  
+  plot_A <- rastPlot(A, title = "A - Interaction matrix")
+```
+
+To account for the cumulative effects of local interactions on transition probabilities, we make colonization and extinction probabilities community dependent. As explained above, at a time $t$, the $\mathbf{Y}_{z,t}$ vector gives the local assemblages. We calculate the sum of interactions at any time and for each species as $\nu=\mathbf{A}_{z,t}\mathbf{Y}_{z,t}$. Our approach can be interpreted as a spatial analogue to the generalized Lotka–Volterra model because it takes into account the impact of the whole network of interactions on each species dynamics and can deal with any type of interaction.  
+
+```{r SumInteractions, fig.height=3, fig.width=8}
+# Compute the sum of ecological interactions for every location and every species
+sum_interactions = function (A, Y) t(A%*%t(Y))
+# this is considered to be "v"
+v <- sum_interactions(A, Y)
+
+plot_v <- rastPlot(v, title = "v - Sum of interactions", x = "patches", y = "species")
+
+ggarrange(plot_A, plot_v, ncol = 2)
+
+```
+
+
+We now define the function 
+$$C_{i,z,t}=g(\nu_{i},z,t)$$
+representing the total effect of ecological interactions on the colonization probability. For convenience, we will use a sigmoid function, with $g$ ranging between $c_{min}$ at high negative interactions and $c_{max}$ at high positive interactions, where $c_{max}$ should be interpreted as the maximal colonization probability when the environmental conditions are optimal and there are no dispersal limitations.  
+
+```{r Cfunction}
+# Effect of ecological interactions on colonization probability
+C_f = function(v, d_c, c_0, c_max) c_max*(1 +(1/c_0 - 1)*exp(-v*d_c))^-1
+
+```
+The arguments for this function are `v` as the resulting matrix from the sum of interactions, `d_c` as the sensitivity to interactions, `c_0` and `c_max` as the colonization parameters:
+```{r params2}
+  # # Colonization function
+  c_0 = rep(0.4, R) # Colonization at 0 interactions
+  c_max = rep(1, R) # Colonization at max interactions
+
+  # # Sensitivity to interactions
+  d_c = 0.2
+```
+
+Example:
+```{r runCfuntion}
+C <- C_f(v, d_c, c_0, c_max)
+plot_C <- rastPlot(C, title = "C - Interactions on colonization", x = "Patches", y = "Species")
+```
+
+With all the components calculated, we can now compute the colonization probability $P\left(X_{i,z,t+\Delta t}=1│X_{i,z,t}=0\right)=I_{i,z,t} S_{i,z,t} C_{i,z,t}$
+
+```{r colonizationProb, echo = FALSE}
+P_col = I*S*C
+plot_Pcol <- rastPlot(P_col, title = "Probability of colonization", x = "Patches", y = "Species")
+```
+
+```{r VisualizeCol, echo = FALSE}
+ggarrange(plot_I, plot_S, plot_C, plot_Pcol, ncol = 2, nrow = 2)
+
+```
+
+
+
+## Patch Extinction
+The definition of the extinction probability follows exactly the same rules as for colonization, except that extinction is independent of the neighborhood composition. We follow the same logic to define the effect of ecological interactions and of variation in the environment. Consequently, we get the Markovian process:
+$$P\left(X_{i,z,{t+\Delta t}}=1│X_{i,z,t}=0\right)=M_{i,z,t} E_{i,z,t}$$
+
+where $M_{i,z,t}$ and $E_{i,z,t}$  are the responses of the extinction probability to the local environment and to ecological interactions, respectively. The difference with the colonization functions defined in the previous section is that the extinction probability must be larger when interactions are negative and smaller when they are positive. In addition, the extinction rate should be minimal (instead of maximal) at environmental optimum.  
+
+```{r Mfunction}
+# Effect of the environment on the extinction
+M_f = function(E, u_e, s_e) {
+	R = ncol(u_e)
+	N = nrow(E)
+	D = ncol(E)
+	M = matrix(1, nr = N, nc = R)
+	for(i in 1:D) M = M*(1-exp(-(E[,i]-matrix(u_e[i,],nr=N,nc=R,byrow=TRUE))^2 / matrix(s_e[i,],nr=N,nc=R,byrow=TRUE)^2))
+	return(M)	
+}
+
+```
+
+With the arguments computed as:
+```{r params3}
+  # # Effect of the environment on extinction
+  u_e = matrix(nr = D, nc = R)
+  u_e[1,] = rep(0.5, R)
+  s_e = matrix(Inf, nr = D, nc = R)
+  
+  #u_e
+  #head(s_e)
+
+```
+
+```{r run Mfunction, echo = FALSE}
+M <- M_f(E, u_e, s_e)
+
+plot_M <- rastPlot(M, title = "Environment on extinction", x = "Patches", y = "Species")
+```
+
+
+
+```{r Efunction}
+
+# Effect of ecological interactions on extinction
+E_f = function(v, d_e, e_0, e_min) {
+
+	e_min_mat = matrix(e_min, nr = N, nc = R, byrow=TRUE)
+
+	e_min_mat+(1/(1-e_min_mat)+(1/(e_0-e_min_mat)-1/(1-e_min_mat))*exp(d_e*v))^-1
+
+}
+
+```
+
+With the arguments computed as:
+```{r params4}
+
+# # Extinction function
+  e_0 = rep(0.025, R) # Extinction at 0 interactions
+  e_min = rep(0, R) # Exinction at max interactions
+
+  # # Sensitivity to interactions
+
+  d_e = 0
+```
+
+```{r runEfunction, echo = FALSE}
+Ex <- E_f(v, d_e, e_0, e_min)
+
+plot_Ex <- rastPlot(Ex, title = "Interactions on extinction")
+```
+
+We can now compute the probability of extinction $P\left(X_{i,z,{t+\Delta t}}=1│X_{i,z,t}=0\right)=M_{i,z,t} E_{i,z,t}$
+
+```{r extinctionProb, echo = FALSE}
+P_ext <- M * (1-Ex) + Ex
+plot_Pext <- rastPlot(P_ext, title = "Probability of extinction", x = "Patches", y = "Species")
+
+```
+
+```{r VisuzalizeExt, echo = FALSE}
+ggarrange(plot_M, plot_Ex, plot_Pext, ncol = 2, nrow = 2)
+
+```
+The way parameters are set, the extinction component is the same for all species in every patch.
+
+### Testing and changes
+
+```{r Test1}
+
+# Perform the test
+delta <- matrix(0, nr = N, nc = R)
+rand <- matrix(runif(N*R), nr = N, nc = R)
+delta[Y == 0 & rand < P_col] <- 1
+
+# Perform the test
+rand = matrix(runif(N*R), nr = N, nc = R)
+delta[Y == 1 & rand < P_ext] = - 1
+
+
+```
+
+```{r testPlot, echo = FALSE}
+	
+### Apply changes ###
+Y_post = Y + delta
+
+plot_Y <- rastPlot(Y, title = "Y0 - initial conditions matrix")
+plot_delta <- rastPlot(delta, title = "Change after col/ext")
+plot_Ypost <- rastPlot(Y_post, title = "Y1 - occupancy at time 1")
+
+
+ggarrange(plot_Y, plot_delta, plot_Ypost)
+```
+
+
+
+
+## Interpretation
+To interpret the model, note that, at steady state, for each species, we obtain the expected occurrence probability $\left( \hat{P}\right)$ at each site as:
+$$\frac{\hat{P^{iz}}}{1-\hat{P^{iz}}} = \frac{I^{iz} \cdot S^{iz} \cdot C^{iz}}{M^{iz} \cdot E^{iz}}$$
+After a log transformation, this yields:  
+
+$$\log \left( \frac{\hat{P^{iz}}}{1-\hat{P^{iz}}}\right) = \log\left(I^{iz}\right) + \log\left(\frac{S^{iz}}{M^{iz}}\right) + \log\left(\frac{C^{iz}}{E^{iz}}\right)$$
+
+The last equation can be interpreted as a macroscopic description of the expected species distribution pattern (Thuiller et al. 2013).  In this formulation, $\log(I)$ describes the tendency of a patch to resemble other nearby patches due to the spatial contagion by dispersal, $\log\left(\frac{S}{M}\right)$ describes the tendency of sites to be occupied by species with similar fitness responses to environmental gradients, and $\log\left(\frac{C}{E}\right)$ describes the remaining influence of other species on co-occurrence due to interactions among species.  The values for these indices will depend on what choices are made for the components of eq. 1 (see Supporting Information for details on how we implemented this simulations model).  
+
+This modeling framework can represent the classical archetypes (Box 1), but also permits more intricate (and likely far more realistic) metacommunity scenarios and predictions. For example, we could use the model to examine how species traits (and environmental context) link to metacommunity dynamics. Moreover, continuous mixtures of different metacommunity extremes (archetypes) can be represented by appropriate choices for dispersal, competitive abilities, and environmental preferences. For instance, species sorting would require a relatively large colonization to extinction ratio along with species-specific environmental requirements and regional similarity (sensu Mouquet and Loreau, 2002). Alternatively, coexistence within competition-colonization trade-offs requires species to have similar responses to the environment and appropriate heterogeneities in the $I$, $C$ and $E$ functions, but no environmental preferences.  
+
+The implemented mechanisms in the simulation model can be partly mapped onto variation partitioning components. For instance, at equilibrium, we could expect dispersal limitation (the $\log(I)$ term in equation 3) to create positive spatial autocorrelation at the dispersal scale (the [S/E] fraction in variation partitioning). Environmental filtering (the $\log\left(\frac{S}{M}\right)$ term in equation 3) should lead to a correlation between composition and environment (the [E/S] fraction in variation partitioning). The last term in equation 3, however, describing the effect of interactions on distribution (the $\log\left(\frac{C}{E}\right)$), is novel and has no equivalent in the context of classical variation partitioning. 
+
+## Parameterization and Simulation Scenarios  
+
+We simulated metacommunity dynamics with a landscape of 1000 patches over 200 time steps and an initial occupancy of 0.8. Patches were placed randomly in a two-dimensional plane with coordinates drawn from a uniform distribution with a minimum of 0 and a maximum of 1. The environment varied spatially, with values drawn from a random distribution between 0 and 1. In the specific simulations we studied in the paper, colonization was the only component of the species that were affected by the environment (i.e. $E_{i,z,t}  = 1$). Specifically, colonization reacted to the environment following a quadratic curve.  
+
+For all scenarios considered, we simulated 12 species. Niche optimums for the species were evenly distributed between 0.1 and 0.9 while niche breadth was set to 0.8 for simulations with narrow niches, and to 2 for simulations where niches was assumed to be broad. For dispersal, we considered an exponential dispersal kernel, with a distance-independent immigration probability of 0.001 and an α parameter of 0.05. In the scenario where we have variable dispersal kernels (Figure 3), α was 0.01 for 1/3 of species, 0.05 for 1/3 of species, and 0.1 for the other 1/3 of species. We used a sigmoid function to relate the total number of interactions with colonization and extinction coefficients following the implementation by Cazelles et al. (2016). Colonization probability in the absence of interactions was set at 0.4, which tends to zero as negative interactions tend to infinity, while it asymptotes at a 1 with infinite positive interactions. All other aspects of the colonization-interaction curve were the same for all scenarios. Similarly, extinction in the absence of interactions was set at 0.025, and tended to 1 with infinite negative interactions, while its asymptote tended to 0 with infinite positive interactions. In both cases, the parameter setting the shape of the sigmoid function was set to 0 for the scenarios without competition, and 1.5 in the presence of competition. If there were interactions, then a focal species only interacted with the two species that had the closest niches.
+For all scenarios, five sets of metacommunities were simulated and analyzed to obtain the results found in Figure 2 and 3. 
+
+All scenarios have been implemented in R and the project’s repository can be found here: github.com/javirudolph/testingHMSC
+
+Supplementary Figure 1.  In which we have half of the species with interactions and the other without. 
+
+
+```{r eval=FALSE, echo=FALSE, message=FALSE}
+E <- readRDS("manuscript_functions/fixedLandscapes/orig-no-seed-E.RDS")
+source("manuscript_functions/output_processing_fx.R")
+
+
+outsfolderpath <- "manuscript_outputs/"
+
+tiff_path <- paste(outsfolderpath, "tiff_files/")
+
+
+base_sites_plot <- function(data, plotMain = NULL, colorVar = NULL, colorLegend = "none"){
+  data %>% 
+    ggtern(aes(x = env, z = spa, y = codist, size = r2)) +
+    geom_point(aes_string(color = colorVar), alpha = 0.6) +
+    scale_T_continuous(limits=c(0,1.0),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    scale_L_continuous(limits=c(0.0,1),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    scale_R_continuous(limits=c(0.0,1.0),
+                       breaks=seq(0,1,by=0.1),
+                       labels=seq(0,1,by=0.1)) +
+    labs(title = plotMain,
+         x = "E",
+         xarrow = "Environment",
+         y = "C",
+         yarrow = "Co-Distribution",
+         z = "S", 
+         zarrow = "Spatial Autocorrelation") +
+    theme_light() +
+    theme_showarrows() +
+    #scale_colour_brewer(palette = "Set1") +
+    #scale_colour_brewer(palette = "Spectral") +
+    #scale_color_viridis_d() +
+    scale_size_area(limits = c(0, 0.003), breaks = seq(0, 0.003, 0.0005)) +
+    guides(color = guide_colorbar(colorLegend, order = 2), 
+           size = guide_legend(title = expression(R^2), order = 1)) +
+    theme(panel.grid = element_line(color = "darkgrey"),
+          axis.text = element_text(size =5),
+          axis.title = element_text(size = 8),
+          plot.title = element_text(size = 12, margin = margin(t = 10, b = -20)),
+          tern.axis.arrow = element_line(size = 1))
+}
+
+
+```
+
+
+```{r eval = FALSE, echo=FALSE, message=FALSE}
+# SUP FIG1 ---------------------------------------------------------------
+
+# This is what used to be Figure 3a, in which we have half of the species with interactions
+# The other half don't
+
+
+fig3aspp <- get_species_data(outsfolderpath, scenario = "FIG3A")
+fig3aparams <- get_fig3_params(outsfolderpath, "FIG3A") %>% 
+  mutate(dispersal = as.numeric(as.character(dispersal)))
+
+left_join(fig3aspp, fig3aparams) %>% 
+  dplyr::select(species, env, spa, codist, r2, iteration,
+                prevalence, nicheOpt, dispersal, intercol, interext) %>% 
+  mutate(nicheCent = abs(nicheOpt - 0.5)) -> fig3a_spp
+
+fig3a_sites <- get_sites_data(outsfolderpath, "FIG3A") %>% 
+  mutate(E = rep(E, 5), 
+         Edev = abs(E-0.5))
+
+# FIG3A or SUP1 PLOT
+pal1 <- viridisLite::plasma(20)
+fig3a_spp %>% 
+  ggtern(aes(x = env, z = spa, y = codist, size = r2,
+             color = nicheOpt, shape = intercol)) +
+  geom_point(alpha = 0.8) +
+  scale_T_continuous(limits=c(0.0,1.0),
+                     breaks=seq(0.0,1.0,by=0.1),
+                     labels=seq(0.0,1.0,by=0.1)) +
+  scale_L_continuous(limits=c(0.0,1),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  scale_R_continuous(limits=c(0.0,1.0),
+                     breaks=seq(0,1,by=0.1),
+                     labels=seq(0,1,by=0.1)) +
+  labs(x = "E",
+       xarrow = "Environment",
+       y = "C",
+       yarrow = "Co-Distribution",
+       z = "S", 
+       zarrow = "Spatial Autocorrelation") +
+  theme_light() +
+  theme_showarrows() +
+  #scale_color_gradient(low = "orange", high = "black") +
+  # scale_color_gradient2(low = "#BBDF27FF", mid = "#414487FF",
+  #                       high = "#BBDF27FF", midpoint = 0.5) +
+  #scale_color_viridis_c(option = "magma") +
+  scale_color_gradient2(low = pal1[5], mid = pal1[18], high = pal1[9], midpoint = 0.5) +
+  scale_size_area(limits = c(0,1), breaks = seq(0,1,0.2)) +
+  guides(color = guide_colorbar("Niche \n Optima", order = 2, barwidth = 8, nbins = 2), 
+         size = guide_legend(title = expression(R^2), order = 1),
+         shape = guide_legend("Interactions", order = 3, override.aes = list(size = 3))) +
+  theme(panel.grid = element_line(color = "darkgrey"),
+        axis.text = element_text(size =5),
+        axis.title = element_text(size = 8),
+        plot.title = element_text(size = 12, margin = margin(t = 10, b = -20)),
+        tern.axis.arrow = element_line(size = 1),
+        legend.direction = "horizontal",
+        legend.box = "vertical",
+        legend.position = "bottom",
+        legend.text = element_text(size = 8)) -> fig3aplot_spp
+
+fig3aplot_spp + theme(legend.position = "none") -> Sup1A
+
+leg <- get_legend(fig3aplot_spp)
+as_ggplot(leg) -> legendSup1A
+
+# SITES PLOT FIG3
+
+fig3aplot_sites <- base_sites_plot(data = fig3a_sites,colorVar = "Edev", colorLegend = "Environmental deviation") +
+  scale_color_viridis_c() + theme(legend.position = "bottom",
+                                  legend.box = "vertical")
+
+fig3aplot_sites + theme(legend.position = "none") -> Sup1B
+
+leg <- get_legend(fig3aplot_sites)
+as_ggplot(leg) -> legendSup1B
+
+
+grid.arrange(Sup1A, Sup1B, ncol = 2)
+grid.arrange(legendSup1A, legendSup1B, ncol = 2)
+
+```
+
+
+Supplementary Figure 2.  In which we change dispersal only, α was 0.01 for 1/3 of species, 0.05 for 1/3 of species, and 0.1 for the other 1/3 of species.
+
+Appendix ## – Calculation of the coefficient of determination (R^2)
+Classic coefficient of determination (R^2)
+
+The coefficient of determination that was partitioned in the variation partitioning analysis (Appendix XX) is calculated for species j as 
+
+	R_j^2= 1-  (∑_(i=1)^n▒(y_ij-y ̂_ij )^2 )/(∑_(i=1)^n▒(y_ij-y ̅_ij )^2 )	eq A1
+
+where y_ij is the data associated with species j (out of p species) at site i (out of n sites), y ̂_ij is the model associated to species j at site i and y ̅_j is the average of the data for species j across all sites. 
+
+Community-level coefficient of determination
+
+Although having an R_j^2 for each species j can be highly informative, it is sometimes useful to also have a single R^2 for the entire community. This is obtained by averaging all R_j^2 
+
+	(_^C)R^2 =(∑_(j=1)^p▒R_j^2 )/p	eq A2
+where the (_^C)R^2  is the community-level R^2.
+
+Site contribution to the coefficient of determination
+
+In the paper, we use the contribution of each site to R_j^2 to present how each site contributes differently to the environment, space and co-distribution for the community. The calculation of the site i contribution to the R_j^2, is calculated as 
+
+	R_ij^2=1/n  -  (y_ij-y ̂_ij )^2/(y_ij-y ̅_ij )^2 .	eq A3
+
+When studying equation A2, a few considerations can be made. The first part of the equation where the 1 of the classic R_j^2 is divided by n is included to make sure that if we sum all R_ij^2 across all sites for species j, the resulting value is R_j^2 and not some other value. 
+
+More importantly, what can be noticed is that by calculating R_ij^2, the contribution of sites to each species R_j^2, we obtain a matrix that has the same dimension as the site by species matrix (an n×p matrix). Using this matrix, if we sum across all sites, we obtain the R_j^2. However, if we average across the species for site i we obtain the site’s contribution to the community-level (_^C)R^2  or (_^C)R_i^2 . 
+The amount of variation expressed by the R_j^2, the (_^C)R^2 , the R_ij^2 or the (_^C)R_i^2   can all be partitioned in its environmental, spatial and co-distribution component following the procedure presented in (Appendix XX).
+
+Pseudo coefficient of determination (pseudo-R^2)
+
+There exist different variants of pseudo-R^2 that can be applied to specific types of data (e.g. Tjur’s D [Tjur 2009] is designed to presence-absence data) or more broadly (e.g. Efron’s pseudo-R^2 [Efron 1978]). Because all the different variants of pseudo-R^2 can be applied to a model with a single response variable (i.e. a single species), community-level pseudo-R^2 can be obtained following the approach mentioned above. However, this is not always possible when the interest is to calculate the sites’ contribution to a pseudo-R^2, especially for variants of pseudo-R^2 that do not have a mathematical structure similar to the classical R^2.
+
+Reference
+
+Tjur, T. 2009. Coefficients of determination in logistic regression models – A new proposal: The coefficient of discrimination. The American Statistician 63:366–372.
+
+Efron, B. 1978. Regression and ANOVA with zero-one data: Measures of residual Variation. Journal of the American Statistical Association 73:113–121.
+
+
 
