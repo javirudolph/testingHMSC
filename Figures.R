@@ -221,7 +221,7 @@ PQ %>%
         legend.position = "bottom") +
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental deviation", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))
-ggsave(paste0(tiff_path, "Figure2.tiff"), dpi = 600, width = 6, height = 6)
+ggsave(paste0(tiff_path, "Figure2_old.tiff"), dpi = 600, width = 6, height = 6)
 
 # Figure3: Scenarios C and D
 #********
@@ -239,7 +239,7 @@ PQ %>%
     legend.position = "bottom") +
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental deviation", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))
-ggsave(paste0(tiff_path, "Figure3.tiff"), dpi = 600, width = 6, height = 6)
+ggsave(paste0(tiff_path, "Figure3_old.tiff"), dpi = 600, width = 6, height = 6)
 
 # Figure 4, scenario G --------------------------------------------
 
@@ -292,7 +292,8 @@ WR %>%
     #legend.spacing.y = unit(0.01, "in"),
     legend.spacing.x = unit(0.1, "cm"),
     legend.text = element_text(size = 4),
-    legend.title = element_text(size = 6)
+    legend.title = element_text(size = 6),
+    legend.margin = margin(0,0,0,0)
   ) +
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          fill = guide_colorbar(title = "Niche optima", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))-> W.plot
@@ -315,14 +316,15 @@ WR %>%
     #legend.spacing.y = unit(0.01, "in"),
     legend.spacing.x = unit(0.1, "cm"),
     legend.text = element_text(size = 4),
-    legend.title = element_text(size = 6)
+    legend.title = element_text(size = 6),
+    legend.margin = margin(0,0,0,0)
   ) +
   guides(size = guide_legend(title = nameColor, order = 1, nrow = 1, label.position = "bottom"),
          color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 0, order = 2, barheight = 0.5, barwidth = 8)) -> R.plot
 
 
 h.WR.plot <- ggtern::grid.arrange(W.plot, R.plot, ncol = 2)
-ggsave(filename = paste0(tiff_path, "Figure4_h.tiff"), plot = h.WR.plot, dpi = 600, width = 6, height = 6)
+ggsave(filename = paste0(tiff_path, "Figure4_h.tiff"), plot = h.WR.plot, dpi = 600, width = 6, height = 4)
 
 # Vertical doesn't look great, size isn't good.
 # v.WR.plot <- ggtern::grid.arrange(W.plot, R.plot, nrow=2)
@@ -351,14 +353,15 @@ WR %>%
   scale_color_gradient2(high = "#000004FF", low = "#56147DFF", mid = "#F4685CFF", limits = c(0, 1), midpoint = 0.5, guide = "none") +
   theme(
     legend.position = "right",
-    #legend.box = "vertical",
+    #legend.box = "horizontal",
     legend.spacing.y = unit(0.1, "cm"),
     legend.spacing.x = unit(0.1, "cm"),
     legend.text = element_text(size = 4),
-    legend.title = element_text(size = 6)
+    legend.title = element_text(size = 6),
+    legend.margin = margin(0,0,0,0)
   ) +
   guides(size = guide_legend(title = expression(R^2), order = 1, label.position = "right"),
-         fill = guide_colorbar(title = "Niche\noptima", title.hjust = 0 , title.position = "top", order = 2, barheight = 4, barwidth = 0.5)) -> Wv.plot
+         fill = guide_colorbar(title = "Niche\noptima", title.hjust = 0 , title.position = "top", order = 2, barheight = 3.5, barwidth = 0.5)) -> Wv.plot
 
 
 nameColor <- bquote(atop(Contribution~by~phantom(),
@@ -374,14 +377,15 @@ WR %>%
   scale_color_viridis_c(na.value = "#666666", limits = c(0, 0.5)) +
   theme(
     legend.position = "right",
-    #legend.box = "vertical",
+    #legend.box = "horizontal",
     legend.spacing.y = unit(0.1, "cm"),
     legend.spacing.x = unit(0.1, "cm"),
     legend.text = element_text(size = 4),
-    legend.title = element_text(size = 6)
+    legend.title = element_text(size = 6),
+    legend.margin = margin(0,0,0,0)
   ) +
   guides(size = guide_legend(title = nameColor, order = 1, label.position = "right"),
-         color = guide_colorbar(title = "Environmental\ndeviation", title.position = "top", title.hjust = 0, order = 2, barheight = 4, barwidth = 0.5)) -> Rv.plot
+         color = guide_colorbar(title = "Environmental\ndeviation", title.position = "top", title.hjust = 0, order = 2, barheight = 3.5, barwidth = 0.5)) -> Rv.plot
 
 v.WR.plot <- ggtern::grid.arrange(Wv.plot, Rv.plot, nrow=2)
 ggsave(filename = paste0(tiff_path, "Figure4_v.tiff"), plot = v.WR.plot, dpi = 600, width = 6, height = 6)
@@ -559,51 +563,100 @@ head(YZ)
 
 #***************************
 YZ %>%
-  filter(scenario == "Scenario E") %>% 
+  filter(type2 == "Species" & scenario == "Scenario E") %>% 
   mytheme() +
-  facet_grid(type1~type2, switch = "y") +
-  geom_point(aes(color = Edev, fill = interCol), alpha = 0.8) +
-  scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  facet_wrap(~type2, ncol=2) +
+  geom_point(aes(color = interCol, fill = interCol), alpha = 0.8) +
+  scale_size_continuous(range = c(0.1,4),limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
   scale_fill_gradient(high = "#810f7c", low = "#b3cde3") +
-    scale_color_viridis_c(na.value = "grey", limits = c(0, 0.5)) +
-    theme(
-      legend.position = "bottom",
-      #legend.box = "vertical",
-      #legend.spacing.y = unit(0.01, "in"),
-      legend.spacing.x = unit(0.1, "cm"),
-      legend.text = element_text(size = 4),
-      legend.title = element_text(size = 6)
-    ) +
-    guides(size = guide_legend(title = expression(R^2), order = 2, nrow = 1, label.position = "bottom"),
-           fill = guide_colorbar(title = "Competition", title.position = "top", order = 1, barheight = 0.5, barwidth = 5),
-           color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 1,
-                                  order = 3, barheight = 0.5, barwidth = 5))
-
-ggsave(paste0(tiff_path, "Sup_F3_scenE.tiff"), dpi = 600, width = 6, height = 4)
-
-YZ %>%
-  filter(scenario == "Scenario F") %>% 
-  mytheme() +
-  facet_grid(type1~type2, switch = "y") +
-  geom_point(aes(color = Edev, fill = dispersal), alpha = 0.8) +
-  scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
-  #scale_fill_manual(values = c("#d8b365", "white" ,"#5ab4ac"))
-  scale_fill_gradient2(high = "#5ab4ac", low = "#d8b365", mid = "white", midpoint = 0.05) +
-  scale_color_viridis_c(na.value = "grey", limits = c(0, 0.5)) +
+  scale_color_gradient(high = "#810f7c", low = "#b3cde3", guide = "none") +
   theme(
     legend.position = "bottom",
-    #legend.box = "vertical",
+    legend.box = "vertical",
     #legend.spacing.y = unit(0.01, "in"),
     legend.spacing.x = unit(0.1, "cm"),
     legend.text = element_text(size = 4),
-    legend.title = element_text(size = 6)
+    legend.title = element_text(size = 6),
+    legend.margin = margin(0,0,0,0)
   ) +
-  guides(size = guide_legend(title = expression(R^2), order = 2, nrow = 1, label.position = "bottom"),
-         fill = guide_colorbar(title = "Dispersal level", title.position = "top", order = 1, barheight = 0.5, barwidth = 5),
-         color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 1, order = 3, barheight = 0.5, barwidth = 5))
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
+         fill = guide_colorbar(title = "Competition", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))-> W.plot
 
-ggsave(paste0(tiff_path, "Sup_F3_scenF.tiff"), dpi = 600, width = 6, height = 4)
+nameColor <- bquote(atop(Contribution~by~phantom(),
+                         sites~to~R^2))
 
+YZ %>%
+  filter(type2 == "Sites" & scenario == "Scenario E") %>% 
+  mytheme() +
+  facet_wrap(~type2, ncol=2) +
+  geom_point(aes(color = Edev, fill = Edev), alpha = 0.8) +
+  scale_size_continuous(range = c(0.1,4),limits = c(0, 0.005), breaks = seq(0, 0.004, 0.001)) +
+  #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)  +
+  scale_fill_viridis_c(na.value = "#666666", guide = "none") +
+  scale_color_viridis_c(na.value = "#666666", limits = c(0, 0.5)) +
+  theme(
+    legend.position = "bottom",
+    legend.box = "vertical",
+    #legend.spacing.y = unit(0.01, "in"),
+    legend.spacing.x = unit(0.1, "cm"),
+    legend.text = element_text(size = 4),
+    legend.title = element_text(size = 6),
+    legend.margin = margin(0,0,0,0)
+  ) +
+  guides(size = guide_legend(title = nameColor, order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 0, order = 2, barheight = 0.5, barwidth = 8)) -> R.plot
+
+
+WR.plot <- ggtern::grid.arrange(W.plot, R.plot, ncol = 2)
+ggsave(filename = paste0(tiff_path, "Sup_F3_ScenE.tiff"), plot = WR.plot, dpi = 600, width = 6, height = 4)
+##############################################################################################################################
+YZ %>%
+  filter(type2 == "Species" & scenario == "Scenario F") %>% 
+  mytheme() +
+  facet_wrap(~type2, ncol=2) +
+  geom_point(aes(color = dispersal, fill = dispersal), alpha = 0.8) +
+  scale_size_continuous(range = c(0.1,4),limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
+  scale_fill_gradient2(high = "#5ab4ac", low = "#d8b365", mid = "white", midpoint = 0.05) +
+  scale_color_gradient2(high = "#5ab4ac", low = "#d8b365", mid = "white", midpoint = 0.05, guide = "none") +
+  theme(
+    legend.position = "bottom",
+    legend.box = "vertical",
+    #legend.spacing.y = unit(0.01, "in"),
+    legend.spacing.x = unit(0.1, "cm"),
+    legend.text = element_text(size = 4),
+    legend.title = element_text(size = 6),
+    legend.margin = margin(0,0,0,0)
+  ) +
+  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
+         fill = guide_colorbar(title = "Dispersal", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))-> W.plot
+
+nameColor <- bquote(atop(Contribution~by~phantom(),
+                         sites~to~R^2))
+
+YZ %>%
+  filter(type2 == "Sites" & scenario == "Scenario F") %>% 
+  mytheme() +
+  facet_wrap(~type2, ncol=2) +
+  geom_point(aes(color = Edev, fill = Edev), alpha = 0.8) +
+  scale_size_continuous(range = c(0.1,4),limits = c(0, 0.005), breaks = seq(0, 0.004, 0.001)) +
+  #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)  +
+  scale_fill_viridis_c(na.value = "#666666", guide = "none") +
+  scale_color_viridis_c(na.value = "#666666", limits = c(0, 0.5)) +
+  theme(
+    legend.position = "bottom",
+    legend.box = "vertical",
+    #legend.spacing.y = unit(0.01, "in"),
+    legend.spacing.x = unit(0.1, "cm"),
+    legend.text = element_text(size = 4),
+    legend.title = element_text(size = 6),
+    legend.margin = margin(0,0,0,0)
+  ) +
+  guides(size = guide_legend(title = nameColor, order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 0, order = 2, barheight = 0.5, barwidth = 8)) -> R.plot
+
+
+WR.plot <- ggtern::grid.arrange(W.plot, R.plot, ncol = 2)
+ggsave(filename = paste0(tiff_path, "Sup_F4_ScenF.tiff"), plot = WR.plot, dpi = 600, width = 6, height = 4)
 
 
 # Summary Table ---------------------------------------------------------------------------
