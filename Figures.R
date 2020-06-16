@@ -195,77 +195,6 @@ sites_data %>%
 
 ggsave(paste0(tiff_path, "Figure3_color.tiff"), dpi = 600, width = 6, height = 6)
 
-# OLD FIGURES 2 & 3 -----------------------------------------------------------------------------
-# Figures 2 and 3 
-
-# Join all the data for use with facets
-#**************************************
-
-vars_keep <- c("env", "spa", "codist", "r2", "Edev", "iteration", "type1", "type2", "interCol", "scenario")
-
-spp_data %>% 
-  filter(scenario %in% new_scen[1:4]) %>% 
-  mutate(iteration = str_replace(iteration, "iter_", "iter"),
-         nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche"),
-         interCol = ifelse(interCol == 0, "No competition", "With competition"),
-         type1 = paste(nicheBreadth, "\n", interCol),
-         type2 = "Species",
-         Edev = NA) %>% 
-  dplyr::select(one_of(vars_keep))-> P
-
-head(P)
-
-sites_data %>% 
-  filter(scenario %in% new_scen[1:4]) %>% 
-  mutate(nicheBreadth = ifelse(scenario %in% c("A", "C"), "Narrow niche", "Broad niche"),
-         interCol = ifelse(scenario %in% c("A", "B"), "No competition", "With competition"),
-         type1 = paste(nicheBreadth, "\n", interCol),
-         type2 = "Sites",
-         dispersal = NA) %>% 
-  dplyr::select(., one_of(vars_keep))-> Q
-
-head(Q)
-
-bind_rows(P, Q) %>% 
-  mutate(type1 = factor(type1, levels = c("Narrow niche \n No competition", "Narrow niche \n With competition",
-                                          "Broad niche \n No competition", "Broad niche \n With competition")),
-         type2 = factor(type2, levels = c("Species", "Sites"))) -> PQ
-
-# Figure2: Scenarios A and B
-#********
-PQ %>%
-  filter(interCol == "No competition") %>% 
-  mytheme() +
-  geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
-  scale_size_continuous(range = c(0.1,4),limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
-  #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
-  scale_fill_viridis_c(guide = "none", na.value = "#000000") +
-  scale_color_viridis_c(na.value = "#000000", limits = c(0,0.5)) +
-  facet_grid(type1~type2, switch = "y") +
-  theme(tern.axis.arrow.text = element_text(size = 7),
-        legend.position = "bottom") +
-  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
-         color = guide_colorbar(title = "Environmental deviation", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))
-ggsave(paste0(tiff_path, "Figure2_old.tiff"), dpi = 600, width = 6, height = 6)
-
-# Figure3: Scenarios C and D
-#********
-PQ %>%
-  filter(interCol == "With competition") %>% 
-  mytheme() +
-  geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
-  scale_size_continuous(range = c(0.1,4),limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
-  #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
-  scale_fill_viridis_c(guide = "none", na.value = "#000000") +
-  scale_color_viridis_c(na.value = "#000000", limits = c(0, 0.5)) +
-  facet_grid(type1~type2, switch = "y") +
-  theme(
-    tern.axis.arrow.text = element_text(size = 7),
-    legend.position = "bottom") +
-  guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
-         color = guide_colorbar(title = "Environmental deviation", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))
-ggsave(paste0(tiff_path, "Figure3_old.tiff"), dpi = 600, width = 6, height = 6)
-
 # Figure 4, scenario G --------------------------------------------
 
 vars_keep <- c("env", "spa", "codist", "r2", "Edev", "iteration", "dispersal", "nicheOptima", "type")
@@ -351,46 +280,6 @@ WR %>%
 h.WR.plot <- ggtern::grid.arrange(W.plot, R.plot, ncol = 2)
 ggsave(filename = paste0(tiff_path, "Figure4_h.tiff"), plot = h.WR.plot, dpi = 600, width = 6, height = 4)
 
-# Vertical doesn't look great, size isn't good.
-# v.WR.plot <- ggtern::grid.arrange(W.plot, R.plot, nrow=2)
-# ggsave(filename = paste0(tiff_path, "Figure4_v.tiff"), plot = v.WR.plot, dpi = 600, width = 6, height = 6)
-
-#*********************************
-#*********************************
-#*********************************
-
-
-WR %>%
-  filter(type == "Species") %>% 
-  mytheme() +
-  facet_wrap(~type, ncol=2) +
-  geom_encircle(data = WR %>% filter(dispersal == 0.01), aes(group = dispersal), size = 0.7, color = NA, fill = "#FDE4A6FF",alpha = 0.6,
-                expand = 0.01) +
-  geom_encircle(data = WR %>% filter(dispersal == 0.05), aes(group = dispersal), size = 0.7, color = NA, fill = "#F4685CFF",alpha = 0.3,
-                expand = 0.01) +
-  geom_encircle(data = WR %>% filter(dispersal == 0.1), aes(group = dispersal), size = 0.7, color = NA, fill = "black",alpha = 0.3,
-                expand = 0.0) +
-  geom_point(aes(color = nicheOptima, fill = nicheOptima), alpha = 0.8) +
-  scale_size_continuous(range = c(0.1,4),limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
-  #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2)  +
-  #scale_fill_viridis_c(na.value = "#666666") +
-  scale_fill_gradient2(high = "#000004FF", low = "#56147DFF", mid = "#F4685CFF", limits = c(0, 1), midpoint = 0.5) +
-  scale_color_gradient2(high = "#000004FF", low = "#56147DFF", mid = "#F4685CFF", limits = c(0, 1), midpoint = 0.5, guide = "none") +
-  theme(
-    legend.position = "right",
-    #legend.box = "horizontal",
-    legend.spacing.y = unit(0.1, "cm"),
-    legend.spacing.x = unit(0.1, "cm"),
-    legend.text = element_text(size = 4),
-    legend.title = element_text(size = 6),
-    legend.margin = margin(0,0,0,0)
-  ) +
-  guides(size = guide_legend(title = expression(R^2), order = 1, label.position = "right"),
-         fill = guide_colorbar(title = "Niche\noptima", title.hjust = 0 , title.position = "top", order = 2, barheight = 3.5, barwidth = 0.5)) -> Wv.plot
-
-
-nameColor <- bquote(atop(Contribution~by~phantom(),
-                         sites~to~R^2))
 WR %>%
   filter(type == "Sites") %>% 
   mytheme() +
@@ -401,26 +290,16 @@ WR %>%
   scale_fill_viridis_c(na.value = "#666666", guide = "none") +
   scale_color_viridis_c(na.value = "#666666", limits = c(0, 0.5)) +
   theme(
-    legend.position = "right",
-    #legend.box = "horizontal",
-    legend.spacing.y = unit(0.1, "cm"),
+    legend.position = "bottom",
+    legend.box = "vertical",
+    #legend.spacing.y = unit(0.01, "in"),
     legend.spacing.x = unit(0.1, "cm"),
     legend.text = element_text(size = 4),
     legend.title = element_text(size = 6),
     legend.margin = margin(0,0,0,0)
   ) +
-  guides(size = guide_legend(title = nameColor, order = 1, label.position = "right"),
-         color = guide_colorbar(title = "Environmental\ndeviation", title.position = "top", title.hjust = 0, order = 2, barheight = 3.5, barwidth = 0.5)) -> Rv.plot
-
-v.WR.plot <- ggtern::grid.arrange(Wv.plot, Rv.plot, nrow=2)
-ggsave(filename = paste0(tiff_path, "Figure4_v.tiff"), plot = v.WR.plot, dpi = 600, width = 6, height = 6)
-
-
-
-# scales::show_col(viridis::viridis_pal(option = "A")(20))
-
-
-
+  guides(size = guide_legend(title = nameColor, order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental deviation", title.position = "top", title.hjust = 0, order = 2, barheight = 0.5, barwidth = 8)) -> bwR.plot
 
 
 
