@@ -104,7 +104,7 @@ mytheme <- function(data, plotMain = NULL, type = NULL){
     guides(size = guide_legend(title = expression(R^2), order = 1))
 }
 
-# Figure 2, scenarios A-D Species only --------------------------------------
+# Figure , scenarios A-D Species only --------------------------------------
 
 # Legend text
 sppR2 <- bquote(atop(Species,~R^2))
@@ -125,7 +125,7 @@ spp_data %>%
   guides(shape = guide_legend(title = "Replicate", label.position = "bottom"),
          size = guide_legend(title = sppR2, order = 2, nrow = 1, label.position = "bottom"))
 
-ggsave(filename=paste0(tiff_path, "Figure2_bw.tiff"), dpi = 600, width = 6, height = 6)
+ggsave(filename=paste0(tiff_path, "Figure_spp_bw.tiff"), dpi = 600, width = 6, height = 6)
 
 # Figure 2 version color
 spp_data %>% 
@@ -145,9 +145,9 @@ spp_data %>%
   guides(size = guide_legend(title = expression(R^2), order = 1, nrow = 1, label.position = "bottom"),
          fill = guide_colorbar(title = "Niche optima", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))
 
-ggsave(filename=paste0(tiff_path, "Figure2_color.tiff"), dpi = 600, width = 6, height = 6)
+ggsave(filename=paste0(tiff_path, "Figure_spp_color.tiff"), dpi = 600, width = 6, height = 6)
 
-# Figure 3, scenarios A-D Sites only --------------------------------------
+# Figure , scenarios A-D Sites only --------------------------------------
 
 nameColor <- bquote(atop(Contribution~by~phantom(),
                          sites~to~R^2))
@@ -171,7 +171,7 @@ sites_data %>%
          color = guide_colorbar(title = "Environmental deviation", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))
 
 
-ggsave(paste0(tiff_path, "Figure3_bw.tiff"), dpi = 600, width = 6, height = 6)
+ggsave(paste0(tiff_path, "Figure_site_bw.tiff"), dpi = 600, width = 6, height = 6)
 
 # Version in color
 sites_data %>% 
@@ -193,7 +193,51 @@ sites_data %>%
          color = guide_colorbar(title = "Environmental deviation", title.position = "top", order = 2, barheight = 0.5, barwidth = 8))
 
 
-ggsave(paste0(tiff_path, "Figure3_color.tiff"), dpi = 600, width = 6, height = 6)
+ggsave(paste0(tiff_path, "Figure_site_color.tiff"), dpi = 600, width = 6, height = 6)
+
+
+# Figures 2 and 3
+sppR2 <- bquote(atop(Species,~R^2))
+
+spp_data %>% 
+  filter(scenario %in% new_scen[1:4]) %>% 
+  mutate(iteration = str_replace(iteration, "iter_", ""),
+         nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche"),
+         nicheBreadth = factor(nicheBreadth, levels = c("Narrow niche", "Broad niche")),
+         interCol = ifelse(interCol == 0, "No competition", "With competition"),
+         type = "Species") %>% 
+  filter(interCol == "No competition") %>% 
+  mytheme() +
+  facet_grid(nicheBreadth~type, switch = "y") +
+  geom_point(color = "black", fill = "black", alpha = 0.7) +
+  scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  theme(tern.axis.arrow.text = element_text(size = 7),
+        legend.position = "bottom",
+        legend.box = "vertical",
+        legend.margin = margin(r = 20)) +
+  guides(shape = guide_legend(title = "Replicate", label.position = "bottom"),
+         size = guide_legend(title = sppR2, order = 2, nrow = 1, label.position = "bottom")) -> spp_AB
+
+spp_data %>% 
+  filter(scenario %in% new_scen[1:4]) %>% 
+  mutate(iteration = str_replace(iteration, "iter_", ""),
+         nicheBreadth = ifelse(nicheBreadth == 0.8, "Narrow niche", "Broad niche"),
+         nicheBreadth = factor(nicheBreadth, levels = c("Narrow niche", "Broad niche")),
+         interCol = ifelse(interCol == 0, "No competition", "With competition"),
+         type = "Species") %>% 
+  filter(interCol == "With competition") %>% 
+  mytheme() +
+  facet_grid(nicheBreadth~type, switch = "y") +
+  geom_point(color = "black", fill = "black", alpha = 0.7) +
+  scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  theme(tern.axis.arrow.text = element_text(size = 7),
+        legend.position = "bottom",
+        legend.box = "vertical",
+        legend.margin = margin(r = 20)) +
+  guides(shape = guide_legend(title = "Replicate", label.position = "bottom"),
+         size = guide_legend(title = sppR2, order = 2, nrow = 1, label.position = "bottom")) -> spp_CD
+
+
 
 # Figure 4, scenario G --------------------------------------------
 
