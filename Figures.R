@@ -210,11 +210,10 @@ spp_data %>%
   mytheme() +
   facet_grid(nicheBreadth~type, switch = "y") +
   geom_point(color = "black", fill = "black", alpha = 0.7) +
-  scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  scale_size_continuous(range = c(0.1,4),limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   theme(tern.axis.arrow.text = element_text(size = 7),
         legend.position = "bottom",
-        legend.box = "vertical",
-        legend.margin = margin(r = 20)) +
+        legend.box = "vertical") +
   guides(shape = guide_legend(title = "Replicate", label.position = "bottom"),
          size = guide_legend(title = sppR2, order = 2, nrow = 1, label.position = "bottom")) -> spp_AB
 
@@ -229,15 +228,66 @@ spp_data %>%
   mytheme() +
   facet_grid(nicheBreadth~type, switch = "y") +
   geom_point(color = "black", fill = "black", alpha = 0.7) +
-  scale_size_continuous(range = c(0.1,5),limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  scale_size_continuous(range = c(0.1,4),limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
   theme(tern.axis.arrow.text = element_text(size = 7),
         legend.position = "bottom",
-        legend.box = "vertical",
-        legend.margin = margin(r = 20)) +
+        legend.box = "vertical") +
   guides(shape = guide_legend(title = "Replicate", label.position = "bottom"),
          size = guide_legend(title = sppR2, order = 2, nrow = 1, label.position = "bottom")) -> spp_CD
 
+nameColor <- bquote(atop(Contribution~by~phantom(),
+                         sites~to~R^2))
+sites_data %>% 
+  filter(scenario %in% new_scen[1:4]) %>% 
+  mutate(iteration = str_replace(iteration, "iter_", "Replicate"),
+         nicheBreadth = ifelse(scenario %in% c("A", "C"), "Narrow niche", "Broad niche"),
+         nicheBreadth = factor(nicheBreadth, levels = c("Narrow niche", "Broad niche")),
+         interCol = ifelse(scenario %in% c("A", "B"), "No competition", "With competition"),
+         type = "Sites") %>% 
+  filter(interCol == "No competition") %>% 
+  mytheme() +
+  facet_grid(nicheBreadth~type, switch = "y") +
+  geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
+  scale_size_continuous(range = c(0.1,4),limits = c(0, 0.005), breaks = seq(0, 0.005, 0.001)) +
+  #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
+  scale_fill_gradient(low = "white", high = "black", guide = "none") +
+  scale_color_gradient(low = "white", high = "black", limits = c(0, 0.5))+
+  theme(tern.axis.arrow.text = element_text(size = 7),
+        legend.position = "bottom",
+        legend.box = "vertical",
+        strip.background.y = element_blank(),
+        strip.text.y = element_blank()) +
+  guides(size = guide_legend(title = nameColor, order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental\ndeviation", title.position = "left", order = 2, barheight = 0.5, barwidth = 8)) -> sites_AB
 
+sites_data %>% 
+  filter(scenario %in% new_scen[1:4]) %>% 
+  mutate(iteration = str_replace(iteration, "iter_", "Replicate"),
+         nicheBreadth = ifelse(scenario %in% c("A", "C"), "Narrow niche", "Broad niche"),
+         nicheBreadth = factor(nicheBreadth, levels = c("Narrow niche", "Broad niche")),
+         interCol = ifelse(scenario %in% c("A", "B"), "No competition", "With competition"),
+         type = "Sites") %>% 
+  filter(interCol == "With competition") %>% 
+  mytheme() +
+  facet_grid(nicheBreadth~type, switch = "y") +
+  geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
+  scale_size_continuous(range = c(0.1,4),limits = c(0, 0.005), breaks = seq(0, 0.005, 0.001)) +
+  #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
+  scale_fill_gradient(low = "white", high = "black", guide = "none") +
+  scale_color_gradient(low = "white", high = "black", limits = c(0, 0.5))+
+  theme(tern.axis.arrow.text = element_text(size = 7),
+        legend.position = "bottom",
+        legend.box = "vertical",
+        strip.background.y = element_blank(),
+        strip.text.y = element_blank()) +
+  guides(size = guide_legend(title = nameColor, order = 1, nrow = 1, label.position = "bottom"),
+         color = guide_colorbar(title = "Environmental\ndeviation", title.position = "left", order = 2, barheight = 0.5, barwidth = 8)) -> sites_CD
+
+AB <- ggtern::grid.arrange(spp_AB, sites_AB, ncol=2)
+ggsave(filename = paste0(tiff_path, "Figure2.tiff"), plot = AB, dpi = 600, width = 6, height = 6)
+
+CD <- ggtern::grid.arrange(spp_CD, sites_CD, ncol=2)
+ggsave(filename = paste0(tiff_path, "Figure3.tiff"), plot = CD, dpi = 600, width = 6, height = 6)
 
 # Figure 4, scenario G --------------------------------------------
 
