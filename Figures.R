@@ -731,10 +731,11 @@ big.fig.df %>%
                             ifelse(dispersal == 0.1, "High dispersal", "Med dispersal")),
          disp.text = factor(disp.text, levels = c("Low dispersal", "Med dispersal", "High dispersal")),
          niche.text = paste("Niche Optima:", signif(nicheOptima, digits = 2))) %>% 
+  #dplyr::filter(iteration == "Replicate 5") %>% 
   bigfigtheme() +
   facet_grid(disp.text~niche.text, switch = "y")  +
   geom_point(aes(color = Edev, fill = Edev), alpha = 0.7) +
-  #scale_size_continuous(range = c(0.1,4),limits = c(0, 0.0125), breaks = seq(0, 0.0025, 0.0125)) +
+  scale_size_continuous(range = c(0.1,2),limits = c(0, 0.015), breaks = seq(0, 0.015, 0.0025)) +
   #scale_size_area(limits = c(0, 1), breaks = seq(0, 1, 0.2))  +
   scale_fill_viridis_c(guide = "none", na.value = "#000000") +
   scale_color_viridis_c(na.value = "#000000", limits = c(0,0.5)) +
