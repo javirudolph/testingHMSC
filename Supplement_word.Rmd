@@ -4,9 +4,6 @@ author: Mathew A. Leibold, Javiera Rudolph, Pedro Peres-Neto, Dominique Gravel, 
   De Meester, Lauren Showmaker, Florian Hartig, F. Guillaume Blanchet, Jonathan M.
   Chase
 output:
-  html_document:
-    toc: yes
-    toc_depth: 3
   word_document:
     toc: yes
     toc_depth: '3'
@@ -14,7 +11,7 @@ output:
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 library(tidyverse)
 library(ggtern)
@@ -22,7 +19,7 @@ library(ggpubr)
 library(reshape2)
 ```
 
-```{r myFunctions, include = FALSE}
+```{r myFunctions, include = FALSE, echo=FALSE}
 
 rastPlot <- function(data, title = "title", xlabel = "x", ylabel = "y"){
   ggplot(melt(data), aes(x = Var1, y = Var2, fill = value)) +
@@ -51,52 +48,54 @@ The model only tracks the occupancy of the patches (not population densities). S
 ## Patch Colonization
 We consider a discrete-time Markovian process to represent the dynamics of presence- absence of all species and we incorporate the effect of dispersal, environmental filtering and ecological interactions in such a way that we could cover all possible scenarios wherein species differ in any combination of ways. We include interspecific competition along with other types of spatial dynamics such as predator-prey interactions (Gravel et al. 2011), priority effects (Shurin et al. 2004), or mutualistic interactions (e.g. Gilarranz et al. 2015).
 Following a colonization event from time $t$ to $t + \Delta$ corresponds to:
-\begin{equation}
-\tag{A1}
-P(X_{i,z,t+\Delta t}=1│X_{i,z,t}=0)=I_{i,z,t} S_{i,z,t} C_{i,z,t}	
-\end{equation}  
+<!-- \begin{equation} -->
+<!-- \tag{A1} -->
+$$P(X_{i,z,t+\Delta t}=1│X_{i,z,t}=0)=I_{i,z,t} S_{i,z,t} C_{i,z,t}$$
+<!-- \end{equation}   -->
 where $I_{i,z,t}$ is the number of immigrants of species $i$ reaching patch $z$ at time $t$, $S_{i,z,t}$ is the effect of environmental filtering on the probability of establishing a viable local population and $C_{i,z,t}$ is the effect of ecological interactions on the establishment probability. We note that because we represent a stochastic process, the product of these three functions has to be bounded between 0 and 1. We consequently define these quantities:  
 
 The effect of immigration is given by:  
-\begin{equation}
-\tag{A2}
-I_{i,z,t} = \frac{\sum k(z,\omega)X_{i,\omega,t}}{\sum k(z,\omega)}	
-\end{equation}
+<!-- \begin{equation} -->
+<!-- \tag{A2} -->
+$$I_{i,z,t} = \frac{\sum k(z,\omega)X_{i,\omega,t}}{\sum k(z,\omega)}	$$
+<!-- \end{equation} -->
 
 which is a weighted average of the occurrence probability of species $i$ in the neighborhood of $z$. The function $k(z,\omega)$ is a dispersal kernel that depends on the location of patch $z$ and the neighborhood $\omega$. For convenience, we consider an exponential function of the Euclidean distance between localities. We add to the kernel a low distance and neighborhood-independent constant $m$ in order to account from immigration from outside the simulated metacommunity. This assumption is required to prevent total extinction by drift under perfectly neutral dynamics.
 
 The effect of the environment is given by a product of the establishment performance over all environmental variables $E_n$:
-\begin{equation}
-\tag{A3}
-S_{i,z,t} = \prod f(E_{n,z}\, \mu_{i,n}\, \sigma_{i,n})
-\end{equation}
+<!-- \begin{equation} -->
+<!-- \tag{A3} -->
+$$S_{i,z,t} = \prod f(E_{n,z}\, \mu_{i,n}\, \sigma_{i,n})$$
+<!-- \end{equation} -->
 In our simulations, for convenience, we consider that the function $f$ has a quadratic form for all species and all environmental variables, though the model is flexible enough to consider other responses that also differ among species.  
 
 ## Ecological interactions on establishment probability
 
-To incorporate all possible ecological interactions, we start by representing the interaction network by a community matrix $\mathbf{A}$ of $R$ species. The elements $\alpha_{ij}$ of $\mathbf{A}$ quantify the effect of species $j$ on the dynamics of species $i$. When $\alpha_{ij}$ is negative, the colonization probability of species $i$ decreases and/or its extinction probability increases when $j$ is found locally. Inversely, when $\alpha_{ij}$ is positive, the colonization probability increases and/or the extinction probability decreases. To account for the cumulative effects of local interactions on transition probabilities, we make colonization and extinction probabilities community dependent. As explained above, at a time $t$, the $\mathbf{Y}_{z,t}$ vector gives the local assemblages. We calculate the sum of interactions at any time and for each species as $\nu=\mathbf{A}_{z,t}\mathbf{Y}_{z,t}$. Our approach can be interpreted as a spatial analogue to the generalized Lotka–Volterra model because it takes into account the impact of the whole network of interactions on each species dynamics and can deal with any type of interaction.   
+To incorporate all possible ecological interactions, we start by representing the interaction network by a community matrix $\mathbf{A}$ of $R$ species. The elements $\alpha_{ij}$ of $\mathbf{A}$ quantify the effect of species $j$ on the dynamics of species $i$. When $\alpha_{ij}$ is negative, the colonization probability of species $i$ decreases and/or its extinction probability increases when $j$ is found locally. Inversely, when $\alpha_{ij}$ is positive, the colonization probability increases and/or the extinction probability decreases. To account for the cumulative effects of local interactions on transition probabilities, we make colonization and extinction probabilities community dependent. As explained above, at a time $t$, the $\mathbf{Y}_{z,t}$ vector gives the local assemblages. We calculate the sum of interactions at any time and for each species as $\nu=\mathbf{A}_{z,t}\mathbf{Y}_{z,t}$. Our approach can be interpreted as a spatial analogue to the generalized Lotka–Volterra model because it takes into account the impact of the whole network of interactions on each species dynamics and can deal with any type of interaction. We now define the function 
+$$C_{i,z,t}=g(\nu_{i},z,t)$$
+representing the total effect of ecological interactions on the colonization probability. For convenience, we will use a sigmoid function, with $g$ ranging between $c_{min}$ at high negative interactions and $c_{max}$ at high positive interactions, where $c_{max}$ should be interpreted as the maximal colonization probability when the environmental conditions are optimal and there are no dispersal limitations.   
 
 ## Patch Extinction
 The definition of the extinction probability follows exactly the same rules as for colonization, except that extinction is independent of the neighborhood composition. We follow the same logic to define the effect of ecological interactions and of variation in the environment. Consequently, we get the Markovian process:
-\begin{equation}
-\tag{A4}
-P\left(X_{i,z,{t+\Delta t}}=1│X_{i,z,t}=0\right)=M_{i,z,t} E_{i,z,t}
-\end{equation}
+<!-- \begin{equation} -->
+<!-- \tag{A4} -->
+$$P\left(X_{i,z,{t+\Delta t}}=1│X_{i,z,t}=0\right)=M_{i,z,t} E_{i,z,t}$$
+<!-- \end{equation} -->
 
 where $M_{i,z,t}$ and $E_{i,z,t}$  are the responses of the extinction probability to the local environment and to ecological interactions, respectively. The difference with the colonization functions defined in the previous section is that the extinction probability must be larger when interactions are negative and smaller when they are positive. In addition, the extinction rate should be minimal (instead of maximal) at environmental optimum. 
 
 ## Interpretation
 To interpret the model, note that, at steady state, for each species, we obtain the expected occurrence probability $( \hat{P})$ at each site as:
-\begin{equation}
-\tag{A5}
-\frac{\hat{P^{iz}}}{1-\hat{P^{iz}}} = \frac{I^{iz} \cdot S^{iz} \cdot C^{iz}}{M^{iz} \cdot E^{iz}}
-\end{equation}
+<!-- \begin{equation} -->
+<!-- \tag{A5} -->
+$$\frac{\hat{P}^{iz}}{1-\hat{P}^{iz}} = \frac{I^{iz} \cdot S^{iz} \cdot C^{iz}}{M^{iz} \cdot E^{iz}}$$
+<!-- \end{equation} -->
 After a log transformation, this yields:  
 
-\begin{equation}
-\tag{A6}
-\log \left( \frac{\hat{P^{iz}}}{1-\hat{P^{iz}}}\right) = \log\left(I^{iz}\right) + \log\left(\frac{S^{iz}}{M^{iz}}\right) + \log\left(\frac{C^{iz}}{E^{iz}}\right)
-\end{equation}
+<!-- \begin{equation} -->
+<!-- \tag{A6} -->
+$$\log \left( \frac{\hat{P}^{iz}}{1-\hat{P}^{iz}}\right) = \log\left(I^{iz}\right) + \log\left(\frac{S^{iz}}{M^{iz}}\right) + \log\left(\frac{C^{iz}}{E^{iz}}\right)$$
+<!-- \end{equation} -->
 
 The last equation can be interpreted as a macroscopic description of the expected species distribution pattern (Thuiller et al. 2013).  In this formulation, $\log(I)$ describes the tendency of a patch to resemble other nearby patches due to the spatial contagion by dispersal, $\log\left(\frac{S}{M}\right)$ describes the tendency of sites to be occupied by species with similar fitness responses to environmental gradients, and $\log\left(\frac{C}{E}\right)$ describes the remaining influence of other species on co-occurrence due to interactions among species.  The values for these indices will depend on what choices are made for the components of eq. 1 (see Supporting Information for details on how we implemented this simulations model).  
 
@@ -109,40 +108,68 @@ The implemented mechanisms in the simulation model can be partly mapped onto var
 
 We simulated metacommunity dynamics with a landscape of 1000 patches over 200 time steps and an initial occupancy of 0.8. Patches were placed randomly in a two-dimensional plane with coordinates drawn from a uniform distribution with a minimum of 0 and a maximum of 1. The environment varied spatially, with values drawn from a random distribution between 0 and 1. In the specific simulations we studied in the paper, colonization was the only component of the species that were affected by the environment (i.e. $E_{i,z,t}  = 1$). Specifically, colonization reacted to the environment following a quadratic curve.  
 
-For all scenarios considered, we simulated 12 species. Niche optimums for the species were evenly distributed between 0.1 and 0.9 while niche breadth was set to 0.8 for simulations with narrow niches, and to 2 for simulations where niches was assumed to be broad. For dispersal, we considered an exponential dispersal kernel, with a distance-independent immigration probability of 0.001 and an $\alpha$ parameter of 0.05. In the scenario where we have variable dispersal kernels (Figure 3), $\alpha$ was 0.01 for 1/3 of species, 0.05 for 1/3 of species, and 0.1 for the other 1/3 of species. We used a sigmoid function to relate the total number of interactions with colonization and extinction coefficients following the implementation by Cazelles et al. (2016). Colonization probability in the absence of interactions was set at 0.4, which tends to zero as negative interactions tend to infinity, while it asymptotes at a 1 with infinite positive interactions. All other aspects of the colonization-interaction curve were the same for all scenarios. Similarly, extinction in the absence of interactions was set at 0.025, and tended to 1 with infinite negative interactions, while its asymptote tended to 0 with infinite positive interactions. In both cases, the parameter setting the shape of the sigmoid function was set to 0 for the scenarios without competition, and 1.5 in the presence of competition. If there were interactions, then a focal species only interacted with the two species that had the closest niches.
-For all scenarios, five sets of metacommunities were simulated and analyzed to obtain the results found in Figures 2, 3, and 4. 
+For all scenarios considered, we simulated 12 species. Niche optimums for the species were evenly distributed between 0.1 and 0.9 while niche breadth was set to 0.8 for simulations with narrow niches (scenarios A, B, E, F, G), and to 2 for simulations where niche was assumed to be broad (scenarios C and D). For dispersal, we considered an exponential dispersal kernel, with a distance-independent immigration probability of 0.001 and an $\alpha$ parameter of 0.05. For scenario G, where we have variable dispersal kernels (Figure 3), $\alpha$ was 0.01 for 1/3 of species, 0.05 for 1/3 of species, and 0.1 for the other 1/3 of species. We used a sigmoid function to relate the total number of interactions with colonization and extinction coefficients following the implementation by Cazelles et al. (2016). Colonization probability in the absence of interactions was set at 0.4, which tends to zero as negative interactions tend to infinity, while it asymptotes at a 1 with infinite positive interactions. All other aspects of the colonization-interaction curve were the same for all scenarios. Similarly, extinction in the absence of interactions was set at 0.025, and tended to 1 with infinite negative interactions, while its asymptote tended to 0 with infinite positive interactions. In both cases, the parameter setting the shape of the sigmoid function was set to 0 for the scenarios without competition (scenarios A, B, and F), and 1.5 in the presence of competition (scenarios C, D, E, G) . If there were interactions, then a focal species only interacted with the two species that had the closest niches.
+For all scenarios, five sets of metacommunities were simulated and analyzed to obtain the results found in Figures 2, 3, and 4 in the main text, and supplementary figures. 
 
 All scenarios have been implemented in R and the project’s repository can be found here: [github.com/javirudolph/testingHMSC](github.com/javirudolph/testingHMSC)
 
-Supplementary Figure 1.  In which we have half of the species with interactions and the other without. 
+
+Supplementary Figure 2. Species interactions for all scenarios
+```{r echo=FALSE, fig.width=6}
+knitr::include_graphics(
+  path = "manuscript_outputs/ tiff_files/Sup_F2_interactions.tiff",
+  dpi = 300,
+  error = TRUE
+)
+```
 
 
-Supplementary Figure 2.  In which we change dispersal only, $\alpha$ was 0.01 for 1/3 of species, 0.05 for 1/3 of species, and 0.1 for the other 1/3 of species.
+Supplementary Figure 3.  In which we have half of the species with interactions and the other without. 
+```{r echo=FALSE, fig.width=6}
+knitr::include_graphics(
+  path = "manuscript_outputs/ tiff_files/Sup_F3_scenE.tiff",
+  dpi = 300,
+  error = TRUE
+)
+```
+
+
+Supplementary Figure 4.  In which we change dispersal only, $\alpha$ was 0.01 for 1/3 of species, 0.05 for 1/3 of species, and 0.1 for the other 1/3 of species.
+
+```{r echo=FALSE, fig.width=6}
+knitr::include_graphics(
+  path = "manuscript_outputs/ tiff_files/Sup_F4_ScenF.tiff",
+  dpi = 300,
+  error = TRUE
+)
+```
+
+
 
 ## Description of the Statistical Framework
 ### Hierarchical Community Models 
 In their simplest form, Hierarchical Community Models (HCMs) resemble standard species distribution models that regress species presences/absences against environmental predictors. However, to reduce model complexity, HCMs assume that all species in a metacommunity will react to environmental heterogeneity following a similar response function (e.g., linear vs quadratic or Gaussian). To account for spatial autocorrelation, either spatial variables such as Moran’s eigenvectors maps (MEM, Dray et al. 2006) or spatially auto-correlated latent variables (Ovaskainen et al. 2016b) can be incorporated to the model. To account for biotic interactions, non-spatially auto-correlated latent variables are used. If we use a linear specification approach (here, this can also include quadratic terms that capture Gaussian responses to environment as imposed in our model), we can write:
-$$
-\begin{equation}
-\tag{A7}
-\mathbf{L}^{zi}=\mathbf{X}^{zk} \mathbf{B}^{ki}+ \mathbf{\epsilon}^{zi}
-\end{equation} 
-$$
+
+<!-- \begin{equation} -->
+<!-- \tag{A7} -->
+$$\mathbf{L}^{zi}=\mathbf{X}^{zk} \mathbf{B}^{ki}+ \mathbf{\epsilon}^{zi}$$
+<!-- \end{equation}  -->
+
 with
-$$
-\begin{equation}
-\tag{A8}
-\mathbf{B}^{ki} \tilde{} N(\mathbf{\mu},\mathbf{\Sigma})
-\end{equation}
-$$
+
+<!-- \begin{equation} -->
+<!-- \tag{A8} -->
+$$\mathbf{B}^{ki} \tilde{} N(\mathbf{\mu},\mathbf{\Sigma})$$
+<!-- \end{equation} -->
+
 where $\mathbf{L}^{zi}$ is the presence (or absence) of species $i$ (out of $m$ species) at patch $z$ (out of $n$ patches), $\mathbf{X}^{zk}$ is the value of the environmental variable $k$ (out of $p$ variables) at site $z$, $\mathbf{B}$ is a matrix of regression parameters, $\mathbf{\mu}$ is a vector of length $p$ that describes the mean environmental response of all species, $\Sigma$ is a $p \times p$ covariance matrix that describes how species vary (diagonal) and co-vary (off-diagonal) around the mean environmental response (Ovaskainen and Soininen 2011), and $\mathbf{\epsilon}^{zi}$ is a residual value. Estimating species parameters hierarchically around a community mean reduces the degrees of freedom and makes the model easier to fit with limited data. Both $\mathbf{\mu}$ and $\Sigma$ can be further informed or constrained by species traits or phylogeny if desired (Ovaskainen et al. 2017). 
 To account for biotic interactions, we consider latent variables $\mathbf{H}^{zl}$ (where $l$ refers to a latent variable measured at site $z$) and their associated parameters $\mathbf{\Lambda}^{li}$ (Ovaskainen et al. 2016a). This yields: 
-$$
-\begin{equation}
-\tag{A9}
-\mathbf{L}^{zi}=\mathbf{X}^{zk} \mathbf{B}^{ki} + \mathbf{H}^{zl}\mathbf{\Lambda}^{li} + \mathbf{\epsilon}^{zi}
-\end{equation} 
-$$
+
+<!-- \begin{equation} -->
+<!-- \tag{A9} -->
+$$\mathbf{L}^{zi}=\mathbf{X}^{zk} \mathbf{B}^{ki} + \mathbf{H}^{zl}\mathbf{\Lambda}^{li} + \mathbf{\epsilon}^{zi}$$
+<!-- \end{equation}  -->
+
  
  
 Note that it is not necessary to always include all of these components in one model; they can be considered in any combination deemed relevant for a particular question. 
@@ -156,36 +183,36 @@ As in any generalized linear mixed effect model, we can now partition the explai
 
 The coefficient of determination, $R^2$, that was partitioned in the variation partitioning analysis (Appendix XX) is calculated for species $j$ as 
 
-\begin{equation}
-\tag{A10}
-	R_j^2= 1- \frac{\sum_{i=1}^{n}(y_{ij}-\hat{y}_{ij})^2}{\sum_{i=1}^{n}(y_{ij}-\bar{y}_{ij})^2)}
-\end{equation}
+<!-- \begin{equation} -->
+<!-- \tag{A10} -->
+$$R_j^2= 1- \frac{\sum_{i=1}^{n}(y_{ij}-\hat{y}_{ij})^2}{\sum_{i=1}^{n}(y_{ij}-\bar{y}_{ij})^2)}$$
+<!-- \end{equation} -->
 where $y_ij$ is the data associated with species $j$ (out of $p$ species) at site $i$ (out of $n$ sites), $\hat{y}_{ij}$ is the model associated to species $j$ at site $i$ and $\bar{y}_j$ is the average of the data for species $j$ across all sites. 
 
 ### Community-level coefficient of determination
 
 Although having an $R_j^2$ for each species $j$ can be highly informative, it is sometimes useful to also have a single $R^2$ for the entire community. This is obtained by averaging all $R_j^2$ 
 
-\begin{equation}
-\tag{A11}
-	{}^CR^2 = \frac{\sum_{j=1}^{p} R_j^2}{p}
-\end{equation}	
+<!-- \begin{equation} -->
+<!-- \tag{A11} -->
+$${}^CR^2 = \frac{\sum_{j=1}^{p} R_j^2}{p}$$
+<!-- \end{equation}	 -->
 where the ${}^CR^2$  is the community-level $R^2$.
 
 ### Site contribution to the coefficient of determination
 
 In the paper, we use the contribution of each site to $R_j^2$ to present how each site contributes differently to the environment, space and co-distribution for the community. The calculation of the site $i$ contribution to the $R_j^2$, is calculated as 
-\begin{equation}
-\tag{A12}
-	R_{ij}^2=\frac{1}{n}-\frac{(y_{ij}-\hat{y}_{ij})^2}{(y_{ij}-\bar{y}_{ij})^2}
-\end{equation}
+<!-- \begin{equation} -->
+<!-- \tag{A12} -->
+$$R_{ij}^2=\frac{1}{n}-\frac{(y_{ij}-\hat{y}_{ij})^2}{(y_{ij}-\bar{y}_{ij})^2}$$
+<!-- \end{equation} -->
 When studying equation A12, a few considerations can be made. The first part of the equation where the 1 of the classic $R_j^2$ is divided by $n$ is included to make sure that if we sum all $R_{ij}^2$ across all sites for species $j$, the resulting value is $R_j^2$ and not some other value. 
 
 More importantly, what can be noticed is that by calculating $R_{ij}^2$, the contribution of sites to each species $R_j^2$, we obtain a matrix that has the same dimension as the site by species matrix (an $n×p$ matrix). Using this matrix, if we sum across all sites, we obtain the $R_j^2$. However, if we average across the species for site $i$ we obtain the site’s contribution to the community-level ${}^CR^2$  or ${}^CR_i^2$.  
 
 The amount of variation expressed by the $R_j^2$, the ${}^CR^2$ , the $R_{ij}^2$ or the ${}^CR_i^2$   can all be partitioned in its environmental, spatial and co-distribution component following the procedure presented in (Appendix XX).
 
-###Pseudo coefficient of determination
+### Pseudo coefficient of determination
 
 There exist different variants of $\text{pseudo-}R^2$ that can be applied to specific types of data (e.g. Tjur’s D (Tjur 2009) is designed to presence-absence data) or more broadly (e.g. Efron’s $\text{pseudo-}R^2$ (Efron 1978)). Because all the different variants of $\text{pseudo-}R^2$ can be applied to a model with a single response variable (i.e. a single species), community-level $\text{pseudo-}R^2$ can be obtained following the approach mentioned above. However, this is not always possible when the interest is to calculate the sites’ contribution to a $\text{pseudo-}R^2$, especially for variants of $\text{pseudo-}R^2$ that do not have a mathematical structure similar to the classical $R^2$.
 
@@ -251,7 +278,7 @@ ggarrange(plot_rXY, plot_agXY, legend = "right", common.legend = TRUE)
 ```
 
 
-### Initial Occupancy
+# Initial Occupancy
 For example, to create the initial conditions, $t=0$,  of presence absence, species occupancy is drawn from a random uniform distribution, and values smaller than $0.8$ are considered as species presence. Patches or locations $z$ are represented by rows in the matrix, whereas each species is a column. Each cell in the matrix is $X_{i,z,t}$ and each row is $\mathbf{Y}_{z,t}$ for $t=0$. The following figure shows three different iterations of this process, where areas in black represent occupancy = 1, and white denotes an absence.  
 
 
@@ -402,9 +429,7 @@ ggarrange(plot_A, plot_v, ncol = 2)
 ```
 
 
-We now define the function 
-$$C_{i,z,t}=g(\nu_{i},z,t)$$
-representing the total effect of ecological interactions on the colonization probability. For convenience, we will use a sigmoid function, with $g$ ranging between $c_{min}$ at high negative interactions and $c_{max}$ at high positive interactions, where $c_{max}$ should be interpreted as the maximal colonization probability when the environmental conditions are optimal and there are no dispersal limitations.  
+  
 
 ```{r Cfunction}
 # Effect of ecological interactions on colonization probability
@@ -515,7 +540,7 @@ plot_Pext <- rastPlot(P_ext, title = "Probability of extinction", x = "Patches",
 
 ```
 
-```{r VisuzalizeExt, echo = FALSE}
+```{r VisuzalizeExt, echo = FALSE, fig.width=8}
 ggarrange(plot_M, plot_Ex, plot_Pext, ncol = 2, nrow = 2)
 
 ```
@@ -537,7 +562,7 @@ delta[Y == 1 & rand < P_ext] = - 1
 
 ```
 
-```{r testPlot, echo = FALSE}
+```{r testPlot, echo = FALSE, fig.width=8}
 	
 ### Apply changes ###
 Y_post = Y + delta
